@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import java.util.HashMap;
 
+import com.example.demo.repository.UserRepository;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class WelcomeController {
 
     HashMap<String, String> db = new HashMap<>();
+    UserRepository userRepository;
 
     @RequestMapping("/")
     public String homepage() {
@@ -72,4 +75,5 @@ public class WelcomeController {
         model.addAttribute("issueName", issueName);
         return "issue_page";
     }
+
 }
