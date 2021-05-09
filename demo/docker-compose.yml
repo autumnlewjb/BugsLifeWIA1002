@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+    sql-server:
+        image: mysql:latest
+        networks:
+            - mysql-network
+        environment:
+            - MYSQL_ROOT_PASSWORD=secret
+        ports:
+            - 5432:8080
+        volumes:
+            - ./User.sql:/docker-entrypoint-initdb.d/User.sql
+
+networks:
+    mysql-network:
+        driver: bridge
