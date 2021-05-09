@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Page</title>
+    </head>
+
+    <body>
+        <h1 th:text="${projectName}">Untitled</h1>
+        <span><a th:href="@{|/issues/${projectName}|}">Issues</a></span>
+    </body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Project Dashboard</title>
+        <link rel="stylesheet" href="project_dashboard.html">
+    </head>
+    <body>
+        <h1 th:inline="text">[[${username}]]'s Project Dashboard</h1>
+        <table style="border: 1px;">
+            <tr>
+                <th>Project ID</th>
+                <th>Project Name</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>
+                    <a href="/project-page/Project A">Project A</a>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
