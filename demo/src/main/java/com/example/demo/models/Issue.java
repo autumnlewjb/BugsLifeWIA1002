@@ -1,19 +1,12 @@
 package com.example.demo.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.List;
 
 @Entity
 @Table(name = "issue")
@@ -35,6 +28,10 @@ public class Issue {
     @ManyToOne
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
+
+    @OneToMany
+    @JoinColumn(name = "comment_id", referencedColumnName = "id")
+    private List<Comment> comment;
 
     public Integer getId() {
         return id;
@@ -66,5 +63,13 @@ public class Issue {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public List<Comment> getComment() {
+        return comment;
+    }
+
+    public void setComment(List<Comment> comment) {
+        this.comment = comment;
     }
 }

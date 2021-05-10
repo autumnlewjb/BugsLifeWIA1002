@@ -4,19 +4,10 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -44,6 +35,10 @@ public class Project implements Serializable {
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @OneToMany
+    @JoinColumn(name= "issue_id", referencedColumnName = "id")
+    private List<Issue> issue;
 
     public Project() {}
 
@@ -108,5 +103,12 @@ public class Project implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
+    public List<Issue> getIssue() {
+        return issue;
+    }
+
+    public void setIssue(List<Issue> issue) {
+        this.issue = issue;
+    }
 }
