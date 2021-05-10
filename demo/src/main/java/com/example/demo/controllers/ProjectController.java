@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
@@ -41,10 +40,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/create")
-    public Project createProject(@RequestBody Map<String, Map<String, String>> payload) {
-        User user = userService.getUser(payload.get("user").get("username"));
-        Project project = Project.fromMap(payload.get("project"));
-
-        return projectService.createProject(user, project);
+    public Project createProject(@RequestBody Project project) {
+        return projectService.createProject(project);
     }
 }

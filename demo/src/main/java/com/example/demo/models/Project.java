@@ -9,8 +9,11 @@ import java.util.Map;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -29,15 +32,17 @@ public class Project implements Serializable {
     @Column(name = "description")
     private String description;
     
-    @Column(name = "date_created")
+    @Temporal(TemporalType.DATE)
+    @CreatedDate
     private Date date;
     
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    @JoinColumn(name= "issue_id", referencedColumnName = "id")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     private List<Issue> issue;
 
     public Project() {}

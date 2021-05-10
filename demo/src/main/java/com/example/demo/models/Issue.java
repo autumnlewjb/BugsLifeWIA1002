@@ -2,35 +2,38 @@ package com.example.demo.models;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Issue {
+public class Issue implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    
     @Column(name = "message")
     private String message;
     
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User author;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
+    @JsonBackReference
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany
-    @JoinColumn(name = "comment_id", referencedColumnName = "id")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "issue")
     private List<Comment> comment;
 
     public Integer getId() {

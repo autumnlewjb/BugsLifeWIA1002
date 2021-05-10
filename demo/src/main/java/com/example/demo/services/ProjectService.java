@@ -31,8 +31,7 @@ public class ProjectService {
         return userService.getProjectByUser(queryUser);
     }
 
-    public Project createProject(User user, Project project) {
-        project.setUser(user);
+    public Project createProject(Project project) {
         return projectRepository.save(project);
     }
 

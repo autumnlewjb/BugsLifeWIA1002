@@ -2,10 +2,10 @@ package com.example.demo.models;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,8 +28,8 @@ public class User implements Serializable{
     @Column(nullable = false, updatable = true)
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
     private List<Project> project;
 
     public User() {}
@@ -77,7 +77,7 @@ public class User implements Serializable{
     }
 
     public List<Project> getProject() {
-        return project;
+        return this.project;
     }
 
     public void setProject(List<Project> project) {
