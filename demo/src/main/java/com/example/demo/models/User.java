@@ -1,5 +1,6 @@
 package com.example.demo.models;
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +32,24 @@ public class User implements Serializable{
     
     @Column(nullable = false, updatable = true)
     private String password;
+
+    public User() {}
+
+    public User(
+        String email, String username, String password
+    ) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
+    public static User fromMap(Map<String, String> map) {
+        String email = map.get("email");
+        String username = map.get("username");
+        String password = map.get("password");
+
+        return new User(email, username, password);
+    }
 
     public Integer getId() {
         return Id;

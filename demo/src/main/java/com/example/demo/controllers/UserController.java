@@ -32,4 +32,5 @@ public class UserController {
     public User getUser(@RequestBody User user) {
         return userService.getUser(user.getUsername());
     }
+
 }

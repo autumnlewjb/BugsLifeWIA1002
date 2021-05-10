@@ -1,64 +1,112 @@
-// package com.example.demo.models;
+package com.example.demo.models;
 
-// import java.util.Date;
+import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
-// import javax.persistence.Column;
-// import javax.persistence.Entity;
-// import javax.persistence.GeneratedValue;
-// import javax.persistence.GenerationType;
-// import javax.persistence.Id;
-// import javax.persistence.JoinColumn;
-// import javax.persistence.ManyToOne;
-// import javax.persistence.Table;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-// @Entity
-// @Table(name = "project")
-// public class Project {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+@Entity
+@Table(name = "project")
+@EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties(allowGetters = true)
+public class Project implements Serializable {
     
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-//     @Column(name = "name")
-//     private String name;
+    @Column(name = "name")
+    private String name;
 
-//     @Column(name = "date_created")
-//     private Date date;
+    @Column(name = "description")
+    private String description;
+    
+    @Column(name = "date_created")
+    private Date date;
+    
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
-//     @ManyToOne
-//     @JoinColumn(name = "issue_id")
-//     private Issue issue;
+    public Project() {}
 
-//     public Integer getId() {
-//         return id;
-//     }
+    public Project(
+        String name, String description, Date date
+    ) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+    }
 
-//     public void setId(Integer id) {
-//         this.id = id;
-//     }
+    public static Project fromMap(Map<String, String> map) {
+        String name = map.get("name");
+        String description = map.get("description");
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(map.get("date_created"));
 
-//     public String getName() {
-//         return name;
-//     }
+            return new Project(name, description, date);
+        } catch (ParseException e) {
+            System.out.println("exception");
+            return null;
+        }
+    }
+    
+    public User getUser() {
+        return user;
+    }
 
-//     public void setName(String name) {
-//         this.name = name;
-//     }
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-//     public Date getDate() {
-//         return date;
-//     }
+    public Integer getId() {
+        return id;
+    }
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public Date getDate() {
+        return date;
+    }
+    
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
 
-//     public void setDate(Date date) {
-//         this.date = date;
-//     }
-
-//     public Issue getIssue() {
-//         return issue;
-//     }
-
-//     public void setIssue(Issue issue) {
-//         this.issue = issue;
-//     }
-
-// }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+}
