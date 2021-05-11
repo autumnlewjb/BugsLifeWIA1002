@@ -34,6 +34,10 @@ public class UserService {
         return projectRepository.findProjectsByUser(user); 
     }
 
+    public void deleteUser(String username){
+        userRepository.delete(getUser(username));
+    }
+
     public User getUserById(Integer id) {
         return userRepository.findUserById(id);
     }

@@ -39,4 +39,8 @@ public class ProjectService {
         return projectRepository.findProjectById(project_id);
     }
 
+    public void deleteProject(Project project){
+        projectRepository.delete(project);
+    }
+
 }

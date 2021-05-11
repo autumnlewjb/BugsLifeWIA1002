@@ -42,7 +42,7 @@ public class Project implements Serializable {
     private User user;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval = true)
     private List<Issue> issue;
 
     public Project() {}

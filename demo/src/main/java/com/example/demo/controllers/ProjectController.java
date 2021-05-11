@@ -8,12 +8,7 @@ import com.example.demo.services.ProjectService;
 import com.example.demo.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -54,5 +49,12 @@ public class ProjectController {
         user.getProject().add(project);
         // save project
         return projectService.createProject(project);
+    }
+
+    @DeleteMapping("{username}/{project_id}")
+    public void deleteProject(@PathVariable String username, @PathVariable Integer project_id){
+        User user = userService.getUser(username);
+        Project project = projectService.findProjectWithId(project_id);
+        user.getProject().remove(project);
     }
 }

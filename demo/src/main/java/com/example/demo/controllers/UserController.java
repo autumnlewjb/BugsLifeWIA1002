@@ -6,11 +6,7 @@ import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -32,5 +28,11 @@ public class UserController {
     public User getUser(@RequestBody User user) {
         return userService.getUser(user.getUsername());
     }
+
+    @DeleteMapping("/{username}")
+    public void deleteUser(@PathVariable String username){
+        userService.deleteUser(username);
+    }
+
 
 }
