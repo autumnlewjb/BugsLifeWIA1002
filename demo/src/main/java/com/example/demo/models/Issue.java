@@ -22,10 +22,6 @@ public class Issue implements Serializable{
     
     @Column(name = "message")
     private String message;
-    
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User author;
 
     @JsonBackReference
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
@@ -33,7 +29,7 @@ public class Issue implements Serializable{
     private Project project;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comment;
 
     public Integer getId() {
@@ -50,14 +46,6 @@ public class Issue implements Serializable{
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public Project getProject() {

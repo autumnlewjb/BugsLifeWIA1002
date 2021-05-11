@@ -31,6 +31,6 @@ public class UserService {
     }
 
     public List<Project> getProjectByUser(User user) {
-        return projectRepository.findProjectsByUser(user.getId()); 
+        return projectRepository.findProjectsByUser(user); 
     }
 }

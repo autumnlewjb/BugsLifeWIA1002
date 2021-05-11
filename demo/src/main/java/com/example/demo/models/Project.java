@@ -37,7 +37,7 @@ public class Project implements Serializable {
     private Date date;
     
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -1,0 +1,9 @@
+{
+    "message": "not a big deal",
+    "author": {
+        "email": "admin@issuetracker.com",
+        "username": "admin",
+        "password": "admin",
+        "id": 1
+    }
+}

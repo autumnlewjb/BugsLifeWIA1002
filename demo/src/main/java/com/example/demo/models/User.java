@@ -29,7 +29,7 @@ public class User implements Serializable{
     private String password;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Project> project;
 
     public User() {}

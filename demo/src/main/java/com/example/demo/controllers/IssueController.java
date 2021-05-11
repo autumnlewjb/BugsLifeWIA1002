@@ -26,6 +26,7 @@ public class IssueController {
         return issueService.findIssuesByProject(project);
     }
 
+    // FIXME this endpoints create new user in the author field although the user exist
     @PostMapping("/issue/create")
     public Issue createIssue(@RequestBody Issue issue) {
         return issueService.createIssue(issue);

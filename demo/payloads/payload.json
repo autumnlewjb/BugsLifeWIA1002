@@ -1,0 +1,34 @@
+{
+    "email": "admin@issuetracker.com",
+    "username": "admin",
+    "password": "admin",
+    "project": [
+        {
+            "name": "project B",
+            "description": "this is project B",
+            "date": "2021-06-07",
+            "issue": []
+        },
+        {
+            "name": "project A",
+            "description": "this is project a",
+            "date": "2021-06-05",
+            "issue": [
+                {
+                    "message": "json return in a loop",
+                    "author": {
+                        "email": "admin@issuetracker.com",
+                        "username": "admin",
+                        "password": "admin",
+                        "project": []
+                    },
+                    "comment": [
+                        {
+                            "message": "not a big deal"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

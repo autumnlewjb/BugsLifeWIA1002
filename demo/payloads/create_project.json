@@ -1,0 +1,10 @@
+{
+    "name": "project A",
+    "description": "this is project a",
+    "date": "2021-06-05",
+    "user": {
+        "email": "admin@issuetracker.com",
+        "username": "admin",
+        "password": "admin"
+    }
+}
