@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.username = ?1")
     User findByUsername(String username);
+
+    @Query("select u from User u where u.id = ?1")
+    User findUserById(Integer id);
 }

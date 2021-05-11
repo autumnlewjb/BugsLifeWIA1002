@@ -9,6 +9,7 @@ import com.example.demo.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,11 +37,22 @@ public class ProjectController {
     
     @GetMapping("/project/user")
     public List<Project> getProjectsWithUser(@RequestBody User user) {
-        return projectService.findProjectsWithUser(user);
+        return projectService.findProjectsWithUser(user.getUsername());
     }
 
     @PostMapping("/project/create")
     public Project createProject(@RequestBody Project project) {
+        return projectService.createProject(project);
+    }
+
+    @PostMapping("/project/create/{userId}")
+    public Project createProjectWithUserId(@PathVariable Integer userId, @RequestBody Project project) {
+        // find user based on userId
+        User user = userService.getUserById(userId);
+        // relate user to project (set project.user = user object)
+        project.setUser(user);
+        user.getProject().add(project);
+        // save project
         return projectService.createProject(project);
     }
 }
