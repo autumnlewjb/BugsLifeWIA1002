@@ -22,7 +22,7 @@ public class IssueController {
 
     // FIXME this view is giving TransientObjectException probably due to the cascade type
     @GetMapping("/{project_id}/issues")
-    public List<Issue> getIssueByProject(@PathVariable Integer project_id, @RequestBody Issue issue) {
+    public List<Issue> getIssueByProject(@PathVariable Integer project_id) {
         Project project = projectService.findProjectWithId(project_id);
         return issueService.findIssuesByProject(project);
     }

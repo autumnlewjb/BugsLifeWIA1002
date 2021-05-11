@@ -21,7 +21,7 @@ public class CommentController {
     IssueService issueService;
 
     @GetMapping("/{issue_id}/comments")
-    public List<Comment> getCommentsByIssue(@RequestBody Comment comment, @PathVariable Integer issue_id) {
+    public List<Comment> getCommentsByIssue(@PathVariable Integer issue_id) {
         Issue issue = issueService.findIssuesById(issue_id);
         return commentService.findCommentsByIssue(issue);
     }

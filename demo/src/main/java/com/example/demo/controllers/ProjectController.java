@@ -36,7 +36,7 @@ public class ProjectController {
     }
     
     @GetMapping("/{username}/projects")
-    public List<Project> getProjectsWithUser(@PathVariable String username, @RequestBody Project project) {
+    public List<Project> getProjectsWithUser(@PathVariable String username) {
         return projectService.findProjectsWithUser(username);
     }
 
