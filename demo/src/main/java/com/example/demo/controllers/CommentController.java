@@ -33,4 +33,13 @@ public class CommentController {
         comment.setIssue(issue);
         return commentService.createComments(comment);
     }
+    
+    @DeleteMapping("/issue/{issue_id}/delete/comment/{comment_id}")
+    public void deleteComment(@PathVariable Integer issue_id, @PathVariable Integer comment_id){
+        Issue issue=issueService.findIssuesById(issue_id);
+        Comment comment=commentService.findCommentById(comment_id);
+        issue.getComment().remove(comment);
+        comment.setIssue(null);
+        commentService.deleteCommnet(comment);
+    }
 }

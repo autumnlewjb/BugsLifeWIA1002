@@ -27,4 +27,8 @@ public class IssueService {
     public Issue findIssuesById(Integer issue_id) {
         return issueRepository.findIssueById(issue_id);
     }
+    
+    public void deleteIssue(Issue issue){
+        issueRepository.delete(issue);
+    }
 }

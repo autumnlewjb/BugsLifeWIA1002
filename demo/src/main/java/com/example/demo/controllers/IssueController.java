@@ -35,4 +35,13 @@ public class IssueController {
         issue.setProject(project);
         return issueService.createIssue(issue);
     }
+    
+    @DeleteMapping("/project/{project_id}/delete/issue/{issue_id}")
+    public void deleteIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id){
+        Project project=projectService.findProjectWithId(project_id);
+        Issue issue=issueService.findIssuesById(issue_id);
+        project.getIssue().remove(issue);
+        issue.setProject(null);
+        issueService.deleteIssue(issue);
+    }
 }

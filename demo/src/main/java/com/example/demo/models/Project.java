@@ -116,4 +116,8 @@ public class Project implements Serializable {
     public void setIssue(List<Issue> issue) {
         this.issue = issue;
     }
+    
+    public void removeUser() {
+        this.user=null;
+    }
 }

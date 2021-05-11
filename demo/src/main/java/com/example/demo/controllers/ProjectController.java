@@ -54,7 +54,9 @@ public class ProjectController {
     @DeleteMapping("{username}/{project_id}")
     public void deleteProject(@PathVariable String username, @PathVariable Integer project_id){
         User user = userService.getUser(username);
-        Project project = projectService.findProjectWithId(project_id);
-        user.getProject().remove(project);
+        Project project=projectService.findProjectWithId(project_id);
+        project.getUser().getProject().remove(project);
+        project.removeUser();
+        projectService.deleteProject(project);
     }
 }
