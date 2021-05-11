@@ -35,4 +35,8 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
+    public Project findProjectWithId(Integer project_id){
+        return projectRepository.findProjectById(project_id);
+    }
+
 }

@@ -35,9 +35,9 @@ public class ProjectController {
         return projectService.findProjectsWithName(project);
     }
     
-    @GetMapping("/project/user")
-    public List<Project> getProjectsWithUser(@RequestBody User user) {
-        return projectService.findProjectsWithUser(user.getUsername());
+    @GetMapping("/{username}/projects")
+    public List<Project> getProjectsWithUser(@PathVariable String username, @RequestBody Project project) {
+        return projectService.findProjectsWithUser(username);
     }
 
     @PostMapping("/project/create")
@@ -45,7 +45,7 @@ public class ProjectController {
         return projectService.createProject(project);
     }
 
-    @PostMapping("/project/create/{userId}")
+    @PostMapping("{userId}/project/create")
     public Project createProjectWithUserId(@PathVariable Integer userId, @RequestBody Project project) {
         // find user based on userId
         User user = userService.getUserById(userId);

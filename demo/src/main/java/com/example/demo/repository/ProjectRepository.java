@@ -16,4 +16,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("select p from Project p where ?1 in p.user")
     List<Project> findProjectsByUser(User user);
+
+    @Query("select p from Project p where p.id = ?1")
+    Project findProjectById(Integer id);
 }

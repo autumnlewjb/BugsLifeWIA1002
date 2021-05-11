@@ -13,4 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Query("select i from Issue i where i.project = ?1")
     List<Issue> findByProject(Project project);
+
+    @Query("select i from Issue i where i.issue_id = ?1")
+    Issue findIssueById(Integer issue_id);
 }

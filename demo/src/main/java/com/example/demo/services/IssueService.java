@@ -22,4 +22,9 @@ public class IssueService {
     public Issue createIssue(Issue issue) {
         return issueRepository.save(issue);
     }
+
+
+    public Issue findIssuesById(Integer issue_id) {
+        return issueRepository.findIssueById(issue_id);
+    }
 }
