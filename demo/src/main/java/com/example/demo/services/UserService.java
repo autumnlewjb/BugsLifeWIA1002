@@ -41,4 +41,8 @@ public class UserService {
     public User getUserById(Integer id) {
         return userRepository.findUserById(id);
     }
+
+    public void createListOfUsers(List<User> users){
+        userRepository.saveAll(users);
+    }
 }
