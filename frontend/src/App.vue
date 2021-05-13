@@ -1,5 +1,5 @@
 <template>
-  <router-view @updateData="updateUserData" :data="data"></router-view>
+  <router-view @updateData="updateUserData" :data="getUserData"></router-view>
 </template>
 
 <script>
@@ -17,6 +17,12 @@ export default {
   methods: {
     updateUserData(data) {
       this.data = data
+      this.$router.push({'name': 'Projects'})
+    }
+  },
+  computed: {
+    getUserData() {
+      return this.data;
     }
   },
   emits: ['updateData']

@@ -1,5 +1,7 @@
 <template>
-  <h1>{{project["name"]}}</h1>
+  <h1>{{project.name}}</h1>
+  <p>Description: {{project.description}}</p>
+  <p>Date created: {{project.date == null ? "Not specified" : project.date}}</p>
   <span><router-link :to="{path: '/issues', query: {projectId: projectId}}">Issues</router-link></span>
 </template>
 

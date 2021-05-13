@@ -5,7 +5,6 @@
 
 <script>
 import Form from '../src/components/Form'
-import router from '../router/index'
 
 export default {
     name: 'Login',
@@ -26,8 +25,7 @@ export default {
         const data = await this.users.json()
         const userInDB = data.find((u) => u.username == user.username && u.password == user.password)
         if (userInDB != null) {
-          await this.$emit('updateData', userInDB)
-          router.push({'name': 'Projects'})
+          this.$emit('updateData', userInDB)
         }
       }
     },

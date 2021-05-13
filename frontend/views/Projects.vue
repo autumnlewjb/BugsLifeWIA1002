@@ -1,5 +1,7 @@
 <template>
-  <h1>{{user}}'s Project Dashboard</h1>
+  <h1>{{user.username}}'s Project Dashboard</h1>
+  <p>Username: {{user.username}}</p>
+  <p>Email: {{user.email}}</p>
   <table style="border: 1px">
     <tr>
       <th>Project ID</th>
@@ -20,7 +22,7 @@ export default {
   setup() {},
   data() {
     return {
-      user: this.data['username'],
+      user: this.data,
       projects: this.data['project']
     }
   },
