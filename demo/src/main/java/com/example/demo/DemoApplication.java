@@ -48,7 +48,7 @@ public class DemoApplication implements CommandLineRunner {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api/users").allowedOrigins("http://localhost:8081");
+				registry.addMapping("/api/users").allowedOrigins("http://35.192.204.249:8081");
 			}
 		};
 	}
