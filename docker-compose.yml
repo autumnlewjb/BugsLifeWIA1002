@@ -1,7 +1,7 @@
 version: "3.9"
 services:
     spring-app:
-        build: .
+        build: ./demo/
         ports:
             - 8080:8080
         depends_on: 
@@ -14,5 +14,12 @@ services:
         ports:
             - 3306:3306
         volumes:
-            - ./User.sql:/docker-entrypoint-initdb.d/User.sql
+            - ./demo/User.sql:/docker-entrypoint-initdb.d/User.sql
+    frontend-app:
+        build: ./frontend/
+        ports:
+            - 8081:8081
+        depends_on:
+            - spring-app
+        restart: on-failure
 

@@ -21,7 +21,7 @@ export default {
     },
     methods: {
       async onSubmit(user) {
-        this.users = await fetch('/api/users')
+        this.users = await fetch('http://localhost:8080/api/users')
         const data = await this.users.json()
         const userInDB = data.find((u) => u.username == user.username && u.password == user.password)
         if (userInDB != null) {

@@ -9,7 +9,7 @@ import Issue from '../views/Issue'
 
 const routes = [
     {
-        path: '/login',
+        path: '/',
         name: 'Login',
         component: Login
     },
