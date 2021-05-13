@@ -1,18 +1,25 @@
 <template>
-  <router-view :data="data"></router-view>
+  <router-view @updateData="updateUserData" :data="data"></router-view>
 </template>
 
 <script>
-import jsonData from '../data.json'
 
 export default {
   name: 'App',
   data() {
-    return {data: jsonData}
+    return {
+      data: null,
+    }
   },
   components: {
     
-  }
+  }, 
+  methods: {
+    updateUserData(data) {
+      this.data = data
+    }
+  },
+  emits: ['updateData']
 }
 </script>
 

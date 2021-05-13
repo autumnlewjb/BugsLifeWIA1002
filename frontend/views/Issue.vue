@@ -24,8 +24,8 @@ export default {
   created() {
     this.projectId = this.$route.query.projectId
     this.issueId = this.$route.query.issueId
-    this.project = this.data["projects"].find((project) => project.id == this.projectId)
-    this.issue = this.project["issues"].find((issue) => issue.id == this.issueId)
+    this.project = this.data["project"].find((project) => project.project_id == this.projectId)
+    this.issue = this.project["issue"].find((issue) => issue.issue_id == this.issueId)
   },
   props: {
     data: JSON

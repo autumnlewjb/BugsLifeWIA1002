@@ -17,17 +17,21 @@ export default {
     },
     data() {
       return {
-        users: this.data["users"]
+        users: []
       }
     },
     methods: {
-      onSubmit(user) {
-        const exist = this.users.find((userInDB) => userInDB.username == user.username && userInDB.password == userInDB.password)
-        if (exist != null) {
+      async onSubmit(user) {
+        this.users = await fetch('/api/users')
+        const data = await this.users.json()
+        const userInDB = data.find((u) => u.username == user.username && u.password == user.password)
+        if (userInDB != null) {
+          await this.$emit('updateData', userInDB)
           router.push({'name': 'Projects'})
         }
       }
-    }
+    },
+    emits: ['updateData']
 };
 </script>
 

@@ -1,5 +1,4 @@
 <template>
-  <h1></h1>
   <h1>{{project["name"]}}</h1>
   <span><router-link :to="{path: '/issues', query: {projectId: projectId}}">Issues</router-link></span>
 </template>
@@ -18,7 +17,7 @@ export default {
   },
   created() {
     this.projectId = this.$route.query.projectId,
-    this.project = this.data["projects"].find((project) => project.id == this.projectId)
+    this.project = this.data["project"].find((project) => project.project_id == this.projectId)
   }
 };
 </script>

@@ -6,9 +6,9 @@
       <th>Issue Name</th>
     </tr>
     <tr v-for="issue in issues" :key="issue.id">
-      <td>{{issue.id}}</td>
+      <td>{{issue.issue_id}}</td>
       <td>
-        <router-link :to="{path: '/issue', query: {projectId: projectId, issueId: issue.id}}">{{issue.title}}</router-link>
+        <router-link :to="{path: '/issue', query: {projectId: projectId, issueId: issue.issue_id}}">{{issue.title}}</router-link>
       </td>
     </tr>
   </table>
@@ -29,8 +29,8 @@ export default {
   },
   created() {
     this.projectId = this.$route.query.projectId
-    this.project = this.data['projects'].find((project) => project.id == this.projectId)
-    this.issues = this.project['issues']
+    this.project = this.data['project'].find((project) => project.project_id == this.projectId)
+    this.issues = this.project['issue']
   }
 };
 </script>
