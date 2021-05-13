@@ -9,7 +9,7 @@
   <p>Timestamp: {{issue.timestamp == null ? 'Not Specified' : issue.timestamp}}</p>
   <div>
     <h2>Comments</h2>
-    <div v-for="comment in issue.comments" :key="comment.id">
+    <div v-for="comment in issue.comment" :key="comment.id">
       <Comment :comment="comment"/>
     </div>
   </div>
