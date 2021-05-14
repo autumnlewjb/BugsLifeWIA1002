@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @SpringBootApplication
-public class DemoApplication implements CommandLineRunner {
+public class DemoApplication {
 
     @Autowired
     UserService userService;
@@ -30,7 +30,7 @@ public class DemoApplication implements CommandLineRunner {
 	}
 
 
-	@Override
+	/*@Override
 	public void run(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -43,7 +43,7 @@ public class DemoApplication implements CommandLineRunner {
         } catch (IOException e){
             System.out.println("Unable to save users: " + e.getMessage());
         }
-	}
+	}*/
 
 
 }

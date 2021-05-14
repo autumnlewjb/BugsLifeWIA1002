@@ -19,10 +19,10 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
-    @Column(nullable=false, updatable=true)
+    @Column(nullable=false, updatable=true, unique = true)
     private String email;
 
-    @Column(nullable = false, updatable = true)
+    @Column(nullable = false, updatable = true, unique = true)
     private String username;
     
     @Column(nullable = false, updatable = true)
