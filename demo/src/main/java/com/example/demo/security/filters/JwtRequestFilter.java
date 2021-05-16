@@ -10,6 +10,7 @@ import com.example.demo.security.util.JwtUtil;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
     private MyUserDetailsService myUserDetailsService;
     @Autowired
     private JwtUtil jwtUtil;
+    Cookie cookie;
     
     @Override
     protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -39,6 +41,11 @@ public class JwtRequestFilter extends OncePerRequestFilter{
         }
         
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null) {
+            cookie=new Cookie("cookies",jwt);
+            httpResponse.addCookie(cookie);
+            cookie.setDomain("localhost");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(10*60*60);
             UserDetails userDetails=this.myUserDetailsService.loadUserByUsername(username);
             if(jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
