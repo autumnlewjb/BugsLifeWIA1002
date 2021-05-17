@@ -1,17 +1,13 @@
 <template>
-<div>
-  <div>
-    <v-breadcrumbs
-    :items="items">
-      
-    </v-breadcrumbs>
-  </div>
-<h1>{{project.name}}</h1>
-  <p>Description: {{project.description}}</p>
-  <p>Date created: {{project.date == null ? "Not specified" : project.date}}</p>
-  <v-btn @click="toggleIssues">{{showIssues ? 'Close' : 'See All Issues'}}</v-btn>
-  <Issues v-if="showIssues" :data="data"></Issues>
-</div>
+<v-container>
+  <v-container>
+    <h1>{{project.name}}</h1>
+    <p>Description: {{project.description}}</p>
+    <p>Date created: {{project.date == null ? "Not specified" : project.date}}</p>
+    <v-btn @click="toggleIssues">{{showIssues ? 'Close' : 'See All Issues'}}</v-btn>
+    <Issues v-if="showIssues" :data="data" @updateUserData="$emit('updateUserData')"></Issues>
+  </v-container>
+</v-container>
   
 </template>
 
@@ -24,7 +20,6 @@ export default {
       projectId: 0,
       project: null,
       showIssues: false,
-      items: [],
     } 
   },
   setup() {},
@@ -33,14 +28,14 @@ export default {
   },
   created() { 
     this.projectId = this.$route.query.projectId
-    console.log(this.data) 
-    console.log(this.projectId)
-    this.project = this.data["project"].find((project) => project.project_id == this.projectId)
-    this.items.push({
-          text: this.project.name,
-          disabled: false,
-          href: window.location.href,
-        })
+    this.project = this.$store.getters.getCurrentUser.project.find((project) => project.project_id == this.projectId)
+  },
+  mounted() {
+    this.$emit('addToBreadcrumb', {
+      text: this.project.name,
+      disabled: false,
+      href: window.location.href
+    })
   },
   methods: {
     toggleIssues() {
@@ -53,7 +48,7 @@ export default {
   },
   components: {
     Issues
-  }
+  },
 };
 </script>
 

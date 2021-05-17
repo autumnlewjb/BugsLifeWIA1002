@@ -3,7 +3,7 @@
     <nav>
 
       <v-navigation-drawer
-        v-if="makeNavVisible"
+        v-if="userAuthenticated"
         app
         v-model="drawer"
         :mini-variant.sync="mini"
@@ -11,10 +11,10 @@
       >
         <v-list-item class="px-2">
           <v-list-item-avatar color="blue">
-            <span class="white--text headline">{{(this.data.username[0].toUpperCase())}}</span>
+            <span class="white--text headline">{{(getData.username[0].toUpperCase())}}</span>
           </v-list-item-avatar>
 
-          <v-list-item-title>{{(this.data.username)}}</v-list-item-title>
+          <v-list-item-title>{{(getData.username)}}</v-list-item-title>
 
           <v-btn icon @click.stop="mini = !mini">
             <v-icon>mdi-chevron-left</v-icon>
@@ -37,12 +37,18 @@
       </v-navigation-drawer>
     </nav>
     <v-main>
-      <div :class="{'pa-16': $vuetify.breakpoint.mdAndUp, 'pa-5': $vuetify.breakpoint.smAndDown}">
+      <!-- <v-container>
+        <v-breadcrumbs :items="getBreadcrumbsItem">
+
+        </v-breadcrumbs>
+      </v-container> -->
+      <v-container :class="{'pa-16': $vuetify.breakpoint.mdAndUp, 'pa-5': $vuetify.breakpoint.smAndDown}">
         <router-view
-          @updateData="updateUserData"
-          :data="data"
+          @updateUserData="updateUserData"
+          @addToBreadcrumb="addToBreadcrumb"
+          @removeFromBreadcrumb="removeFromBreadcrumb"
         ></router-view>
-      </div>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -59,6 +65,7 @@ export default {
         { title: "Logout", icon: "mdi-logout", route:"Login", click: this.logOut },
       ],
       mini: true,
+      breadcrumbItems: []
     };
   },
   components: {},
@@ -70,27 +77,64 @@ export default {
     } else {
       this.drawer = false;
     }
+    console.log("app created")
+  },
+  destroyed() {
+    console.log("app destroy");
   },
   methods: {
     updateUserData() {
-      this.data = JSON.parse(localStorage.data);
-      console.log(this.data);
-      this.$router.push({ name: "Projects" });
+      console.log('reach')
+      if (localStorage.data != null) {
+        const currentUser = JSON.parse(localStorage.data);
+        console.log(`/api/user/${currentUser.username}`)
+        fetch(`/api/user/${currentUser.username}`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json()
+          }
+        }).then((user) => {
+          this.data = user
+          console.log(user)
+          localStorage.setItem('data', JSON.stringify(user))
+        }).then(() => this.goToProject())
+        .catch((e) => console.log(e));
+      } else {
+        this.logOut()
+      }
     },
     goToProject() {
       this.$router.push({name: 'Projects'}).catch(() => {})
     },
     logOut() {
       localStorage.clear()
-      this.data = null
+      this.breadcrumbItems = []
+      this.$store.dispatch('fetchCurrentUser')
       this.$router.push({name: 'Login'})
+    },
+    addToBreadcrumb(breadcrumbItem) {
+      if (this.breadcrumbItems.length == 0 || this.breadcrumbItems[this.breadcrumbItems.length - 1].href !== breadcrumbItem.href) {
+        this.breadcrumbItems.push(breadcrumbItem)
+      }
+      this.breadcrumbItems.map((item) => item.disabled = false)
+      this.breadcrumbItems[this.breadcrumbItems.length-1].disabled = true
+    },
+    removeFromBreadcrumb() {
+      console.log("detected")
+      if (this.breadcrumbItems.length > 0) this.breadcrumbItems.pop()
     }
   },
   computed: {
-    makeNavVisible() {
-      return this.data != null
+    userAuthenticated() {
+      return this.$store.getters.getCurrentUser != null
     },
+    getBreadcrumbsItem() {
+      return this.breadcrumbItems
+    },
+    getData() {
+      return this.$store.getters.getCurrentUser;
+    }
   },
-  emits: ["updateData"],
+  emits: ["updateUserData"],
 };
 </script>

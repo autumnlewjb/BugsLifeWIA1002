@@ -8,7 +8,7 @@
     <v-layout row justify-center>
       <v-flex xs12 md6>
         <v-card class="d-flex justify-center pa-5 mx-2">
-          <Form @form-submit="onSubmit"></Form>
+          <Form @form-submit="onSubmit" formPurpose="Login" :collectEmail="false"></Form>
         </v-card>
       </v-flex>
     </v-layout>
@@ -31,6 +31,11 @@ export default {
       users: [],
     };
   },
+  created() {
+    if (localStorage.data) {
+      this.$router.push({name: 'Projects'})
+    }
+  },
   methods: {
     async onSubmit(user) {
       this.users = await fetch("/api/users");
@@ -39,13 +44,12 @@ export default {
         (u) => u.username == user.username && u.password == user.password
       );
       if (userInDB != null) {
-        console.log("logged in");
-        localStorage.data = JSON.stringify(userInDB);
-        this.$emit("updateData");
+        localStorage.setItem('data', JSON.stringify(userInDB));
+        this.$store.dispatch("fetchCurrentUser");
+        this.$router.push({name: 'Projects'})
       }
     },
   },
-  emits: ["updateData"],
 };
 </script>
 
