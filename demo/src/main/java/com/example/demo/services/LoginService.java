@@ -1,27 +1,29 @@
 package com.example.demo.services;
 
-import com.example.demo.models.RefreshToken;
 import com.example.demo.models.User;
 import com.example.demo.security.MyUserDetailsService;
 import com.example.demo.security.models.AuthenticateRequest;
 import com.example.demo.security.models.AuthenticateResponse;
+import com.example.demo.security.util.CookieUtil;
 import com.example.demo.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Service
 public class LoginService {
-    @Autowired
-    private UserService userService;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -29,26 +31,25 @@ public class LoginService {
     @Autowired
     private JwtUtil jwtTokenUtil;
     @Autowired
-    private RefreshTokenService refreshTokenService;
+    private CookieUtil cookieUtil;
 
-    public ResponseEntity<?> authenticate(AuthenticateRequest authenticateRequest) throws Exception {
+    public ResponseEntity<AuthenticateResponse> logIn(String refreshToken, AuthenticateRequest authenticateRequest) throws Exception {
         authenticate(authenticateRequest.getUsername(), authenticateRequest.getPassword());
         final User user = myUserDetailsService.getUser(authenticateRequest.getUsername());
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authenticateRequest.getUsername());
         final String jwt = jwtTokenUtil.generateToken(userDetails);
-        RefreshToken refreshToken;
-        if(refreshTokenService.findById(user.getUser_id()).isPresent()){
-            refreshToken = refreshTokenService.findById(user.getUser_id()).get();
-            if (jwtTokenUtil.isTokenExpired(refreshToken.getToken())) {
-                refreshTokenService.delete(refreshToken);
-                refreshToken = new RefreshToken(user.getUser_id(), jwtTokenUtil.generateRefreshToken(user));
-                refreshTokenService.save(refreshToken);
-            }
-            return ResponseEntity.ok(new AuthenticateResponse(jwt, refreshToken.getToken()));
+        if (refreshToken == null) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE,
+                            cookieUtil.createRefreshTokenCookie(jwtTokenUtil.generateRefreshToken(user)).toString())
+                    .body(new AuthenticateResponse(jwt));
+        } else if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE,
+                            cookieUtil.createRefreshTokenCookie(jwtTokenUtil.generateRefreshToken(user)).toString())
+                    .body(new AuthenticateResponse(jwt));
         }
-        refreshToken = new RefreshToken(user.getUser_id(), jwtTokenUtil.generateRefreshToken(user));
-        refreshTokenService.save(refreshToken);
-        return ResponseEntity.ok(new AuthenticateResponse(jwt, refreshToken.getToken()));
+        return ResponseEntity.ok(new AuthenticateResponse(jwt));
     }
 
     private void authenticate(String username, String password) throws Exception {
@@ -63,23 +64,13 @@ public class LoginService {
         }
     }
 
-    public Optional<String> refreshJwtToken(RefreshToken refreshToken) throws Exception {
-        return Optional.of(refreshTokenService.findByToken(refreshToken.getToken())
-                .map(token -> {
-                    jwtTokenUtil.isTokenExpired(token.getToken());
-                    return token;
-                })
-                .map(RefreshToken::getId)
-                .map(userService::getUserById)
-                .map(User::getUsername)
-                .map(myUserDetailsService::loadUserByUsername)
-                .map(jwtTokenUtil::generateToken))
-                .orElseThrow(() -> new Exception("Missing refresh token in database.Please login again"));
-    }
-
-    public void logoutUser(String refreshToken) {
-        refreshTokenService.findByToken(refreshToken)
-                .ifPresent(refreshTokenService::delete);
+    public ResponseEntity<AuthenticateResponse> refreshJwtToken(String refreshToken) throws Exception {
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtTokenUtil.extractUsername(refreshToken));
+        if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+            String jwt = jwtTokenUtil.generateToken(userDetails);
+            return ResponseEntity.ok(new AuthenticateResponse(jwt));
+        }
+        throw new Exception("An error occurred.Please login again");
     }
 
     /*public boolean authenticate(String username, String password) {

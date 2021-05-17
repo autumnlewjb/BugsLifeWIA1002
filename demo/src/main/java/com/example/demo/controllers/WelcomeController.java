@@ -2,26 +2,16 @@ package com.example.demo.controllers;
 
 import java.util.HashMap;
 
-import com.example.demo.models.RefreshToken;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.MyUserDetailsService;
 import com.example.demo.security.models.AuthenticateRequest;
 import com.example.demo.security.models.AuthenticateResponse;
-import com.example.demo.security.util.JwtUtil;
 import com.example.demo.services.LoginService;
 
-import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class WelcomeController {
@@ -48,15 +38,21 @@ public class WelcomeController {
     }
 
     @PostMapping(path = "/authenticate")
-    public ResponseEntity<?> loginPost(@RequestBody AuthenticateRequest authenticateRequest) throws Exception {
-        return loginService.authenticate(authenticateRequest);
+    public ResponseEntity<AuthenticateResponse> loginPost(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            @RequestBody AuthenticateRequest authenticateRequest) throws Exception {
+        return loginService.logIn(refreshToken, authenticateRequest);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshJwtToken(@RequestBody RefreshToken refreshToken) throws Exception {
-        return loginService.refreshJwtToken(refreshToken)
-                .map(updatedToken -> ResponseEntity.ok(new AuthenticateResponse(updatedToken, refreshToken.getToken())))
-                .orElseThrow(() -> new Exception("Unexpected error during token refresh. Please logout and login again."));
+    public ResponseEntity<AuthenticateResponse> refreshJwtToken(@CookieValue(name = "refreshToken") String refreshToken) throws Exception {
+        return loginService.refreshJwtToken(refreshToken);
+    }
+
+    @GetMapping(path = "/logout")
+    @ResponseBody
+    public String logout() {
+        return "logout";
     }
 
     /*@PostMapping(path = "/login")
