@@ -33,11 +33,20 @@ public class LoginService {
 
     public ResponseEntity<?> authenticate(AuthenticateRequest authenticateRequest) throws Exception {
         authenticate(authenticateRequest.getUsername(), authenticateRequest.getPassword());
-        final User user= myUserDetailsService.getUser(authenticateRequest.getUsername());
+        final User user = myUserDetailsService.getUser(authenticateRequest.getUsername());
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authenticateRequest.getUsername());
         final String jwt = jwtTokenUtil.generateToken(userDetails);
-        final RefreshToken refreshToken = new RefreshToken(user.getUser_id(), jwtTokenUtil.generateRefreshToken(user));
-        refreshTokenService.findById(user.getUser_id()).ifPresent(refreshTokenService::delete);
+        RefreshToken refreshToken;
+        if(refreshTokenService.findById(user.getUser_id()).isPresent()){
+            refreshToken = refreshTokenService.findById(user.getUser_id()).get();
+            if (jwtTokenUtil.isTokenExpired(refreshToken.getToken())) {
+                refreshTokenService.delete(refreshToken);
+                refreshToken = new RefreshToken(user.getUser_id(), jwtTokenUtil.generateRefreshToken(user));
+                refreshTokenService.save(refreshToken);
+            }
+            return ResponseEntity.ok(new AuthenticateResponse(jwt, refreshToken.getToken()));
+        }
+        refreshToken = new RefreshToken(user.getUser_id(), jwtTokenUtil.generateRefreshToken(user));
         refreshTokenService.save(refreshToken);
         return ResponseEntity.ok(new AuthenticateResponse(jwt, refreshToken.getToken()));
     }

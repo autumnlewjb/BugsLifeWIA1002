@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtUtil {
     private String secretKey="secret";
-    private final int JWT_EXPIRATION_MS= 1000*20; //1000*60*60*10
+    private final int JWT_EXPIRATION_MS= 1000*60*60; //1000*60*60*10
     private final int REFRESH_EXPIRATION_MS= 1000*60*60*10;
 
     public String extractUsername(String token) {
