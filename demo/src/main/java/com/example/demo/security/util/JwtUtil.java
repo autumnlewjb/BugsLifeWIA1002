@@ -5,12 +5,14 @@
  */
 package com.example.demo.security.util;
 
+import com.example.demo.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtUtil {
     private String secretKey="secret";
-    
+    private final int JWT_EXPIRATION_MS= 1000*20; //1000*60*60*10
+    private final int REFRESH_EXPIRATION_MS= 1000*60*60*10;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -36,21 +40,28 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
     
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-    
     public String generateToken(UserDetails userDetails) {
         Map<String,Object> claims=new HashMap<>();
-        return createToken(claims,userDetails.getUsername());
+        return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION_MS))
+                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
-    
-    public String createToken(Map<String,Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis()+1000*60*60*10)).signWith(SignatureAlgorithm.HS256, secretKey).compact();
+
+    public String generateRefreshToken(User user) {
+        Map<String,Object> claims=new HashMap<>();
+        return Jwts.builder().setClaims(claims).setSubject(user.getUser_id().toString())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_MS))
+                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
-    
+
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username=extractUsername(token);
         return(username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

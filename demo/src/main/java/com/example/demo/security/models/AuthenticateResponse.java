@@ -1,19 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.example.demo.security.models;
 
 public class AuthenticateResponse {
     private final String jwt;
+    private final String refreshToken;
 
-    public AuthenticateResponse(String jwt) {
+    public AuthenticateResponse(String jwt, String refreshToken) {
         this.jwt = jwt;
+        this.refreshToken = refreshToken;
     }
 
     public String getJwt() {
         return jwt;
     }
 
+    public String getRefreshToken() {
+        return refreshToken;
+    }
 }
