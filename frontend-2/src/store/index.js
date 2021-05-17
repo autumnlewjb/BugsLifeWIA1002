@@ -17,7 +17,7 @@ export default new Vuex.Store({
     async fetchCurrentUser(state) {
       if (localStorage.data) {
         const currentUser = JSON.parse(localStorage.data);
-        fetch(`/api/user/${currentUser.username}`)
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/api/user/${currentUser.username}`)
         .then((res) => {
           if (res.status == 200) {
             return res.json()

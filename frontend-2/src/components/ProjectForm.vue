@@ -37,7 +37,7 @@ export default {
   methods: {
     onSubmit(action) {
         if (action == 'add') {
-            fetch(`/api/${this.$store.getters.getCurrentUser.user_id}/project/create`, {
+            fetch(`${process.env.VUE_APP_BACKEND_URL}/api/${this.$store.getters.getCurrentUser.user_id}/project/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

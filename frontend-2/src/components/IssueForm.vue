@@ -69,7 +69,7 @@ export default {
     },
     onSubmit(action) {
       if (action == "add") {
-        fetch(`/api/${this.projectId}/issue/create`, {
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/api/${this.projectId}/issue/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -70,6 +70,8 @@ export default {
   },
   components: {},
   created() {
+    const url = process.env.VUE_APP_BACKEND_URL
+    console.log(url)
     if (localStorage.data) {
       this.data = JSON.parse(localStorage.data);
       console.log(this.data);
@@ -88,7 +90,7 @@ export default {
       if (localStorage.data != null) {
         const currentUser = JSON.parse(localStorage.data);
         console.log(`/api/user/${currentUser.username}`)
-        fetch(`/api/user/${currentUser.username}`)
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/api/user/${currentUser.username}`)
         .then((res) => {
           if (res.status == 200) {
             return res.json()

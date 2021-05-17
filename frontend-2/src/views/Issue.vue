@@ -107,7 +107,7 @@ export default {
   // },
   methods: {
     postComment() {
-      fetch(`/api/${this.issueId}/comment/create`, {
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/api/${this.issueId}/comment/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,9 +121,9 @@ export default {
         if (res.status == 200) {
           console.log('comment added')
           // this.$emit('updateUserData')
+          this.$store.dispatch('fetchCurrentUser');
         }
       }).catch((e) => console.log(e))
-      this.$store.dispatch('fetchCurrentUser');
     }
   },
   computed: {

@@ -42,16 +42,4 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Unable to save users: " + e.getMessage());
         }
 	}
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api/users").allowedOrigins("http://35.192.204.249:8081");
-			}
-		};
-	}
-
-
 }
