@@ -1,12 +1,10 @@
 package com.example.demo.controllers;
 
-import java.util.HashMap;
-
-import com.example.demo.repository.UserRepository;
+import com.example.demo.models.User;
 import com.example.demo.security.models.AuthenticateRequest;
 import com.example.demo.security.models.AuthenticateResponse;
 import com.example.demo.services.LoginService;
-
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,11 +14,14 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class WelcomeController {
 
-    HashMap<String, String> db = new HashMap<>();
+    private final LoginService loginService;
+    private final UserService userService;
+
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    LoginService loginService;
+    public WelcomeController(LoginService loginService, UserService userService) {
+        this.loginService = loginService;
+        this.userService = userService;
+    }
 
     @RequestMapping("/")
     public String homepage() {
@@ -40,12 +41,12 @@ public class WelcomeController {
     @PostMapping(path = "/authenticate")
     public ResponseEntity<AuthenticateResponse> loginPost(
             @CookieValue(name = "refreshToken", required = false) String refreshToken,
-            @RequestBody AuthenticateRequest authenticateRequest) throws Exception {
+            @RequestBody AuthenticateRequest authenticateRequest) {
         return loginService.logIn(refreshToken, authenticateRequest);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticateResponse> refreshJwtToken(@CookieValue(name = "refreshToken") String refreshToken) throws Exception {
+    public ResponseEntity<AuthenticateResponse> refreshJwtToken(@CookieValue(name = "refreshToken") String refreshToken){
         return loginService.refreshJwtToken(refreshToken);
     }
 
@@ -70,9 +71,9 @@ public class WelcomeController {
     }
 
     @PostMapping(path = "/register")
-    public String registerPost(@RequestParam String username, @RequestParam String password) {
-        System.out.println(username + " " + password);
-        db.put(username, password);
+    public String registerPost(@RequestBody User user) {
+        //System.out.println(username + " " + password);
+        userService.createUser(user);
         return "redirect:/login";
     }
 

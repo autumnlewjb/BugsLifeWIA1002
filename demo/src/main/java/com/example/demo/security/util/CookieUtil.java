@@ -31,12 +31,4 @@ public class CookieUtil {
                 .path("/")
                 .build();
     }
-
-    public HttpCookie deleteAccessTokenCookie() {
-        return ResponseCookie.from(accessTokenName, "").maxAge(0).httpOnly(true).path("/").build();
-    }
-
-    public HttpCookie deleteRefreshTokenCookie() {
-        return ResponseCookie.from(refreshTokenName, "").maxAge(0).httpOnly(true).path("/").build();
-    }
 }

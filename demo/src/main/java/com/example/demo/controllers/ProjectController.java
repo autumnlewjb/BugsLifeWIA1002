@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class ProjectController {
-    
-    @Autowired
-    ProjectService projectService;
+
+    private final ProjectService projectService;
+    private final UserService userService;
 
     @Autowired
-    UserService userService;
+    public ProjectController(ProjectService projectService, UserService userService) {
+        this.projectService = projectService;
+        this.userService = userService;
+    }
 
     @GetMapping("/projects")
     public List<Project> getAllProjects() {

@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -17,12 +19,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    private final MyUserDetailsService myUserDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    public SecurityConfigurer(MyUserDetailsService myUserDetailsService,
+                              JwtRequestFilter jwtRequestFilter,
+                              JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+        this.myUserDetailsService = myUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -37,15 +46,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+                .authorizeRequests()
                 //permit all requests to this two address
-                .authorizeRequests().antMatchers("/", "/authenticate").permitAll()
+                .antMatchers("/", "/authenticate", "/register").permitAll()
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
                 .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
-                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("cookie2").and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
-                //todo implement this code after integrated with frontend
-                //.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("cookie2");
+        //todo implement this code after integrated with frontend
+        //.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

@@ -11,9 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IssueService {
-    
+
+    private final IssueRepository issueRepository;
+
     @Autowired
-    IssueRepository issueRepository;
+    public IssueService(IssueRepository issueRepository) {
+        this.issueRepository = issueRepository;
+    }
 
     public List<Issue> findIssuesByProject(Project project) {
         return issueRepository.findByProject(project);

@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectService {
 
-    @Autowired
-    ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+    private final UserService userService;
 
     @Autowired
-    UserService userService;
+    public ProjectService(ProjectRepository projectRepository, UserService userService) {
+        this.projectRepository = projectRepository;
+        this.userService = userService;
+    }
 
     public List<Project> findAllProjects() {
         return projectRepository.findAll();

@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class IssueController {
-    
-    @Autowired
-    IssueService issueService;
+
+    private final IssueService issueService;
+    private final ProjectService projectService;
 
     @Autowired
-    ProjectService projectService;
+    public IssueController(IssueService issueService, ProjectService projectService) {
+        this.issueService = issueService;
+        this.projectService = projectService;
+    }
 
     // FIXME this view is giving TransientObjectException probably due to the cascade type
     @GetMapping("/{project_id}/issues")

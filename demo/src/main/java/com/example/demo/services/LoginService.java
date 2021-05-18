@@ -24,26 +24,26 @@ import javax.servlet.http.HttpSession;
 
 @Service
 public class LoginService {
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private MyUserDetailsService myUserDetailsService;
-    @Autowired
-    private JwtUtil jwtTokenUtil;
-    @Autowired
-    private CookieUtil cookieUtil;
 
-    public ResponseEntity<AuthenticateResponse> logIn(String refreshToken, AuthenticateRequest authenticateRequest) throws Exception {
+    private final AuthenticationManager authenticationManager;
+    private final MyUserDetailsService myUserDetailsService;
+    private final JwtUtil jwtTokenUtil;
+    private final CookieUtil cookieUtil;
+
+    @Autowired
+    public LoginService(AuthenticationManager authenticationManager, MyUserDetailsService myUserDetailsService, JwtUtil jwtTokenUtil, CookieUtil cookieUtil) {
+        this.authenticationManager = authenticationManager;
+        this.myUserDetailsService = myUserDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.cookieUtil = cookieUtil;
+    }
+
+    public ResponseEntity<AuthenticateResponse> logIn(String refreshToken, AuthenticateRequest authenticateRequest){
         authenticate(authenticateRequest.getUsername(), authenticateRequest.getPassword());
         final User user = myUserDetailsService.getUser(authenticateRequest.getUsername());
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authenticateRequest.getUsername());
         final String jwt = jwtTokenUtil.generateToken(userDetails);
-        if (refreshToken == null) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE,
-                            cookieUtil.createRefreshTokenCookie(jwtTokenUtil.generateRefreshToken(user)).toString())
-                    .body(new AuthenticateResponse(jwt));
-        } else if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+        if (refreshToken == null || !jwtTokenUtil.validateToken(refreshToken, userDetails)) {
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE,
                             cookieUtil.createRefreshTokenCookie(jwtTokenUtil.generateRefreshToken(user)).toString())
@@ -52,25 +52,25 @@ public class LoginService {
         return ResponseEntity.ok(new AuthenticateResponse(jwt));
     }
 
-    private void authenticate(String username, String password) throws Exception {
+    private void authenticate(String username, String password){
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new RuntimeException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new RuntimeException("INVALID_CREDENTIALS", e);
         } catch (Exception e) {
-            throw new Exception(e.toString());
+            throw new RuntimeException(e.toString());
         }
     }
 
-    public ResponseEntity<AuthenticateResponse> refreshJwtToken(String refreshToken) throws Exception {
+    public ResponseEntity<AuthenticateResponse> refreshJwtToken(String refreshToken){
         UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtTokenUtil.extractUsername(refreshToken));
         if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
             String jwt = jwtTokenUtil.generateToken(userDetails);
             return ResponseEntity.ok(new AuthenticateResponse(jwt));
         }
-        throw new Exception("An error occurred.Please login again");
+        throw new RuntimeException("An error occurred.Please login again");
     }
 
     /*public boolean authenticate(String username, String password) {
