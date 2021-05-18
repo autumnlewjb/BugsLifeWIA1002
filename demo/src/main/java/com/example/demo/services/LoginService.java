@@ -26,8 +26,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 
 @Service
+@Transactional
 public class LoginService {
 
     private final AuthenticationManager authenticationManager;

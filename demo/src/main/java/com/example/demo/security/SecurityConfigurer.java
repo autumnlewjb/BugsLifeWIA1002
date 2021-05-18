@@ -48,9 +48,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //permit all requests to this two address
                 .antMatchers("/", "/authenticate", "/register").permitAll()
+                .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
-                .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
+                .formLogin().loginProcessingUrl("/login").permitAll().defaultSuccessUrl("/project-dashboard", true).and()
                 .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("cookie2");
         //todo implement this code after integrated with frontend
         //.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
