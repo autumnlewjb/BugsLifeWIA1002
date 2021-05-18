@@ -7,6 +7,7 @@ import com.example.demo.services.LoginService;
 import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,13 @@ public class WelcomeController {
 
     private final LoginService loginService;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public WelcomeController(LoginService loginService, UserService userService) {
+    public WelcomeController(LoginService loginService, UserService userService, PasswordEncoder passwordEncoder) {
         this.loginService = loginService;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @RequestMapping("/")
@@ -72,7 +75,7 @@ public class WelcomeController {
 
     @PostMapping(path = "/register")
     public String registerPost(@RequestBody User user) {
-        //System.out.println(username + " " + password);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.createUser(user);
         return "redirect:/login";
     }

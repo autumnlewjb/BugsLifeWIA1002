@@ -17,6 +17,8 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -55,7 +57,6 @@ public class LoginService {
         }catch (JsonProcessingException e){
             e.printStackTrace();
         }
-        System.out.println(userString);
         if (refreshToken == null || !jwtTokenUtil.validateToken(refreshToken, userDetails)) {
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE,
