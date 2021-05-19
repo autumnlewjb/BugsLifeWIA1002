@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import com.example.demo.exception.GlobalExceptionHandler;
 import com.example.demo.security.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

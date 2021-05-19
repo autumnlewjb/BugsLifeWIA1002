@@ -16,6 +16,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
+
     @Autowired
     public CommentService(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
@@ -33,7 +34,12 @@ public class CommentService {
         return commentRepository.findCommentById(comment_id);
     }
     
-    public void deleteCommnet(Comment comment) {
+    public void deleteComment(Comment comment) {
         commentRepository.delete(comment);
+    }
+
+    public void updateComment(Integer comment_id, String updatedText) {
+        Comment comment = commentRepository.findCommentById(comment_id);
+        comment.setText(updatedText);
     }
 }

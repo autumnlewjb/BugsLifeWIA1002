@@ -43,6 +43,11 @@ public class CommentController {
         Comment comment=commentService.findCommentById(comment_id);
         issue.getComment().remove(comment);
         comment.setIssue(null);
-        commentService.deleteCommnet(comment);
+        commentService.deleteComment(comment);
+    }
+
+    @PutMapping("comment/{comment_id}/update")
+    public void updateComment( @PathVariable Integer comment_id, @RequestBody String text){
+        commentService.updateComment(comment_id, text);
     }
 }
