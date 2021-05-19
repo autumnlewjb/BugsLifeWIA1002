@@ -54,6 +54,11 @@ public class WelcomeController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @PostMapping(path = "/logout")
+    public String logout() {
+        return "logout";
+    }
+
     @GetMapping(path = "/project-dashboard")
     public String projectDashboard(@ModelAttribute("username") String username, Model model) {
         model.addAttribute("username", username);

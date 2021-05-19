@@ -53,11 +53,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 //permit all requests to this two address
-                .antMatchers("/", "/api/login", "/api/register").permitAll()
+                .antMatchers("/api/login", "/api/register").permitAll()
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
-                .logout().logoutUrl("api/logout").logoutSuccessUrl("/login")
+                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
                 .invalidateHttpSession(true).deleteCookies(jwtCookieName);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
