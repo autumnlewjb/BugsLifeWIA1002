@@ -52,12 +52,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 //permit all requests to this two address
-                .antMatchers("/", "/authenticate", "/register").permitAll()
+                .antMatchers("/", "/api/authenticate", "/api/register").permitAll()
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
-                .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
-                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies(jwtCookieName)
+                .formLogin().loginProcessingUrl("api/login").defaultSuccessUrl("api/project-dashboard", true).and()
+                .logout().logoutUrl("api/logout").invalidateHttpSession(true).deleteCookies(jwtCookieName)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

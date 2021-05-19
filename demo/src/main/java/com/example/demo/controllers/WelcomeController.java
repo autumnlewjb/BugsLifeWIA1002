@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/api")
 public class WelcomeController {
 
     private final LoginService loginService;
@@ -36,7 +37,7 @@ public class WelcomeController {
         return "login";
     }
 
-    @PostMapping(path = "authenticate")
+    @PostMapping(path = "/authenticate")
     public ResponseEntity<AuthenticateResponse> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
         return loginService.logIn(authenticateRequest);
     }
