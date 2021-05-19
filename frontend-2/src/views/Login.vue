@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     async onSubmit(user) {
-      this.users = await fetch(`${process.env.VUE_APP_BACKEND_URL}/api/users`);
+      this.users = await fetch(`/api/users`);
       const data = await this.users.json();
       const userInDB = data.find(
         (u) => u.username == user.username && u.password == user.password

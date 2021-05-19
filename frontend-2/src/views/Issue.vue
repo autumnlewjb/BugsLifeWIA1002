@@ -107,7 +107,7 @@ export default {
   // },
   methods: {
     postComment() {
-      fetch(`${process.env.VUE_APP_BACKEND_URL}/api/${this.issueId}/comment/create`, {
+      fetch(`/api/${this.issueId}/comment/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
