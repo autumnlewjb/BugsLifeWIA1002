@@ -1,7 +1,9 @@
 package com.example.demo.security;
 
+import com.example.demo.exception.GlobalExceptionHandler;
 import com.example.demo.security.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     private final MyUserDetailsService myUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Value("${demo.jwtCookieName}")
+    private String jwtCookieName;
 
     @Autowired
     public SecurityConfigurer(MyUserDetailsService myUserDetailsService,
@@ -47,14 +53,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 //permit all requests to this two address
-                .antMatchers("/", "/authenticate", "/register").permitAll()
+                .antMatchers("/", "/login", "/register").permitAll()
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
-                .formLogin().loginProcessingUrl("/login").permitAll().defaultSuccessUrl("/project-dashboard", true).and()
-                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("cookie2");
-        //todo implement this code after integrated with frontend
-        //.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
+                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies(jwtCookieName)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

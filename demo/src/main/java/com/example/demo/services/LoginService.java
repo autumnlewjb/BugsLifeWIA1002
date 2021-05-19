@@ -4,28 +4,21 @@ import com.example.demo.models.User;
 import com.example.demo.security.MyUserDetailsService;
 import com.example.demo.security.models.AuthenticateRequest;
 import com.example.demo.security.models.AuthenticateResponse;
-import com.example.demo.security.util.CookieUtil;
 import com.example.demo.security.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 @Service
@@ -35,37 +28,34 @@ public class LoginService {
     private final AuthenticationManager authenticationManager;
     private final MyUserDetailsService myUserDetailsService;
     private final JwtUtil jwtTokenUtil;
-    private final CookieUtil cookieUtil;
     private final ObjectMapper objectMapper;
+
+    @Value("${demo.jwtCookieName}")
+    private String jwtCookieName;
 
     @Autowired
     public LoginService(AuthenticationManager authenticationManager, MyUserDetailsService myUserDetailsService,
-                        JwtUtil jwtTokenUtil, CookieUtil cookieUtil, ObjectMapper objectMapper) {
+                        JwtUtil jwtTokenUtil, ObjectMapper objectMapper) {
         this.authenticationManager = authenticationManager;
         this.myUserDetailsService = myUserDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.cookieUtil = cookieUtil;
         this.objectMapper = objectMapper;
     }
 
-    public ResponseEntity<AuthenticateResponse> logIn(String refreshToken, AuthenticateRequest authenticateRequest) {
+    public ResponseEntity<AuthenticateResponse> logIn(AuthenticateRequest authenticateRequest) {
         authenticate(authenticateRequest.getUsername(), authenticateRequest.getPassword());
         final User user = myUserDetailsService.getUser(authenticateRequest.getUsername());
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authenticateRequest.getUsername());
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
         String userString = "";
-        try{
+        try {
             userString = objectMapper.writeValueAsString(user);
-        }catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        if (refreshToken == null || !jwtTokenUtil.validateToken(refreshToken, userDetails)) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE,
-                            cookieUtil.createRefreshTokenCookie(jwtTokenUtil.generateRefreshToken(user)).toString())
-                    .body(new AuthenticateResponse(jwt, userString));
-        }
-        return ResponseEntity.ok(new AuthenticateResponse(jwt, userString));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE,
+                        createAccessTokenCookie(jwtTokenUtil.generateToken(userDetails)).toString())
+                .body(new AuthenticateResponse(userString));
     }
 
     private void authenticate(String username, String password) {
@@ -80,12 +70,12 @@ public class LoginService {
         }
     }
 
-    public ResponseEntity<AuthenticateResponse> refreshJwtToken(String refreshToken) {
-        UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtTokenUtil.extractUsername(refreshToken));
-        if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
-            String jwt = jwtTokenUtil.generateToken(userDetails);
-            return ResponseEntity.ok(new AuthenticateResponse(jwt));
-        }
-        throw new RuntimeException("An error occurred.Please login again");
+    public ResponseCookie createAccessTokenCookie(String token) {
+        return ResponseCookie.from(jwtCookieName, token)
+                .maxAge(-1) // the cookie is removed when the browser is closed
+                .domain("localhost")
+                .path("/")
+                .sameSite("Lax")
+                .build();
     }
 }

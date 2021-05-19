@@ -5,18 +5,15 @@
  */
 package com.example.demo.security.util;
 
-import com.example.demo.models.User;
 import io.jsonwebtoken.*;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Function;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtUtil {
@@ -27,62 +24,57 @@ public class JwtUtil {
     @Value("${demo.jwtExpirationInMs}")
     private Integer JWT_EXPIRATION_MS;
 
-    @Value("${demo.refreshTokenExpirationInMs}")
-    private Integer REFRESH_EXPIRATION_MS;
+    private final Logger logger = LoggerFactory.getLogger(JwtException.class);
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-    
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-    
-    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver) {
-        final Claims claims=extractAllClaims(token);
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
-    
+
     public String generateToken(UserDetails userDetails) {
-        Map<String,Object> claims=new HashMap<>();
-        return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
+        return Jwts.builder().setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION_MS))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MS))
                 .signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
 
-    public String generateRefreshToken(User user) {
-        Map<String,Object> claims=new HashMap<>();
-        return Jwts.builder().setClaims(claims).setSubject(user.getUser_id().toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_MS))
-                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails){
+    public Boolean validateToken(String token){
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return extractUsername(token).equals(userDetails.getUsername());
+
         } catch (SignatureException ex) {
-            System.out.println("Incorrect signature");
+            logger.error("Invalid JWT signature");
+            logger.error(ex.getMessage());
 
         } catch (MalformedJwtException ex) {
-            System.out.println("Malformed jwt token");
+            logger.error("Invalid JWT token");
+            logger.error(ex.getMessage());
 
         } catch (ExpiredJwtException ex) {
-            System.out.println("Token expired. Refresh required");
+            logger.error("Expired JWT token");
+            logger.error(ex.getMessage());
 
         } catch (UnsupportedJwtException ex) {
-            System.out.println("Unsupported JWT token");
+            logger.error("Unsupported JWT token");
+            logger.error(ex.getMessage());
 
         } catch (IllegalArgumentException ex) {
-            System.out.println("Illegal argument token");
+            logger.error("JWT claims string is empty.");
+            logger.error(ex.getMessage());
         }
-        return false;
+        return true;
     }
 
 }

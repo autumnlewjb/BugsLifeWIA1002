@@ -36,21 +36,9 @@ public class WelcomeController {
         return "login";
     }
 
-    @GetMapping(path = "/authenticate")
-    public String auth() {
-        return "login";
-    }
-
-    @PostMapping(path = "/authenticate")
-    public ResponseEntity<AuthenticateResponse> loginPost(
-            @CookieValue(name = "refreshToken", required = false) String refreshToken,
-            @RequestBody AuthenticateRequest authenticateRequest) {
-        return loginService.logIn(refreshToken, authenticateRequest);
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<AuthenticateResponse> refreshJwtToken(@CookieValue(name = "refreshToken") String refreshToken){
-        return loginService.refreshJwtToken(refreshToken);
+    @PostMapping(path = "/login")
+    public ResponseEntity<AuthenticateResponse> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
+        return loginService.logIn(authenticateRequest);
     }
 
     @GetMapping(path = "/logout")
@@ -58,15 +46,6 @@ public class WelcomeController {
     public String logout() {
         return "logout";
     }
-
-    /*@PostMapping(path = "/login")
-    public String loginPost(@RequestParam String username, @RequestParam String password, RedirectAttributes redirectAttributes) {
-        if (!loginService.authenticate(username, password)) {
-            return "401";
-        }
-        redirectAttributes.addFlashAttribute("username", username);
-        return "redirect:/project-dashboard";
-    }*/
 
     @GetMapping(path = "/register")
     public String register() {
