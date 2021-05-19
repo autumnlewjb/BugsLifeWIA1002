@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+    spring-app:
+        build: ./demo/
+        ports:
+            - 8080:8080
+        depends_on: 
+            - sql-server
+        restart: on-failure
+    sql-server:
+        image: mysql:latest
+        environment:
+            - MYSQL_ROOT_PASSWORD=secret
+        ports:
+            - 3306:3306
+        volumes:
+            - ./demo/User.sql:/docker-entrypoint-initdb.d/User.sql
+    frontend-app-2:
+        build: ./frontend-2/
+        ports:
+            - 8081:80
+        depends_on:
+            - spring-app
+        restart: on-failure
+

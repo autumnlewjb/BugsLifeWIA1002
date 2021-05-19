@@ -70,6 +70,8 @@ export default {
   },
   components: {},
   created() {
+    const url = process.env.VUE_APP_BACKEND_URL
+    console.log(url)
     if (localStorage.data) {
       this.data = JSON.parse(localStorage.data);
       console.log(this.data);

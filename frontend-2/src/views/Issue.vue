@@ -121,9 +121,9 @@ export default {
         if (res.status == 200) {
           console.log('comment added')
           // this.$emit('updateUserData')
+          this.$store.dispatch('fetchCurrentUser');
         }
       }).catch((e) => console.log(e))
-      this.$store.dispatch('fetchCurrentUser');
     }
   },
   computed: {
