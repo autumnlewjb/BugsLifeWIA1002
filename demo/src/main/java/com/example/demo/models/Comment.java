@@ -5,10 +5,12 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "comment")
@@ -23,7 +25,9 @@ public class Comment {
     @Column(name = "text", nullable = true)
     private String text;
 
-    private int react;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "comment",  cascade = CascadeType.ALL)
+    private List<React> react;
 
     @Temporal(TemporalType.DATE)
     @CreatedDate
@@ -58,11 +62,11 @@ public class Comment {
         this.text = text;
     }
 
-    public int getReact() {
+    public List<React> getReact() {
         return react;
     }
 
-    public void setReact(int react) {
+    public void setReact(List<React> react) {
         this.react = react;
     }
 

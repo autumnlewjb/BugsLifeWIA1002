@@ -5,15 +5,21 @@ import java.util.List;
 import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
 import com.example.demo.repository.IssueRepository;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class IssueService {
-    
+
+    private final IssueRepository issueRepository;
+
     @Autowired
-    IssueRepository issueRepository;
+    public IssueService(IssueRepository issueRepository) {
+        this.issueRepository = issueRepository;
+    }
 
     public List<Issue> findIssuesByProject(Project project) {
         return issueRepository.findByProject(project);

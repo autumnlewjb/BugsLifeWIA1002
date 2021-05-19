@@ -5,15 +5,22 @@ import java.util.List;
 import com.example.demo.models.Comment;
 import com.example.demo.models.Issue;
 import com.example.demo.repository.CommentRepository;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class CommentService {
-    
+
+    private final CommentRepository commentRepository;
+
+
     @Autowired
-    CommentRepository commentRepository;
+    public CommentService(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     public List<Comment> findCommentsByIssue(Issue issue) {
         return commentRepository.findByIssue(issue);
@@ -27,7 +34,12 @@ public class CommentService {
         return commentRepository.findCommentById(comment_id);
     }
     
-    public void deleteCommnet(Comment comment) {
+    public void deleteComment(Comment comment) {
         commentRepository.delete(comment);
+    }
+
+    public void updateComment(Integer comment_id, String updatedText) {
+        Comment comment = commentRepository.findCommentById(comment_id);
+        comment.setText(updatedText);
     }
 }

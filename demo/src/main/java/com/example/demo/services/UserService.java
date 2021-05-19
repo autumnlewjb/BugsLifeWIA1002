@@ -5,18 +5,26 @@ import java.util.List;
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.repository.ProjectRepository;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class UserService {
     @Autowired
-    UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
-    ProjectRepository projectRepository;
+    public UserService(UserRepository userRepository, ProjectRepository projectRepository) {
+        this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
+    }
 
     public List<User> getUsers() {
         return userRepository.findAll();

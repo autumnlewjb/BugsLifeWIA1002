@@ -6,14 +6,22 @@ import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
+
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    UserService userService;
-    
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getUsers();
@@ -21,17 +29,13 @@ public class UserController {
 
     @PostMapping("/user/create")
     public User createUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.createUser(user);
     }
 
     @GetMapping("/user")
     public User getUser(@RequestBody User user) {
         return userService.getUser(user.getUsername());
-    }
-
-    @GetMapping("/user/{username}")
-    public User getUser(@PathVariable String username) {
-        return userService.getUser(username);
     }
 
     @DeleteMapping("/{username}")

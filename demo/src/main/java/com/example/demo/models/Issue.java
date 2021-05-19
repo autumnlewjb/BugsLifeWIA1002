@@ -28,7 +28,9 @@ public class Issue implements Serializable{
 
     private String status;
 
-    private String tag;
+    @ElementCollection
+    @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
+    private List<String> tag;
 
     @Lob @Basic(fetch = FetchType.LAZY) @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
@@ -106,11 +108,11 @@ public class Issue implements Serializable{
         this.status = status;
     }
 
-    public String getTag() {
+    public List<String> getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
+    public void setTag(List<String> tag) {
         this.tag = tag;
     }
 

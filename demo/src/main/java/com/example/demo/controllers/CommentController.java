@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class CommentController {
-    
-    @Autowired
-    CommentService commentService;
+
+    private final CommentService commentService;
+    private final IssueService issueService;
 
     @Autowired
-    IssueService issueService;
+    public CommentController(CommentService commentService, IssueService issueService) {
+        this.commentService = commentService;
+        this.issueService = issueService;
+    }
 
     @GetMapping("/{issue_id}/comments")
     public List<Comment> getCommentsByIssue(@PathVariable Integer issue_id) {
@@ -40,6 +43,11 @@ public class CommentController {
         Comment comment=commentService.findCommentById(comment_id);
         issue.getComment().remove(comment);
         comment.setIssue(null);
-        commentService.deleteCommnet(comment);
+        commentService.deleteComment(comment);
+    }
+
+    @PutMapping("comment/{comment_id}/update")
+    public void updateComment( @PathVariable Integer comment_id, @RequestBody String text){
+        commentService.updateComment(comment_id, text);
     }
 }

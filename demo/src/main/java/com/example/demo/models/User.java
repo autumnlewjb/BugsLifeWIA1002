@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.ArrayList;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -19,10 +20,10 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
-    @Column(nullable=false, updatable=true)
+    @Column(nullable=false, updatable=true, unique = true)
     private String email;
 
-    @Column(nullable = false, updatable = true)
+    @Column(nullable = false, updatable = true, unique = true)
     private String username;
     
     @Column(nullable = false, updatable = true)
@@ -31,6 +32,12 @@ public class User implements Serializable{
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
+    
+    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinTable(name = "Users_Roles", joinColumns = {
+            @JoinColumn(name = "User_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "Role_id") })
+    private List<Role> roles=new ArrayList <>();
 
     public User() {}
 
@@ -83,4 +90,13 @@ public class User implements Serializable{
     public void setProject(List<Project> project) {
         this.project = project;
     }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+    
 }
