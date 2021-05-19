@@ -53,7 +53,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 //permit all requests to this two address
-                .antMatchers("/", "/login", "/register").permitAll()
+                .antMatchers("/", "/authenticate", "/register").permitAll()
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()

@@ -75,6 +75,7 @@ public class LoginService {
                 .maxAge(-1) // the cookie is removed when the browser is closed
                 .domain("localhost")
                 .path("/")
+                .httpOnly(true)
                 .sameSite("Lax")
                 .build();
     }

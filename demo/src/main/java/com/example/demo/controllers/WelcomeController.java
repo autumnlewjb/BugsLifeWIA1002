@@ -36,7 +36,7 @@ public class WelcomeController {
         return "login";
     }
 
-    @PostMapping(path = "/login")
+    @PostMapping(path = "authenticate")
     public ResponseEntity<AuthenticateResponse> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
         return loginService.logIn(authenticateRequest);
     }
