@@ -15,8 +15,8 @@ services:
             - 3306:3306
         volumes:
             - ./demo/User.sql:/docker-entrypoint-initdb.d/User.sql
-    frontend-app-2:
-        build: ./frontend-2/
+    frontend-app:
+        build: ./frontend/
         ports:
             - 8081:80
         depends_on:
