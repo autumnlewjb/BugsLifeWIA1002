@@ -38,6 +38,11 @@ public class UserController {
         return userService.getUser(user.getUsername());
     }
 
+    @GetMapping("/user/{username}")
+    public User getUserById(@PathVariable String username) {
+        return userService.getUser(username);
+    }
+
     @DeleteMapping("/{username}")
     public void deleteUser(@PathVariable String username){
         userService.deleteUser(username);

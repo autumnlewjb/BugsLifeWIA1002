@@ -3,7 +3,9 @@
     <v-layout row justify-space-around class="ma-5">
       <v-flex xs12 md7>
         <v-container>
-          <h1>{{ issue.title }}</h1>
+          <h1>
+            {{ issue.title }} <v-btn @click="editIssue" plain>Edit</v-btn>
+          </h1>
         </v-container>
         <v-container>
           <v-card outlined height="80%">
@@ -33,7 +35,9 @@
           <p>
             Tag: <br />
             <v-chip-group>
-              <v-chip>{{ issue.tag }}</v-chip>
+              <v-chip v-for="tag in issue.tag" :key="tag" class="ma-1">{{
+                tag
+              }}</v-chip>
             </v-chip-group>
           </p>
           <p>
@@ -59,16 +63,27 @@
           :comment="comment"
         />
         <v-card class="pa-5 ma-5" outlined>
-            <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
-            <v-btn text color="teal" class="" @click="postComment">Post Comment</v-btn>
+          <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
+          <v-btn text color="teal" class="" @click="postComment"
+            >Post Comment</v-btn
+          >
         </v-card>
       </v-flex>
     </v-layout>
+    <v-dialog v-model="dialog" persistent max-width="600px">
+      <IssueForm
+        @toggleDialog="toggleDialog"
+        :data="data"
+        :issue="issue"
+        :projectId="projectId"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import Comment from "../components/Comment";
+import IssueForm from "../components/IssueForm";
 export default {
   setup() {},
   data() {
@@ -77,7 +92,8 @@ export default {
       issueId: 0,
       project: null,
       issue: null,
-      text: ''
+      text: "",
+      dialog: false,
     };
   },
   created() {
@@ -100,6 +116,7 @@ export default {
   },
   components: {
     Comment,
+    IssueForm,
   },
   // beforeRouteLeave(to, from, next) {
   //   this.$emit("removeFromBreadcrumb");
@@ -108,33 +125,39 @@ export default {
   methods: {
     postComment() {
       fetch(`/api/${this.issueId}/comment/create`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: this.text,
-          timestamp: Date.now()
-        })
+          timestamp: Date.now(),
+        }),
       })
-      .then((res) => {
-        if (res.status == 200) {
-          console.log('comment added')
-          // this.$emit('updateUserData')
-          this.$store.dispatch('fetchCurrentUser');
-        }
-      }).catch((e) => console.log(e))
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("comment added");
+            this.text = "";
+            // this.$emit('updateUserData')
+            this.$store.dispatch("fetchCurrentUser");
+          }
+        })
+        .catch((e) => console.log(e));
+    },
+    toggleDialog() {
+      this.dialog = !this.dialog
+    },
+    editIssue() {
+      this.dialog = true;
     }
   },
   computed: {
     getComments() {
-      return this.$store.getters.getCurrentUser.project.find(
-      (project) => project.project_id == this.projectId
-    ).issue.find(
-      (issue) => issue.issue_id == this.issueId
-    ).comment;
-    }
-  }
+      return this.$store.getters.getCurrentUser.project
+        .find((project) => project.project_id == this.projectId)
+        .issue.find((issue) => issue.issue_id == this.issueId).comment;
+    },
+  },
 };
 </script>
 

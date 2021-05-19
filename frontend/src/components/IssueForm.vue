@@ -21,7 +21,7 @@
           ></v-textarea>
         </v-row>
         <v-row>
-          <v-text-field label="Tag" v-model="tag"></v-text-field>
+          <v-text-field label="Tag (use comma to separate multiple tags)" v-model="tag"></v-text-field>
         </v-row>
         <br />
         <p class="body-1">Priority: <br /></p>
@@ -41,7 +41,7 @@
       <v-btn color="blue darken-1" text @click="onSubmit('close')">
         Close
       </v-btn>
-      <v-btn color="blue darken-1" text @click="onSubmit('add')"> Add </v-btn>
+      <v-btn color="blue darken-1" text @click="onSubmit(action)"> Save </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -57,7 +57,19 @@ export default {
       tag: "",
       descriptionText: "",
       assignee: "",
+      action: 'add'
     };
+  },
+  created() {
+    if (this.issue) {
+      this.title = this.issue.title;
+      this.priority = this.issue.priority;
+      this.tag = this.issue.tag.join();
+      this.descriptionText = this.issue.descriptionText;
+      this.assignee = this.issue.assignee;
+      this.action = 'edit'
+      console.log(this.action)
+    }
   },
   methods: {
     clearForm() {
@@ -79,7 +91,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag,
+            tag: this.tag.split(","),
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()
@@ -94,6 +106,8 @@ export default {
             }
           })
           .catch((e) => console.log(e));
+      } else if (action == "edit") {
+        console.log("edit");
       }
       this.$emit("toggleDialog");
     },
@@ -101,6 +115,7 @@ export default {
   props: {
     data: Object,
     projectId: String,
+    issue: Object
   },
 };
 </script>

@@ -28,26 +28,39 @@ export default {
   },
   data() {
     return {
-      users: [],
     };
   },
   created() {
-    if (localStorage.data) {
+    if (this.$store.getters.getCurrentUser) {
       this.$router.push({name: 'Projects'})
     }
   },
   methods: {
     async onSubmit(user) {
-      this.users = await fetch(`/api/users`);
-      const data = await this.users.json();
-      const userInDB = data.find(
-        (u) => u.username == user.username && u.password == user.password
-      );
-      if (userInDB != null) {
-        localStorage.setItem('data', JSON.stringify(userInDB));
-        this.$store.dispatch("fetchCurrentUser");
-        this.$router.push({name: 'Projects'})
-      }
+      fetch(`/api/authenticate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json()
+        } else {
+          return null
+        }
+      })
+      .then((data) => {
+        if (data && data.user) {
+          const user = JSON.parse(data.user)
+          console.log(user)
+          localStorage.setItem('data', JSON.stringify(user))
+          this.$store.dispatch('fetchCurrentUser')
+          this.$router.push({name: 'Projects'})
+        }
+      })
+      .catch((e) => console.log(e))
     },
   },
 };

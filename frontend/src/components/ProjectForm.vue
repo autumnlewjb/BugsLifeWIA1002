@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="headline">Add New Project</span>
+      <span class="headline">{{title}}</span>
     </v-card-title>
     <v-card-text>
       <v-container>
@@ -19,7 +19,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue darken-1" text @click="onSubmit('close')"> Close </v-btn>
-      <v-btn color="blue darken-1" text @click="onSubmit('add')"> Add </v-btn>
+      <v-btn color="blue darken-1" text @click="onSubmit(action)"> Save </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -30,9 +30,20 @@ export default {
   setup() {},
   data() {
     return {
+        title: 'Add New Project',
         name: '',
-        description: ''
+        description: '',
+        action: 'add'
     };
+  },
+  created() {
+    if (this.projectId) {
+      this.action = 'edit';
+      const project = this.$store.getters.getCurrentUser.project.find((p) => p.project_id == this.projectId)
+      this.name = project.name;
+      this.description = project.description;
+      this.title = 'Edit Project'
+    }
   },
   methods: {
     onSubmit(action) {
@@ -55,12 +66,15 @@ export default {
                     alert("Project Not Added !!")
                 }
             }).catch((e) => console.log(e))
+        } else if (action == 'edit') {
+          console.log('edit')
         }
         this.$emit('toggleDialog')
     }
   },
   props: {
-    data: Object
+    data: Object,
+    projectId: String
   }
 };
 </script>

@@ -36,7 +36,7 @@ export default {
           userInDB.password == userInDB.password
       );
       if (exist == null) {
-        const res = await fetch(`/api/user/create`, {
+        const res = await fetch(`/api/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

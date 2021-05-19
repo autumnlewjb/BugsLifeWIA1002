@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping(path="/api")
 public class WelcomeController {
 
     private final LoginService loginService;
@@ -53,10 +54,11 @@ public class WelcomeController {
     }
 
     @PostMapping(path = "/register")
+    @ResponseBody
     public String registerPost(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.createUser(user);
-        return "redirect:/login";
+        return user.getUsername();
     }
 
     @GetMapping(path = "/project-dashboard")
