@@ -29,7 +29,6 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
-
     public Issue findIssuesById(Integer issue_id) {
         return issueRepository.findIssueById(issue_id);
     }

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -48,17 +50,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable()/*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()*/
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 //permit all requests to this two address
-                .antMatchers("/", "/authenticate", "/register").permitAll()
+                .antMatchers("/", "/login", "/register").permitAll()
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //any other requests should be authenticated
                 .anyRequest().authenticated().and()
-                .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
-                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies(jwtCookieName)
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .logout().logoutUrl("/logout").logoutSuccessUrl("/login").deleteCookies(jwtCookieName);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

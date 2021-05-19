@@ -2,17 +2,18 @@ package com.example.demo.controllers;
 
 import com.example.demo.models.User;
 import com.example.demo.security.models.AuthenticateRequest;
-import com.example.demo.security.models.AuthenticateResponse;
 import com.example.demo.services.LoginService;
 import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.sql.SQLException;
+
+@RestController
 public class WelcomeController {
 
     private final LoginService loginService;
@@ -36,15 +37,10 @@ public class WelcomeController {
         return "login";
     }
 
-    @PostMapping(path = "authenticate")
-    public ResponseEntity<AuthenticateResponse> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
+    @PostMapping(path = "/login")
+    public ResponseEntity<User> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
+        loginService.authenticate(authenticateRequest.getUsername(),authenticateRequest.getPassword());
         return loginService.logIn(authenticateRequest);
-    }
-
-    @GetMapping(path = "/logout")
-    @ResponseBody
-    public String logout() {
-        return "logout";
     }
 
     @GetMapping(path = "/register")
@@ -53,10 +49,10 @@ public class WelcomeController {
     }
 
     @PostMapping(path = "/register")
-    public String registerPost(@RequestBody User user) {
+    public ResponseEntity<User> registerPost(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.createUser(user);
-        return "redirect:/login";
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(path = "/project-dashboard")
