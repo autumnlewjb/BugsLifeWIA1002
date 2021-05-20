@@ -30,7 +30,7 @@ public class User implements Serializable{
     private String password;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
     
     @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
@@ -55,6 +55,10 @@ public class User implements Serializable{
         String password = map.get("password");
 
         return new User(email, username, password);
+    }
+
+    public int getProjectIndex(Project targetProject){
+        return this.project.indexOf(targetProject);
     }
 
     public Integer getUser_id() {

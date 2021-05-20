@@ -37,6 +37,7 @@ public class CommentController {
         Issue issue = issueService.findIssuesById(issue_id);
         issue.getComment().add(comment);
         comment.setIssue(issue);
+        commentService.createComments(comment);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
     
@@ -50,9 +51,12 @@ public class CommentController {
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
-    @PutMapping("comment/{comment_id}/update")
-    public ResponseEntity<?> updateComment( @PathVariable Integer comment_id, @RequestBody String text){
-        commentService.updateComment(comment_id, text);
-        return new ResponseEntity<>(text, HttpStatus.OK);
+    @PutMapping("{issue_id}/{comment_id}/updateComment")
+    public ResponseEntity<?> updateComment( @PathVariable Integer issue_id, @PathVariable Integer comment_id, @RequestBody Comment updatedComment){
+        Comment comment = commentService.findCommentById(comment_id);
+        updatedComment.setComment_id(comment.getComment_id());
+        commentService.updateComment(issue_id, comment, updatedComment);
+        return new ResponseEntity<>(updatedComment, HttpStatus.OK);
     }
+
 }

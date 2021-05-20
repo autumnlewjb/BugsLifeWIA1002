@@ -54,5 +54,12 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping("/{username}/update")
+    public ResponseEntity<?> updateUser(@RequestBody User updatedUser, @PathVariable String username){
+        User user = userService.getUser(username);
+        updatedUser.setUser_id(user.getUser_id());
+        userService.updateUser(user, updatedUser);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
 
 }

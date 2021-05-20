@@ -51,4 +51,12 @@ public class IssueController {
         issueService.deleteIssue(issue);
         return new ResponseEntity<>(issue, HttpStatus.OK);
     }
+
+    @PutMapping("{project_id}/{issue_id}/updateIssue")
+    public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue){
+        Issue issue = issueService.findIssuesById(issue_id);
+        updatedIssue.setIssue_id(issue.getIssue_id());
+        issueService.updateIssue(project_id, issue, updatedIssue);
+        return new ResponseEntity<>(updatedIssue, HttpStatus.OK);
+    }
 }

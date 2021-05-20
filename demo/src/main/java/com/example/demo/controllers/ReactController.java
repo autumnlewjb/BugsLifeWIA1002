@@ -43,12 +43,21 @@ public class ReactController {
     }
 
     @DeleteMapping("/{comment_id}/{react_id}/deleteReaction")
-    public  ResponseEntity<React> deleteIssue(@PathVariable Integer comment_id, @PathVariable Integer react_id){
+    public  ResponseEntity<React> deleteReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id){
         Comment comment = commentService.findCommentById(comment_id);
         React react = reactService.findReactionByID(react_id);
         comment.getReact().remove(react);
         react.setComment(null);
         reactService.deleteReaction(react);
         return new ResponseEntity<>(react, HttpStatus.OK);
+    }
+
+    @PutMapping("/{comment_id}/{react_id}/updateReaction")
+    public ResponseEntity<React> updateReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id, @RequestBody React updatedReact){
+        React react = reactService.findReactionByID(react_id);
+        updatedReact.setReact_id(react_id);
+        reactService.updateReaction(comment_id, react, updatedReact);
+        return new ResponseEntity<>(updatedReact, HttpStatus.OK);
+
     }
 }

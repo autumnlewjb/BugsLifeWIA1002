@@ -70,4 +70,13 @@ public class ProjectController {
         projectService.deleteProject(project);
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
+
+    @PutMapping("{username}/{project_id}/update")
+    public ResponseEntity<?> updateProject(@PathVariable String username, @PathVariable Integer project_id, @RequestBody Project updatedProject){
+        Project project = projectService.findProjectWithId(project_id);
+        updatedProject.setProject_id(project.getProject_id());
+        projectService.updateProject(username, project, updatedProject);
+        return new ResponseEntity<>(updatedProject, HttpStatus.OK);
+    }
+
 }

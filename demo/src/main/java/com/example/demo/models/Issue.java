@@ -52,6 +52,10 @@ public class Issue implements Serializable{
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comment;
 
+    public int getCommentIndex(Comment comment){
+        return this.comment.indexOf(comment);
+    }
+
     public Integer getIssue_id() {
         return issue_id;
     }
