@@ -53,4 +53,13 @@ public class UserService {
     public void createListOfUsers(List<User> users){
         userRepository.saveAll(users);
     }
+
+    public void updateUser(User user, User updatedUser) {
+        List<Project> allProject = projectRepository.findProjectsByUser(user);
+        for (Project project: allProject ){
+            project.setUser(updatedUser);
+        }
+        updatedUser.setProject(allProject);
+        userRepository.save(updatedUser);
+    }
 }

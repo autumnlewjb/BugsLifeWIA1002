@@ -68,6 +68,10 @@ public class Project implements Serializable {
             return null;
         }
     }
+
+    public int getIssueIndex(Issue issue){
+        return this.issue.indexOf(issue);
+    }
     
     public User getUser() {
         return user;

@@ -2,8 +2,10 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
+import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import javax.transaction.Transactional;
 
@@ -16,11 +18,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserService userService;
+    private final IssueRepository issueRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserService userService) {
+    public ProjectService(ProjectRepository projectRepository, UserService userService, IssueRepository issueRepository) {
         this.projectRepository = projectRepository;
         this.userService = userService;
+        this.issueRepository = issueRepository;
     }
 
     public List<Project> findAllProjects() {
@@ -48,4 +52,21 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
+    public void updateProject(String username, Project oldProject, Project updatedProject) {
+        //find all issues from old project
+        List<Issue> allIssue = issueRepository.findByProject(oldProject);
+        //find user related to old project
+        User user = userService.getUser(username);
+        //set updatedProject to user
+        user.getProject().set(user.getProjectIndex(oldProject), updatedProject);
+        //set updatedProject to all issues
+        for (Issue issue : allIssue){
+            issue.setProject(updatedProject);
+        }
+        //set user for the updatedProject
+        updatedProject.setUser(user);
+        //set issues for the updatedProject
+        updatedProject.setIssue(allIssue);
+        projectRepository.save(updatedProject);
+    }
 }

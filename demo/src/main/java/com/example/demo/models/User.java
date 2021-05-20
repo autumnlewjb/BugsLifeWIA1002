@@ -8,9 +8,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@Indexed
 @Table(name = "user")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
@@ -20,9 +23,11 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
+    @FullTextField
     @Column(nullable=false, updatable=true, unique = true)
     private String email;
 
+    @FullTextField
     @Column(nullable = false, updatable = true, unique = true)
     private String username;
     
@@ -30,7 +35,7 @@ public class User implements Serializable{
     private String password;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
     
     @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
@@ -55,6 +60,10 @@ public class User implements Serializable{
         String password = map.get("password");
 
         return new User(email, username, password);
+    }
+
+    public int getProjectIndex(Project targetProject){
+        return this.project.indexOf(targetProject);
     }
 
     public Integer getUser_id() {

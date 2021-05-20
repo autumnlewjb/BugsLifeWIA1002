@@ -38,6 +38,10 @@ public class Comment {
     @JoinColumn(name = "issue_id")
     private Issue issue;
 
+    public int getReactionIndex(React react){
+        return this.react.indexOf(react);
+    }
+
     public Issue getIssue() {
         return issue;
     }

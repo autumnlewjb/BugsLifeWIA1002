@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     private final MyUserDetailsService myUserDetailsService;
@@ -48,17 +50,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable()/*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()*/
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
-                //permit all requests to this two address
-                .antMatchers("/api", "/api/authenticate", "/api/register").permitAll()
-                .antMatchers("/api/**").hasAnyAuthority("USER", "ADMIN")
-                //any other requests should be authenticated
+                .antMatchers("/api/login", "/api/register").permitAll()
+                //.antMatchers("/api/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated().and()
-                .formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/project-dashboard", true).and()
-                .logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies(jwtCookieName)
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies(jwtCookieName);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
