@@ -27,7 +27,7 @@ public class Issue implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer issue_id;
 
-    @FullTextField
+    @FullTextField (analyzer="NAME")
     private String title;
 
     private int priority;
@@ -39,7 +39,7 @@ public class Issue implements Serializable{
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
     private List<String> tag;
 
-    @FullTextField
+    @FullTextField (analyzer="ISSUE")
     @Lob @Basic(fetch = FetchType.LAZY) @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
 

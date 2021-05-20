@@ -12,7 +12,7 @@ import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.jboss.logging.annotations.Field;
+//import org.jboss.logging.annotations.Field;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -30,7 +30,7 @@ public class User implements Serializable{
     @Column(nullable=false, updatable=true, unique = true)
     private String email;
 
-    @FullTextField
+    @FullTextField (analyzer="NAME")
     @Column(nullable = false, updatable = true, unique = true)
     private String username;
     

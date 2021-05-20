@@ -31,11 +31,11 @@ public class Project implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer project_id;
 
-    @FullTextField
+    @FullTextField (analyzer="NAME")
     @Column(name = "name")
     private String name;
 
-    @FullTextField
+    @FullTextField (analyzer="PROJECT")
     @Column(name = "description")
     private String description;
     
