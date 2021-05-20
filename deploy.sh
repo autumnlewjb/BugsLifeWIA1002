@@ -8,3 +8,8 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 docker-compose --version
+
+sed -i 's/localhost:3306/sql-server/g' ./demo/src/main/resources/application.properties
+
+sudo docker-compose up
+
