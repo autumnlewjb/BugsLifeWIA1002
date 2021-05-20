@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.jboss.logging.annotations.Field;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -36,6 +37,7 @@ public class User implements Serializable{
     @Column(nullable = false, updatable = true)
     private String password;
 
+    @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;

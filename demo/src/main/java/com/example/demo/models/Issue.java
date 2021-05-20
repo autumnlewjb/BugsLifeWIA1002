@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Indexed
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
@@ -22,16 +27,19 @@ public class Issue implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer issue_id;
 
+    @FullTextField
     private String title;
 
     private int priority;
 
+    @KeywordField
     private String status;
 
     @ElementCollection
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
     private List<String> tag;
 
+    @FullTextField
     @Lob @Basic(fetch = FetchType.LAZY) @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
 
@@ -48,6 +56,7 @@ public class Issue implements Serializable{
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comment;

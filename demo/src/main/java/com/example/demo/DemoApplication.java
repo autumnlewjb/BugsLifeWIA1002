@@ -61,7 +61,7 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Unable to save users: " + e.getMessage());
         }*/
         SearchSession searchSession = Search.session( entityManager );
-        MassIndexer indexer = searchSession.massIndexer( User.class );
+        MassIndexer indexer = searchSession.massIndexer();
         indexer.startAndWait();
     }
 
