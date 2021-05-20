@@ -27,7 +27,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException ex) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
@@ -40,21 +39,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>("Server refused to authorize the request", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNotFoundException(Exception ex) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>("Cannot find the requested element", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleUncaughtException(Exception ex) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>("Please contact the technician for assistant",HttpStatus.INTERNAL_SERVER_ERROR);

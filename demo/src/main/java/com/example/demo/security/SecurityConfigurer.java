@@ -54,13 +54,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
-                //permit all requests to this two address
                 .antMatchers("/api/login", "/api/register").permitAll()
-                .antMatchers("/api/**").hasAuthority("ADMIN")
-                //any other requests should be authenticated
+                //.antMatchers("/api/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated().and()
-                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login").clearAuthentication(true)
-                .invalidateHttpSession(true).deleteCookies(jwtCookieName);
+                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies(jwtCookieName);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
