@@ -2,6 +2,9 @@ package com.example.demo.security.filters;
 
 import com.example.demo.security.MyUserDetailsService;
 import com.example.demo.security.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,12 +20,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final MyUserDetailsService myUserDetailsService;
     private final JwtUtil jwtUtil;
+    private final Logger logger = LoggerFactory.getLogger(JwtException.class);
 
     @Value("${demo.jwtCookieName}")
     private String jwtCookieName;
@@ -44,13 +49,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         }
-        if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
             if (jwtUtil.validateToken(jwt)) {
-                UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtUtil.extractUsername(jwt));
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtUtil.extractUsername(jwt));
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+                if (httpRequest.getRequestURI().equals("/api/login")) {
+                    //Return authenticated user to homepage when they request for login page
+                    httpResponse.sendRedirect("/api/project-dashboard");
+                }
             }
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error(e.getMessage());
+            httpRequest.setAttribute("exception", "Invalid JWT Token. Please login again.");
         }
 
         filterChain.doFilter(httpRequest, httpResponse);

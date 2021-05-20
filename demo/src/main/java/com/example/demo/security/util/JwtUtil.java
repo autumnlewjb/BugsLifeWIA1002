@@ -24,8 +24,6 @@ public class JwtUtil {
     @Value("${demo.jwtExpirationInMs}")
     private Integer JWT_EXPIRATION_MS;
 
-    private final Logger logger = LoggerFactory.getLogger(JwtException.class);
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -51,29 +49,7 @@ public class JwtUtil {
     }
 
     public Boolean validateToken(String token){
-        try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-
-        } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature");
-            logger.error(ex.getMessage());
-
-        } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
-            logger.error(ex.getMessage());
-
-        } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
-            logger.error(ex.getMessage());
-
-        } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
-            logger.error(ex.getMessage());
-
-        } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty.");
-            logger.error(ex.getMessage());
-        }
+        Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         return true;
     }
 
