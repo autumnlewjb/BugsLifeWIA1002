@@ -6,6 +6,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ public class Role {
     @Column(nullable = false, updatable = true, unique = true)
     private String name;
     
-    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="roles")
-    @JsonBackReference
+    @ManyToMany(fetch=FetchType.LAZY, mappedBy="roles")
+    @JsonIgnore
     private List<User> users=new ArrayList<>();
     
     public Role(String name) {

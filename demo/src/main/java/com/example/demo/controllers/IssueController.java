@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api")
@@ -41,7 +42,8 @@ public class IssueController {
         issueService.createIssue(issue);
         return new ResponseEntity<>(issue, HttpStatus.OK);
     }
-
+    
+    @Transactional
     @DeleteMapping("/project/{project_id}/delete/issue/{issue_id}")
     public ResponseEntity<Issue> deleteIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
         Project project = projectService.findProjectWithId(project_id);

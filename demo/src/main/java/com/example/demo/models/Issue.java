@@ -3,6 +3,7 @@ package com.example.demo.models;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -37,6 +38,7 @@ public class Issue implements Serializable{
 
     @ElementCollection
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
+    @JsonIgnore
     private List<String> tag;
 
     @FullTextField (analyzer="ISSUE")

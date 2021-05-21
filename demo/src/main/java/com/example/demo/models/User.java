@@ -42,7 +42,7 @@ public class User implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
     
-    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(name = "Users_Roles", joinColumns = {
             @JoinColumn(name = "User_id") }, inverseJoinColumns = {
             @JoinColumn(name = "Role_id") })

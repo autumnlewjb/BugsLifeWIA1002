@@ -6,6 +6,7 @@ import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.services.ProjectService;
 import com.example.demo.services.UserService;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,8 @@ public class ProjectController {
         projectService.createProject(project);
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
-
+    
+    @Transactional
     @DeleteMapping("{username}/{project_id}")
     public ResponseEntity<Project> deleteProject(@PathVariable String username, @PathVariable Integer project_id) {
         User user = userService.getUser(username);

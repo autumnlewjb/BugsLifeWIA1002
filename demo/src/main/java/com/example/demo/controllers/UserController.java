@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api")
@@ -47,7 +48,8 @@ public class UserController {
     public ResponseEntity<User> getUser(@RequestBody User user){
         return new ResponseEntity<>(userService.getUser(user.getUsername()),HttpStatus.OK);
     }
-
+    
+    @Transactional
     @DeleteMapping("/{username}")
     public  ResponseEntity<?> deleteUser(@PathVariable String username){
         userService.deleteUser(username);
