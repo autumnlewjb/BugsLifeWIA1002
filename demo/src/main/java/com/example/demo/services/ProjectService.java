@@ -35,6 +35,10 @@ public class ProjectService {
         return projectRepository.findProjectsByName(project.getName());
     }
 
+    public List<Project> findProjectsWithName(String projectName) {
+        return projectRepository.findProjectsByName(projectName);
+    }
+
     public List<Project> findProjectsWithUser(String username) {
         User queryUser = userService.getUser(username);
         return userService.getProjectByUser(queryUser);

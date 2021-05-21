@@ -60,7 +60,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
                 if (httpRequest.getRequestURI().equals("/api/login")) {
                     //Return authenticated user to homepage when they request for login page
-                    httpResponse.sendRedirect("/api/project-dashboard");
+                    // httpResponse.sendRedirect("/api/project-dashboard");
                 }
             }
         } catch (JwtException | IllegalArgumentException e) {

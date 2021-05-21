@@ -5,12 +5,21 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    currentUser: JSON.parse(localStorage.getItem('data'))
+    currentUser: JSON.parse(localStorage.getItem('data')),
+    username: '',
+    userId: '',
+    email: '',
+    projects: [],
   },
   mutations: {
     setCurrentUser(state, payload) {
-      console.log("set user")
       state.currentUser = payload;
+      if (payload) {
+        state.username = payload.username;
+        state.userId = payload.user_id;
+        state.email = payload.email;
+        state.projects = payload.project;
+      }
     } 
   },
   actions: {
@@ -37,5 +46,17 @@ export default new Vuex.Store({
     getCurrentUser(state) {
       return state.currentUser;
     },
+    getUsername(state) {
+      return state.username;
+    },
+    getUserId(state) {
+      return state.userId;
+    },
+    getEmail(state) {
+      return state.email;
+    },
+    getProjects(state) {
+      return state.projects;
+    }
   }
 })

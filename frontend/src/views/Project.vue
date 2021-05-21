@@ -3,49 +3,26 @@
   <v-layout row>
     <v-flex xs8 md8>
       <v-container>
-        <h1>{{project.name}}</h1>
-        <p>Description: {{project.description}}</p>
-        <p>Date created: {{project.date == null ? "Not specified" : project.date}}</p>
+        <h1>{{getProject.name}}
+          <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
+          <v-btn class="mx-0" plain color="red" @click="toggleDeleteDialog(false)">Delete</v-btn>
+        </h1>
+        <p>Description: {{getProject.description}}</p>
+        <p>Date created: {{project.date == null ? "Not specified" : getProject.date}}</p>
         
       </v-container>
     </v-flex>
-    <v-flex xs2 md2 style="text-align: end;" align-self-center>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            dark
-            plain
-            v-bind="attrs"
-            v-on="on"
-          >
-            Actions
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="editProject">
-            <v-list-item-title>
-              Edit project
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="deleteProject">
-            <v-list-item-title>
-              Delete project
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-flex>
   </v-layout>
-  <Issues :data="data" @updateUserData="$emit('updateUserData')"></Issues>
+  <Issues :data="data"></Issues>
   
     <v-dialog
       v-model="dialog"
       persistent
       max-width="600px"
     >
-      <ProjectForm :projectId="projectId" @toggleDialog="toggleDialog" @updateUserData="$emit('updateUserData')" :data="data"/>
+      <ProjectForm :projectId="projectId" @toggleDialog="toggleDialog" :data="data"/>
     </v-dialog>
+    <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
 </v-container>
   
 </template>
@@ -53,6 +30,7 @@
 <script>
 import Issues from '../views/Issues'
 import ProjectForm from "../components/ProjectForm"
+import ConfirmDelete from "../components/ConfirmDelete"
 
 export default {
   data() {
@@ -60,7 +38,8 @@ export default {
       projectId: 0,
       project: null,
       showIssues: false,
-      dialog: false
+      dialog: false,
+      confirmDeleteDialog: false
     } 
   },
   setup() {},
@@ -68,16 +47,11 @@ export default {
     data: Object
   },
   created() { 
+    console.log(this.$store.getters.getProjects)
     this.projectId = this.$route.query.projectId
     this.project = this.$store.getters.getCurrentUser.project.find((project) => project.project_id == this.projectId)
   },
-  mounted() {
-    this.$emit('addToBreadcrumb', {
-      text: this.project.name,
-      disabled: false,
-      href: window.location.href
-    })
-  },
+  mounted() {},
   methods: {
     toggleIssues() {
       if (this.$vuetify.breakpoint.mdAndUp) {
@@ -90,16 +64,40 @@ export default {
       this.dialog = true
     },
     deleteProject() {
-      console.log("delete project")
+      fetch(`/api/${this.$store.getters.getUsername}/${this.projectId}`,{
+        method: 'DELETE'
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          console.log("delete successful")
+          this.$store.dispatch('fetchCurrentUser')
+          this.$router.push({name: 'Projects'})
+        } else {
+          console.log("delete unsuccessful")
+        }
+      })
+      .catch((e) => console.log(e));
     },
     toggleDialog() {
       this.dialog = !this.dialog
+    },
+    toggleDeleteDialog(userResponse) {
+      this.confirmDeleteDialog = !this.confirmDeleteDialog;
+      if (userResponse) {
+        this.deleteProject();
+      }
     }
   },
   components: {
     Issues,
-    ProjectForm
+    ProjectForm,
+    ConfirmDelete
   },
+  computed: {
+    getProject() {
+      return this.$store.getters.getCurrentUser.project.find((project) => project.project_id == this.projectId)
+    }
+  }
 };
 </script>
 

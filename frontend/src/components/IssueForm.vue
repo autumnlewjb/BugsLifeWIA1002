@@ -68,7 +68,6 @@ export default {
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
       this.action = 'edit'
-      console.log(this.action)
     }
   },
   methods: {
@@ -91,7 +90,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag.split(","),
+            tag: this.tag.split(",").map((val) => val.trim()),
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()
@@ -107,7 +106,31 @@ export default {
           })
           .catch((e) => console.log(e));
       } else if (action == "edit") {
-        console.log("edit");
+        console.log(this.title)
+        fetch(`/api/${this.projectId}/${this.issue.issue_id}/updateIssue`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: this.title,
+            descriptionText: this.descriptionText,
+            priority: this.priority,
+            status: "In progress",
+            tag: this.tag.split(",").map((val) => val.trim()),
+            createdBy: this.$store.getters.getCurrentUser.username,
+            assignee: "",
+            timestamp: Date.now()
+          }),
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            this.$store.dispatch('fetchCurrentUser');
+            console.log("update successful")
+          } else {
+            console.log("update unsuccessful");
+          }
+        })
       }
       this.$emit("toggleDialog");
     },

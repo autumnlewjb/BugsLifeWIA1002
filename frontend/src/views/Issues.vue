@@ -29,7 +29,9 @@
                 >
               </v-card-title>
               <v-card-text>
-                <v-chip v-for="tag in issue.tag" :key="tag" class="mx-1">{{ tag }}</v-chip>
+                <v-chip-group>
+                  <v-chip v-for="tag in issue.tag" :key="tag" class="mx-1">{{ tag }}</v-chip>
+                </v-chip-group>
               </v-card-text>
               <v-card-text>
                 {{
@@ -97,7 +99,6 @@ export default {
   },
   computed: {
     getIssues() {
-      console.log(this.$store.getters.getCurrentUser.project.find((p) => p.project_id == this.projectId))
       return this.$store.getters.getCurrentUser.project.find((p) => p.project_id == this.projectId).issue;
     },
   },

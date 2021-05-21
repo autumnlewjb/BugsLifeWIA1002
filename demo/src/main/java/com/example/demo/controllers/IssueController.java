@@ -49,14 +49,15 @@ public class IssueController {
         project.getIssue().remove(issue);
         issue.setProject(null);
         issueService.deleteIssue(issue);
-        return new ResponseEntity<>(issue, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("{project_id}/{issue_id}/updateIssue")
     public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue){
         Issue issue = issueService.findIssuesById(issue_id);
+        System.out.println(issue);
         updatedIssue.setIssue_id(issue.getIssue_id());
         issueService.updateIssue(project_id, issue, updatedIssue);
-        return new ResponseEntity<>(updatedIssue, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

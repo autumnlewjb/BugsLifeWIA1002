@@ -42,7 +42,7 @@ public class DemoApplication implements CommandLineRunner {
     @Override
     @Transactional(readOnly = false)
     public void run(String[] args) throws IOException, InterruptedException {
-        ObjectMapper mapper = new ObjectMapper();
+        /*ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/JsonTesting.json");
         try {
@@ -62,7 +62,7 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Unable to save users: " + e.getMessage());
         } catch (DataIntegrityViolationException ex) {
             System.out.println("Users Saved!");
-        }
+        }*/
         SearchSession searchSession = Search.session( entityManager );
         MassIndexer indexer = searchSession.massIndexer( User.class );
         indexer.startAndWait();

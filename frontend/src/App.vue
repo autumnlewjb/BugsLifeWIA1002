@@ -44,7 +44,6 @@
       </v-container> -->
       <v-container :class="{'pa-16': $vuetify.breakpoint.mdAndUp, 'pa-5': $vuetify.breakpoint.smAndDown}">
         <router-view
-          @updateUserData="updateUserData"
           @addToBreadcrumb="addToBreadcrumb"
           @removeFromBreadcrumb="removeFromBreadcrumb"
         ></router-view>
@@ -70,49 +69,30 @@ export default {
   },
   components: {},
   created() {
-    const url = process.env.VUE_APP_BACKEND_URL
-    console.log(url)
     if (localStorage.data) {
       this.data = JSON.parse(localStorage.data);
-      console.log(this.data);
       this.drawer = true;
     } else {
       this.drawer = false;
     }
-    console.log("app created")
   },
   destroyed() {
-    console.log("app destroy");
   },
   methods: {
-    updateUserData() {
-      console.log('reach')
-      if (localStorage.data != null) {
-        const currentUser = JSON.parse(localStorage.data);
-        console.log(`/api/user/${currentUser.username}`)
-        fetch(`/api/user/${currentUser.username}`)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json()
-          }
-        }).then((user) => {
-          this.data = user
-          console.log(user)
-          localStorage.setItem('data', JSON.stringify(user))
-        }).then(() => this.goToProject())
-        .catch((e) => console.log(e));
-      } else {
-        this.logOut()
-      }
-    },
     goToProject() {
       this.$router.push({name: 'Projects'}).catch(() => {})
     },
     logOut() {
-      localStorage.clear()
-      this.breadcrumbItems = []
-      this.$store.dispatch('fetchCurrentUser')
-      this.$router.push({name: 'Login'})
+      fetch(`/api/logout`).then((res) => {
+        if (res.status == 200) {
+          localStorage.clear()
+          this.breadcrumbItems = []
+          this.$store.dispatch('fetchCurrentUser')
+          this.$router.push({name: 'Login'})
+        } else {
+          console.log("logout failed")
+        }
+      })
     },
     addToBreadcrumb(breadcrumbItem) {
       if (this.breadcrumbItems.length == 0 || this.breadcrumbItems[this.breadcrumbItems.length - 1].href !== breadcrumbItem.href) {
@@ -122,7 +102,6 @@ export default {
       this.breadcrumbItems[this.breadcrumbItems.length-1].disabled = true
     },
     removeFromBreadcrumb() {
-      console.log("detected")
       if (this.breadcrumbItems.length > 0) this.breadcrumbItems.pop()
     }
   },
@@ -137,6 +116,5 @@ export default {
       return this.$store.getters.getCurrentUser;
     }
   },
-  emits: ["updateUserData"],
 };
 </script>

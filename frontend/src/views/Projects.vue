@@ -9,7 +9,7 @@
           <v-btn elevation="3" rounded color="teal" class="white--text" @click="dialog=true">+ Add Project</v-btn>
         </v-flex>
       </v-layout>
-      <v-layout row justify-center>
+      <v-layout row>
         <v-flex xs12 md12>
           <v-card
             v-for="project in getProjects"
@@ -20,8 +20,8 @@
               <v-card-title>{{ project.name }}</v-card-title>
               <v-card-text>{{ project.description }}</v-card-text>
               <v-card-text>Created on {{ project.date == null ? '(Not Specified)' : project.date }}</v-card-text>
-              <v-card-actions>
-                <v-btn outlined color="normal" :to="{path: 'project', query: {projectId: project.project_id}}">View Issues</v-btn>
+              <v-card-actions class="d-flex justify-end">
+                <v-btn color="primary" :to="{path: 'project', query: {projectId: project.project_id}}" text>View Project</v-btn>
               </v-card-actions>
             </v-layout>
           </v-card>
@@ -34,7 +34,7 @@
       persistent
       max-width="600px"
     >
-      <ProjectForm @toggleDialog="toggleDialog" @updateUserData="$emit('updateUserData')" :data="data"/>
+      <ProjectForm @toggleDialog="toggleDialog" :data="data"/>
     </v-dialog>
   </v-row>
   </v-container>

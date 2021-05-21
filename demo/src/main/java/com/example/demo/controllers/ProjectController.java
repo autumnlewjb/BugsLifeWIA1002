@@ -37,6 +37,12 @@ public class ProjectController {
         return new ResponseEntity<>(projectList, HttpStatus.OK);
     }
 
+    @GetMapping("/project/{projectName}")
+    public ResponseEntity<List<Project>> getProjectsWithName(@PathVariable String projectName) {
+        List<Project> projectList = projectService.findProjectsWithName(projectName);
+        return new ResponseEntity<>(projectList, HttpStatus.OK);
+    }
+
     @GetMapping("/{username}/projects")
     public ResponseEntity<List<Project>> getProjectsWithUser(@PathVariable String username) {
         List<Project> projectList = projectService.findProjectsWithUser(username);
@@ -68,7 +74,7 @@ public class ProjectController {
         project.getUser().getProject().remove(project);
         project.removeUser();
         projectService.deleteProject(project);
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("{username}/{project_id}/update")
@@ -76,7 +82,7 @@ public class ProjectController {
         Project project = projectService.findProjectWithId(project_id);
         updatedProject.setProject_id(project.getProject_id());
         projectService.updateProject(username, project, updatedProject);
-        return new ResponseEntity<>(updatedProject, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

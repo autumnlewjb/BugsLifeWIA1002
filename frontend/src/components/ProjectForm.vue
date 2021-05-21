@@ -67,7 +67,24 @@ export default {
                 }
             }).catch((e) => console.log(e))
         } else if (action == 'edit') {
-          console.log('edit')
+          fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: this.name,
+                    description: this.description,
+                    date: Date.now()
+                })
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log("edit project")
+                    this.$store.dispatch('fetchCurrentUser')
+                } else {
+                    alert("Project Not Edited !!")
+                }
+            }).catch((e) => console.log(e))
         }
         this.$emit('toggleDialog')
     }

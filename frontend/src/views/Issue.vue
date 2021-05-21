@@ -4,7 +4,9 @@
       <v-flex xs12 md7>
         <v-container>
           <h1>
-            {{ issue.title }} <v-btn @click="editIssue" plain>Edit</v-btn>
+            {{ getIssue.title }} 
+            <v-btn @click="editIssue" plain>Edit</v-btn>
+            <v-btn @click="toggleDeleteDialog(false)" plain color="red">Delete</v-btn>
           </h1>
         </v-container>
         <v-container>
@@ -12,9 +14,9 @@
             <v-card-text height="100%">
               <span class="font-weight-bold">Description:</span> <br />
               {{
-                issue.descriptionText == null
+                getIssue.descriptionText == null
                   ? "Not specified"
-                  : issue.descriptionText
+                  : getIssue.descriptionText
               }}
             </v-card-text>
           </v-card>
@@ -24,33 +26,33 @@
         <v-container class="text--body-2 font-weight-light">
           <p>
             Priority: <br />
-            <v-icon v-for="n in issue.priority" :key="n" color="red"
+            <v-icon v-for="n in getIssue.priority" :key="n" color="red"
               >mdi-exclamation</v-icon
             >
           </p>
           <p>
             Status: <br />
-            {{ issue.status }}
+            {{ getIssue.status }}
           </p>
           <p>
             Tag: <br />
-            <v-chip-group>
-              <v-chip v-for="tag in issue.tag" :key="tag" class="ma-1">{{
+            <!-- <v-chip-group> -->
+              <v-chip v-for="tag in getIssue.tag" :key="tag" class="ma-1">{{
                 tag
               }}</v-chip>
-            </v-chip-group>
+            <!-- </v-chip-group> -->
           </p>
           <p>
             Created by: <br />
-            {{ issue.createdBy == null ? "anonymous" : issue.createdBy }}
+            {{ getIssue.createdBy == null ? "anonymous" : getIssue.createdBy }}
           </p>
           <p>
             Assignee: <br />
-            {{ issue.assignee == null ? "Nobody for now" : issue.assignee }}
+            {{ getIssue.assignee == null ? "Nobody for now" : getIssue.assignee }}
           </p>
           <p>
             Timestamp: <br />
-            {{ issue.timestamp == null ? "Not Specified" : issue.timestamp }}
+            {{ getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp }}
           </p>
         </v-container>
       </v-flex>
@@ -61,6 +63,7 @@
           v-for="comment in getComments"
           :key="comment.id"
           :comment="comment"
+          :issueId="issueId"
         />
         <v-card class="pa-5 ma-5" outlined>
           <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
@@ -74,16 +77,19 @@
       <IssueForm
         @toggleDialog="toggleDialog"
         :data="data"
-        :issue="issue"
+        :issue="getIssue"
         :projectId="projectId"
       />
     </v-dialog>
+    <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
   </v-container>
 </template>
 
 <script>
 import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
+import ConfirmDelete from "../components/ConfirmDelete"
+
 export default {
   setup() {},
   data() {
@@ -94,6 +100,7 @@ export default {
       issue: null,
       text: "",
       dialog: false,
+      confirmDeleteDialog: false
     };
   },
   created() {
@@ -105,11 +112,6 @@ export default {
     this.issue = this.project.issue.find(
       (issue) => issue.issue_id == this.issueId
     );
-    // this.$emit("addToBreadcrumb", {
-    //   text: this.issue.title,
-    //   disabled: false,
-    //   href: window.location.href,
-    // });
   },
   props: {
     data: Object,
@@ -117,11 +119,8 @@ export default {
   components: {
     Comment,
     IssueForm,
+    ConfirmDelete
   },
-  // beforeRouteLeave(to, from, next) {
-  //   this.$emit("removeFromBreadcrumb");
-  //   next();
-  // },
   methods: {
     postComment() {
       fetch(`/api/${this.issueId}/comment/create`, {
@@ -138,7 +137,6 @@ export default {
           if (res.status == 200) {
             console.log("comment added");
             this.text = "";
-            // this.$emit('updateUserData')
             this.$store.dispatch("fetchCurrentUser");
           }
         })
@@ -147,8 +145,29 @@ export default {
     toggleDialog() {
       this.dialog = !this.dialog
     },
+    toggleDeleteDialog(userResponse) {
+      this.confirmDeleteDialog = !this.confirmDeleteDialog;
+      if (userResponse) {
+        this.deleteIssue();
+      }
+    },
     editIssue() {
       this.dialog = true;
+    },
+    deleteIssue() {
+      fetch(`/api/project/${this.projectId}/delete/issue/${this.issueId}`,{
+        method: 'DELETE'
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          console.log("delete successful")
+          this.$store.dispatch('fetchCurrentUser')
+          this.$router.push({name: 'Project', query: {projectId: this.projectId}})
+        } else {
+          console.log("delete unsuccessful")
+        }
+      })
+      .catch((e) => console.log(e));
     }
   },
   computed: {
@@ -157,6 +176,14 @@ export default {
         .find((project) => project.project_id == this.projectId)
         .issue.find((issue) => issue.issue_id == this.issueId).comment;
     },
+    getIssue() {
+      const p = this.$store.getters.getCurrentUser.project.find(
+        (project) => project.project_id == this.projectId
+      );
+      return p.issue.find(
+        (issue) => issue.issue_id == this.issueId
+      );
+    }
   },
 };
 </script>

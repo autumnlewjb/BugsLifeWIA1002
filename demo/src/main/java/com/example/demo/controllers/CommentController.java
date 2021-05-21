@@ -48,7 +48,7 @@ public class CommentController {
         issue.getComment().remove(comment);
         comment.setIssue(null);
         commentService.deleteComment(comment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("{issue_id}/{comment_id}/updateComment")

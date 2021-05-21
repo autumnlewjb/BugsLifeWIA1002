@@ -12,6 +12,17 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-dialog v-model="loginFailed" width="500">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Login Failed</v-card-title>
+        <v-card-text class="my-2">You might have entered the wrong username or password. <br>Please try again later. </v-card-text>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn @click="loginFailed = false" text>
+            Dismiss
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -28,6 +39,7 @@ export default {
   },
   data() {
     return {
+      loginFailed: false
     };
   },
   created() {
@@ -37,7 +49,7 @@ export default {
   },
   methods: {
     async onSubmit(user) {
-      fetch(`/api/authenticate`, {
+      fetch(`/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -47,15 +59,16 @@ export default {
       .then((res) => {
         if (res.status == 200) {
           return res.json()
+        } else if (res.status == 401) {
+          this.loginFailed = true;
         } else {
           return null
         }
       })
       .then((data) => {
-        if (data && data.user) {
-          const user = JSON.parse(data.user)
-          console.log(user)
-          localStorage.setItem('data', JSON.stringify(user))
+        if (data) {
+          console.log(data)
+          localStorage.setItem('data', JSON.stringify(data))
           this.$store.dispatch('fetchCurrentUser')
           this.$router.push({name: 'Projects'})
         }
