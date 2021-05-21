@@ -31,16 +31,12 @@ public class DemoApplication implements CommandLineRunner {
     @Autowired
     UserService userService;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void run(String[] args) throws IOException, InterruptedException {
+    public void run(String[] args) throws IOException {
         /*ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/JsonTesting.json");
@@ -60,9 +56,6 @@ public class DemoApplication implements CommandLineRunner {
         } catch (IOException e) {
             System.out.println("Unable to save users: " + e.getMessage());
         }*/
-        SearchSession searchSession = Search.session( entityManager );
-        MassIndexer indexer = searchSession.massIndexer();
-        indexer.startAndWait();
     }
 
 

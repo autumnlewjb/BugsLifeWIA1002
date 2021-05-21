@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.example.demo.config;
 
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;

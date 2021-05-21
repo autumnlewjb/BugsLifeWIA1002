@@ -38,4 +38,11 @@ public class SearchController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchMultiple")
+    public ResponseEntity<Page<?>> searchMultiple(
+            Pageable pageable, @RequestParam("query") String query, @RequestParam("scope") String scope) {
+        Page<?> result = searchService.searchMultiple(pageable, query, scope);
+        return ResponseEntity.ok(result);
+    }
+
 }
