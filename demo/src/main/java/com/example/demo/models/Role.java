@@ -25,7 +25,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "role")
-@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class Role {
     @Id
@@ -35,7 +34,7 @@ public class Role {
     @Column(nullable = false, updatable = true, unique = true)
     private String name;
     
-    @ManyToMany(fetch=FetchType.LAZY, mappedBy="roles")
+    @ManyToMany(fetch=FetchType.LAZY,cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy="roles")
     @JsonIgnore
     private List<User> users=new ArrayList<>();
     

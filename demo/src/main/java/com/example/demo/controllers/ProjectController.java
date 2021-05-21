@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -64,13 +65,17 @@ public class ProjectController {
     
     @Transactional
     @DeleteMapping("{username}/{project_id}")
-    public ResponseEntity<Project> deleteProject(@PathVariable String username, @PathVariable Integer project_id) {
+    public ResponseEntity<Project> deleteProjectByAdmin(@PathVariable String username, @PathVariable Integer project_id) {
         User user = userService.getUser(username);
-        Project project = projectService.findProjectWithId(project_id);
-        project.getUser().getProject().remove(project);
-        project.removeUser();
-        projectService.deleteProject(project);
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        Authentication authentication= org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if(projectService.findProjectWithId(project_id).getUser().getUsername().equals(authentication.getName())) {
+            Project project = projectService.findProjectWithId(project_id);
+            project.getUser().getProject().remove(project);
+            project.removeUser();
+            projectService.deleteProject(project); 
+            return new ResponseEntity<>(project, HttpStatus.OK);
+        }
+        return null;
     }
 
     @PutMapping("{username}/{project_id}/update")

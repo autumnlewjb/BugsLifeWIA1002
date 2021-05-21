@@ -10,6 +10,7 @@ import com.example.demo.repository.ProjectRepository;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,7 +48,8 @@ public class ProjectService {
     public Project findProjectWithId(Integer project_id){
         return projectRepository.findProjectById(project_id);
     }
-
+    
+//    @PreAuthorize("#username == authentication.name")
     public void deleteProject(Project project){
         projectRepository.delete(project);
     }

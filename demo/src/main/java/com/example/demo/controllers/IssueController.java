@@ -2,8 +2,10 @@ package com.example.demo.controllers;
 
 import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
+import com.example.demo.models.User;
 import com.example.demo.services.IssueService;
 import com.example.demo.services.ProjectService;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,16 +13,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import javax.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api")
 public class IssueController {
-
+    
+    private final UserService userService;
     private final IssueService issueService;
     private final ProjectService projectService;
 
     @Autowired
-    public IssueController(IssueService issueService, ProjectService projectService) {
+    public IssueController(UserService userService, IssueService issueService, ProjectService projectService) {
+        this.userService=userService;
         this.issueService = issueService;
         this.projectService = projectService;
     }
@@ -47,11 +52,16 @@ public class IssueController {
     @DeleteMapping("/project/{project_id}/delete/issue/{issue_id}")
     public ResponseEntity<Issue> deleteIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
         Project project = projectService.findProjectWithId(project_id);
-        Issue issue = issueService.findIssuesById(issue_id);
-        project.getIssue().remove(issue);
-        issue.setProject(null);
-        issueService.deleteIssue(issue);
-        return new ResponseEntity<>(issue, HttpStatus.OK);
+        User user=userService.getUserById(project.getUser().getUser_id());
+        Authentication authentication= org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if(projectService.findProjectWithId(project_id).getUser().getUsername().equals(authentication.getName())) {
+            Issue issue = issueService.findIssuesById(issue_id);
+            project.getIssue().remove(issue);
+            issue.setProject(null);
+            issueService.deleteIssue(issue);
+            return new ResponseEntity<>(issue, HttpStatus.OK);
+        }
+        return null;
     }
 
     @PutMapping("{project_id}/{issue_id}/updateIssue")

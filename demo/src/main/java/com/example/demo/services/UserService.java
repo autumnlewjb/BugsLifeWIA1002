@@ -41,7 +41,7 @@ public class UserService {
     public List<Project> getProjectByUser(User user) {
         return projectRepository.findProjectsByUser(user); 
     }
-
+    
     public void deleteUser(String username){
         userRepository.deleteUserByUsername(username);
     }
