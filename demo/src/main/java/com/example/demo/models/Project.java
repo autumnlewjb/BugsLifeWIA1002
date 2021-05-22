@@ -13,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -38,7 +36,7 @@ public class Project implements Serializable {
     @FullTextField (analyzer="PROJECT")
     @Column(name = "description")
     private String description;
-    
+
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date date;
@@ -48,7 +46,6 @@ public class Project implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval = true)
     private List<Issue> issue;

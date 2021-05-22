@@ -37,7 +37,6 @@ public class User implements Serializable{
     @Column(nullable = false, updatable = true)
     private String password;
 
-    @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;

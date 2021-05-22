@@ -4,6 +4,7 @@ import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.sort.dsl.SortOrder;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -18,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -38,13 +41,28 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         }
     }
 
-    public Page<User> search(Pageable pageable, String query) {
+    public Page<?> searchAll(Pageable pageable, String query) {
+        SearchSession session = Search.session(entityManager);
+        SearchResult<?> result = session.search(Arrays.asList(User.class, Project.class, Issue.class))
+                .where(
+                        f -> f.match()
+                                .fields("username", "email",
+                                        "name", "description",
+                                        "title", "descriptionText",
+                                        "comment.text")
+                                .matching(query).fuzzy()
+                )
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
+    public Page<User> searchUser(Pageable pageable, String query) {
         SearchSession session = Search.session(entityManager);
         SearchResult<User> result = session.search(User.class)
                 .where(
-                        f -> f.match().fields("username", "email", "project.name", "project.description")
+                        f -> f.match().fields("username", "email")
                                 .matching(query)
-                                .fuzzy(1)
+                                .fuzzy()
                 )
                 .fetch((int) pageable.getOffset(), pageable.getPageSize());
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
@@ -54,7 +72,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         SearchSession session = Search.session(entityManager);
         SearchResult<Project> result = session.search(Project.class)
                 .where(
-                        f -> f.match().fields("name", "description", "issue.title", "issue.descriptionText")
+                        f -> f.match().fields("name", "description")
                                 .matching(query)
                                 .fuzzy(1)
                 )
@@ -74,44 +92,82 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    public Page<?> searchMultiple(Pageable pageable, String query, String scope) {
-        List<String> list = new ArrayList<>();
-        List<Class<?>> classList =new ArrayList<>();
-        if (scope.contains("all")) {
-            scope = "user+project+issue+comment";
-        }
-        if (scope.contains("user")) {
-            list.add("username");
-            list.add("email");
-            classList.add(User.class);
-        }
-        if (scope.contains("project")) {
-            list.add("name");
-            list.add("description");
-            classList.add(Project.class);
-        }
-        if (scope.contains("issue")) {
-            list.add("issue.title");
-            list.add("issue.descriptionText");
-            classList.add(Project.class);
-        }
-        if (scope.contains("comment")) {
-            list.add("issue.comment.text");
-            classList.add(Project.class);
-        }
-        return search(pageable, query, list.toArray(new String[0]), classList);
-    }
-
-    public Page<?> search(Pageable pageable, String query, String[] fields, List<Class<?>> classList) {
+    private Page<Issue> searchWithSortAndFilter(Pageable pageable, String query, String[] sort, String[] filter) {
         SearchSession session = Search.session(entityManager);
-        SearchResult<?> result = session.search(classList)
+        SearchResult<Issue> result = session.search(Issue.class)
                 .where(
-                        f -> f.match()
-                                .fields(fields)
-                                .matching(query).fuzzy(1)
+                        f -> f.bool()
+                                .should(f.match().fields("title", "descriptionText",
+                                        "comment.text")
+                                        .matching(query).fuzzy(1))
+                                .must(f.match().field(filter[0]).matching(filter[1]).fuzzy(0))
+                )
+                .sort(
+                        f -> f.field(sort[0]).order(SortOrder.valueOf(sort[1].toUpperCase()))
                 )
                 .fetch((int) pageable.getOffset(), pageable.getPageSize());
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
+    private Page<Issue> searchWithSort(Pageable pageable, String query, String[] sort) {
+        SearchSession session = Search.session(entityManager);
+        SearchResult<Issue> result = session.search(Issue.class)
+                .where(
+                        f -> f.match()
+                                .fields("title", "descriptionText", "comment.text")
+                                .matching(query).fuzzy(1)
+                )
+                .sort(
+                        f -> f.field(sort[0]).order(SortOrder.valueOf(sort[1].toUpperCase()))
+                )
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
+    private Page<Issue> searchWithFilter(Pageable pageable, String query, String[] filter) {
+        SearchSession session = Search.session(entityManager);
+        SearchResult<Issue> result = session.search(Issue.class)
+                .where(
+                        f -> f.bool()
+                                .should(f.match().fields("title", "descriptionText", "comment.text")
+                                        .matching(query).fuzzy(1))
+                                .must(f.match().field(filter[0]).matching(filter[1]).fuzzy(0))
+                )
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
+    public Page<?> search(Pageable pageable, Map<String, String> map) {
+        String scope = map.get("scope");
+        String query = map.get("query");
+        String[] sortArr = map.get("sort").split(",");
+        String[] filterArr = map.get("filter").split(",");
+        boolean needSort = getSort(sortArr);
+        boolean needFilter = getFilter(filterArr);
+        switch (scope) {
+            case "user":
+                return searchUser(pageable, query);
+            case "project":
+                return searchProject(pageable, query);
+            case "issue":
+                if (needSort && needFilter) {
+                    return searchWithSortAndFilter(pageable, query, sortArr, filterArr);
+                } else if (needSort) {
+                    return searchWithSort(pageable, query, sortArr);
+                } else if (needFilter) {
+                    return searchWithFilter(pageable, query, filterArr);
+                }
+                return searchIssue(pageable,query);
+        }
+        return searchAll(pageable, query);
+    }
+
+    private boolean getSort(String[] arr) {
+        return !arr[0].equals("relevance") || !arr[1].equals("desc");
+    }
+
+    private boolean getFilter(String[] filter) {
+        return !filter[0].equals("none");
     }
 
 }

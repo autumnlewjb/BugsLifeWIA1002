@@ -1,13 +1,17 @@
 package com.example.demo.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.services.ProjectService;
 import com.example.demo.services.UserService;
+
 import javax.transaction.Transactional;
 
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,10 +66,9 @@ public class ProjectController {
         projectService.createProject(project);
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
-    
-    @Transactional
+
     @DeleteMapping("{username}/{project_id}")
-    public ResponseEntity<Project> deleteProjectByAdmin(@PathVariable String username, @PathVariable Integer project_id) {
+    public ResponseEntity<?> deleteProjectByAdmin(@PathVariable String username, @PathVariable Integer project_id) {
         User user = userService.getUser(username);
         Authentication authentication= org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if(projectService.findProjectWithId(project_id).getUser().getUsername().equals(authentication.getName())) {
@@ -76,10 +79,16 @@ public class ProjectController {
             return new ResponseEntity<>(project, HttpStatus.OK);
         }
         return null;
+        /*Project project = projectService.findProjectWithId(project_id);
+        if (project == null) {
+            throw new ResourceNotFoundException("project", "id", project_id);
+        }
+        projectService.deleteProject(project);
+        return new ResponseEntity<>(HttpStatus.OK);*/
     }
 
     @PutMapping("{username}/{project_id}/update")
-    public ResponseEntity<?> updateProject(@PathVariable String username, @PathVariable Integer project_id, @RequestBody Project updatedProject){
+    public ResponseEntity<?> updateProject(@PathVariable String username, @PathVariable Integer project_id, @RequestBody Project updatedProject) {
         Project project = projectService.findProjectWithId(project_id);
         updatedProject.setProject_id(project.getProject_id());
         projectService.updateProject(username, project, updatedProject);

@@ -41,16 +41,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>("Server refused to authorize the request", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(Exception ex) {
         logger.error(ex.getMessage());
-        return new ResponseEntity<>("Cannot find the requested element", HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleUncaughtException(Exception ex) {
-        logger.error(ex.getMessage());
-        return new ResponseEntity<>("Please contact the technician for assistant",HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({SQLException.class, DataAccessException.class})
@@ -64,6 +58,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleUncaughtException(Exception ex) {
+        logger.error(ex.getMessage());
+        return new ResponseEntity<>("Please contact the technician for assistant",HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

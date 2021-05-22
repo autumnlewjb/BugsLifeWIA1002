@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 public class SearchController {
@@ -22,7 +24,7 @@ public class SearchController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<User>> searchPersons(Pageable pageable, @RequestParam("query") String query) {
-        Page<User> result = searchService.search(pageable, query);
+        Page<User> result = searchService.searchUser(pageable, query);
         return ResponseEntity.ok(result);
     }
 
@@ -38,10 +40,15 @@ public class SearchController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/searchMultiple")
+    @GetMapping
     public ResponseEntity<Page<?>> searchMultiple(
-            Pageable pageable, @RequestParam("query") String query, @RequestParam("scope") String scope) {
-        Page<?> result = searchService.searchMultiple(pageable, query, scope);
+            Pageable pageable,
+            @RequestParam String query,
+            @RequestParam(defaultValue = "all") String scope,
+            @RequestParam(defaultValue = "relevance,desc") String sort,
+            @RequestParam(defaultValue = "none") String filter) {
+        Map<String, String> map = Map.of("query", query, "scope", scope, "sort", sort, "filter", filter);
+        Page<?> result = searchService.search(pageable, map);
         return ResponseEntity.ok(result);
     }
 

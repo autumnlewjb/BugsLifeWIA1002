@@ -49,8 +49,10 @@ public class ProjectService {
         return projectRepository.findProjectById(project_id);
     }
     
-//    @PreAuthorize("#username == authentication.name")
+    //@PreAuthorize("#project.user.username == authentication.name")
     public void deleteProject(Project project){
+        /*project.getUser().getProject().remove(project);
+        project.removeUser();*/
         projectRepository.delete(project);
     }
 
