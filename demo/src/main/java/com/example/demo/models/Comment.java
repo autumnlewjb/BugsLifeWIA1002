@@ -38,6 +38,8 @@ public class Comment {
     @CreatedDate
     private Date timestamp;
 
+    private String user;
+
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
@@ -45,6 +47,14 @@ public class Comment {
 
     public int getReactionIndex(React react){
         return this.react.indexOf(react);
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public Issue getIssue() {
