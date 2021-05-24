@@ -15,9 +15,6 @@
 
 <script>
 export default {
-    setup() {
-        
-    },
     props: {
         showDialog: Boolean
     },

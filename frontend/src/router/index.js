@@ -9,6 +9,8 @@ import Issue from '../views/Issue'
 
 import Vue from 'vue'
 
+import store from '../store/index.js'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -45,5 +47,13 @@ const routes = [
 ]
 
 const router = new VueRouter({routes: routes, mode: 'history'})
+
+router.beforeEach((to, from, next) => {
+    if (to.name != 'Login' && !store.getters.getCurrentUser) {
+        next({name: "Login"});
+    } else {
+        next();
+    }
+})
 
 export default router;

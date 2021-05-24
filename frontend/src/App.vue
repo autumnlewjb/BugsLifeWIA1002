@@ -37,15 +37,8 @@
       </v-navigation-drawer>
     </nav>
     <v-main>
-      <!-- <v-container>
-        <v-breadcrumbs :items="getBreadcrumbsItem">
-
-        </v-breadcrumbs>
-      </v-container> -->
       <v-container :class="{'pa-16': $vuetify.breakpoint.mdAndUp, 'pa-5': $vuetify.breakpoint.smAndDown}">
         <router-view
-          @addToBreadcrumb="addToBreadcrumb"
-          @removeFromBreadcrumb="removeFromBreadcrumb"
         ></router-view>
       </v-container>
     </v-main>
@@ -64,7 +57,6 @@ export default {
         { title: "Logout", icon: "mdi-logout", route:"Login", click: this.logOut },
       ],
       mini: true,
-      breadcrumbItems: []
     };
   },
   components: {},
@@ -86,7 +78,6 @@ export default {
       fetch(`/api/logout`).then((res) => {
         if (res.status == 200) {
           localStorage.clear()
-          this.breadcrumbItems = []
           this.$store.dispatch('fetchCurrentUser')
           this.$router.push({name: 'Login'})
         } else {
@@ -94,23 +85,10 @@ export default {
         }
       })
     },
-    addToBreadcrumb(breadcrumbItem) {
-      if (this.breadcrumbItems.length == 0 || this.breadcrumbItems[this.breadcrumbItems.length - 1].href !== breadcrumbItem.href) {
-        this.breadcrumbItems.push(breadcrumbItem)
-      }
-      this.breadcrumbItems.map((item) => item.disabled = false)
-      this.breadcrumbItems[this.breadcrumbItems.length-1].disabled = true
-    },
-    removeFromBreadcrumb() {
-      if (this.breadcrumbItems.length > 0) this.breadcrumbItems.pop()
-    }
   },
   computed: {
     userAuthenticated() {
       return this.$store.getters.getCurrentUser != null
-    },
-    getBreadcrumbsItem() {
-      return this.breadcrumbItems
     },
     getData() {
       return this.$store.getters.getCurrentUser;

@@ -3,13 +3,12 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     currentUser: JSON.parse(localStorage.getItem('data')),
     username: '',
     userId: '',
     email: '',
-    projects: [],
   },
   mutations: {
     setCurrentUser(state, payload) {
@@ -18,23 +17,14 @@ export default new Vuex.Store({
         state.username = payload.username;
         state.userId = payload.user_id;
         state.email = payload.email;
-        state.projects = payload.project;
       }
-    } 
+    }
   },
   actions: {
     async fetchCurrentUser(state) {
       if (localStorage.data) {
         const currentUser = JSON.parse(localStorage.data);
-        fetch(`/api/user/${currentUser.username}`)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json()
-          }
-        }).then((user) => {
-          state.commit('setCurrentUser', user)
-          localStorage.setItem('data', JSON.stringify(user))
-        })
+        state.commit('setCurrentUser', currentUser)
       } else {
         state.commit('setCurrentUser', null)
       }
@@ -59,4 +49,6 @@ export default new Vuex.Store({
       return state.projects;
     }
   }
-})
+});
+
+export default store;

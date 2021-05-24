@@ -19,7 +19,6 @@
 import Form from "../components/Form";
 import router from "../router/index"
 export default {
-  setup() {},
   components: {
     Form,
   },

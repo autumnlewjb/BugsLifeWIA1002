@@ -33,22 +33,23 @@ export default {
         title: 'Add New Project',
         name: '',
         description: '',
-        action: 'add'
+        action: 'add',
+        projectId: 0
     };
   },
   created() {
-    if (this.projectId) {
+    if (this.project) {
       this.action = 'edit';
-      const project = this.$store.getters.getCurrentUser.project.find((p) => p.project_id == this.projectId)
-      this.name = project.name;
-      this.description = project.description;
-      this.title = 'Edit Project'
+      this.name = this.project.name;
+      this.description = this.project.description;
+      this.title = 'Edit Project';
+      this.projectId = this.project.project_id;
     }
   },
   methods: {
-    onSubmit(action) {
+    async onSubmit(action) {
         if (action == 'add') {
-            fetch(`/api/${this.$store.getters.getCurrentUser.user_id}/project/create`, {
+            await fetch(`/api/${this.$store.getters.getCurrentUser.user_id}/project/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -67,7 +68,7 @@ export default {
                 }
             }).catch((e) => console.log(e))
         } else if (action == 'edit') {
-          fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}/update`, {
+          await fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -91,7 +92,7 @@ export default {
   },
   props: {
     data: Object,
-    projectId: String
+    project: Object
   }
 };
 </script>

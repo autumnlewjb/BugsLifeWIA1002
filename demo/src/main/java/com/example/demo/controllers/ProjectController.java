@@ -37,11 +37,17 @@ public class ProjectController {
         return new ResponseEntity<>(projectList, HttpStatus.OK);
     }
 
-    @GetMapping("/project/{projectName}")
-    public ResponseEntity<List<Project>> getProjectsWithName(@PathVariable String projectName) {
-        List<Project> projectList = projectService.findProjectsWithName(projectName);
-        return new ResponseEntity<>(projectList, HttpStatus.OK);
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<Project> getProjectWithId(@PathVariable Integer projectId) {
+        Project project = projectService.findProjectWithId(projectId);
+        return new ResponseEntity<>(project, HttpStatus.OK);
     }
+
+    // @GetMapping("/project/{projectName}")
+    // public ResponseEntity<List<Project>> getProjectsWithName(@PathVariable String projectName) {
+    //     List<Project> projectList = projectService.findProjectsWithName(projectName);
+    //     return new ResponseEntity<>(projectList, HttpStatus.OK);
+    // }
 
     @GetMapping("/{username}/projects")
     public ResponseEntity<List<Project>> getProjectsWithUser(@PathVariable String username) {

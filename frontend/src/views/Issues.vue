@@ -21,7 +21,7 @@
       <v-container>
         <v-layout row justify-center>
           <v-flex xs12 md12>
-            <v-card v-for="issue in getIssues" :key="issue.id" class="ma-5">
+            <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
               <v-card-title>
                 {{ issue.title }}
                 <v-icon v-for="n in issue.priority" :key="n" color="red"
@@ -42,7 +42,7 @@
               >
               <v-card-text>
                 Status: {{ issue.status }}<br />
-                Created on
+                Last updated on
                 {{ issue.timestamp == null ? "(Not Specified)" : issue.timestamp }}
               </v-card-text>
               <v-card-actions>
@@ -81,6 +81,7 @@ export default {
       projectId: 0,
       project: null,
       dialog: false,
+      issues: null
     };
   },
   props: {
@@ -88,6 +89,7 @@ export default {
   },
   created() {
     this.projectId = this.$route.query.projectId;
+    this.fetchIssues();
   },
   components: {
     IssueForm,
@@ -95,11 +97,26 @@ export default {
   methods: {
     toggleDialog() {
       this.dialog = !this.dialog;
+      this.fetchIssues();
     },
+    fetchIssues() {
+      fetch(`/api/${this.projectId}/issues`)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return null;
+      }
+    })
+    .then((data) => {
+      this.issues = data;
+    })
+    .catch((e) => console.log(e));
+    }
   },
   computed: {
     getIssues() {
-      return this.$store.getters.getCurrentUser.project.find((p) => p.project_id == this.projectId).issue;
+      return this.issues;
     },
   },
 };

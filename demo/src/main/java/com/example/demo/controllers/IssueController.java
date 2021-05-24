@@ -32,6 +32,12 @@ public class IssueController {
         return new ResponseEntity<>(issueList, HttpStatus.OK);
     }
 
+    @GetMapping("/issue/{issueId}")
+    public ResponseEntity<Issue> getIssueById(@PathVariable Integer issueId) {
+        Issue issue = issueService.findIssuesById(issueId);
+        return new ResponseEntity<>(issue, HttpStatus.OK);
+    }
+
     // FIXME this endpoints create new user in the author field although the user exist
     @PostMapping("/{project_id}/issue/create")
     public ResponseEntity<Issue> createIssue(@RequestBody Issue issue, @PathVariable Integer project_id) {

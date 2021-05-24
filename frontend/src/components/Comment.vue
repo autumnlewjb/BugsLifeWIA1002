@@ -16,17 +16,17 @@
         <v-layout row>
           <v-flex xs6 md8>
             <v-chip @click="addEmoji('angry')" class="ma-1">
-              &#128520; {{ angry ? angry.count : 0 }}
+              &#128520; {{ angryCount }}
             </v-chip>
             <v-chip @click="addEmoji('happy')" class="ma-1">
-              &#128516; {{ happy ? happy.count : 0 }}
+              &#128516; {{ happyCount }}
             </v-chip>
             <v-chip @click="addEmoji('thumbsup')" class="ma-1">
-              &#128077; {{ thumbsup ? thumbsup.count : 0 }}
+              &#128077; {{ thumbsupCount }}
             </v-chip>
           </v-flex>
           <v-flex xs6 md4 style="text-align: end">
-            <v-btn class="mx-0" plain @click="toggleDialog">Edit</v-btn>
+            <v-btn class="mx-0" plain @click="toggleEditDialog">Edit</v-btn>
             <v-btn class="mx-0" plain color="red" @click="toggleDeleteDialog(false)"
               >Delete</v-btn
             >
@@ -41,7 +41,7 @@
           <v-btn text color="teal" class="" @click="editComment"
             >Edit Comment</v-btn
           >
-          <v-btn text color="red" @click="toggleDialog">Close</v-btn>
+          <v-btn text color="red" @click="toggleEditDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -61,25 +61,25 @@ export default {
       angry: this.comment.react.find((r) => r.reaction === "angry"),
       happy: this.comment.react.find((r) => r.reaction === "happy"),
       thumbsup: this.comment.react.find((r) => r.reaction === "thumbsup"),
+      angryCount: 0,
+      happyCount: 0,
+      thumbsupCount: 0,
       dialog: false,
       text: this.comment.text,
       confirmDeleteDialog: false
     };
   },
-  created() {},
-  watch: {
-    comment(comment) {
-      this.angry = comment.react.find((r) => r.reaction === "angry");
-      this.happy = comment.react.find((r) => r.reaction === "happy");
-      this.thumbsup = comment.react.find((r) => r.reaction === "thumbsup");
-    },
+  created() {
+    this.angryCount = this.angry ? this.angry.count : 0;
+    this.happyCount = this.happy ? this.happy.count : 0;
+    this.thumbsupCount = this.thumbsup ? this.thumbsup.count : 0;
   },
   props: {
     comment: Object,
     issueId: undefined,
   },
   methods: {
-    addEmoji(str) {
+    async addEmoji(str) {
       if (str == "happy") {
         var url = `/api/${this.comment.comment_id}/reaction/create`;
         var met = "POST";
@@ -92,10 +92,10 @@ export default {
           met = "PUT";
           data = {
             reaction: "happy",
-            count: this.happy.count + 1,
+            count: this.happyCount + 1,
           };
         }
-        fetch(url, {
+        await fetch(url, {
           method: met,
           headers: {
             "Content-Type": "application/json",
@@ -106,6 +106,7 @@ export default {
             if (res.status == 200) {
               this.$store.dispatch("fetchCurrentUser");
               console.log("successful");
+              this.happyCount ++;
             } else {
               console.log("failed");
             }
@@ -123,10 +124,10 @@ export default {
           met = "PUT";
           data = {
             reaction: "angry",
-            count: this.angry.count + 1,
+            count: this.angryCount + 1,
           };
         }
-        fetch(url, {
+        await fetch(url, {
           method: met,
           headers: {
             "Content-Type": "application/json",
@@ -137,6 +138,7 @@ export default {
             if (res.status == 200) {
               this.$store.dispatch("fetchCurrentUser");
               console.log("successful");
+              this.angryCount ++;
             } else {
               console.log("failed");
             }
@@ -154,10 +156,10 @@ export default {
           met = "PUT";
           data = {
             reaction: "thumbsup",
-            count: this.thumbsup.count + 1,
+            count: this.thumbsupCount + 1,
           };
         }
-        fetch(url, {
+        await fetch(url, {
           method: met,
           headers: {
             "Content-Type": "application/json",
@@ -168,14 +170,16 @@ export default {
             if (res.status == 200) {
               this.$store.dispatch("fetchCurrentUser");
               console.log("successful");
+              this.thumbsupCount ++;
             } else {
               console.log("failed");
             }
           })
           .catch((e) => console.log(e));
       }
+      this.$emit('updateComment')
     },
-    toggleDialog() {
+    toggleEditDialog() {
       this.dialog = !this.dialog;
     },
     toggleDeleteDialog(userResponse) {
@@ -184,8 +188,8 @@ export default {
         this.deleteComment();
       }
     },
-    deleteComment() {
-      fetch(
+    async deleteComment() {
+      await fetch(
         `/api/issue/${this.issueId}/delete/comment/${this.comment.comment_id}`,
         {
           method: "DELETE",
@@ -197,9 +201,10 @@ export default {
           console.log("delete unsuccessful");
         }
       });
+      this.$emit('updateComment');
     },
-    editComment() {
-      fetch(`/api/${this.issueId}/${this.comment.comment_id}/updateComment`, {
+    async editComment() {
+      await fetch(`/api/${this.issueId}/${this.comment.comment_id}/updateComment`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -213,12 +218,13 @@ export default {
           if (res.status == 200) {
             this.$store.dispatch("fetchCurrentUser");
             console.log("update successful");
-            this.toggleDialog();
+            this.toggleEditDialog();
           } else {
             console.log("update failed");
           }
         })
         .catch((e) => console.log(e));
+      this.$emit('updateComment');
     },
   },
   computed: {

@@ -6,7 +6,14 @@
           <h1 class="subheading">Project Dashboard</h1>
         </v-flex>
         <v-flex xs12 md2>
-          <v-btn elevation="3" rounded color="teal" class="white--text" @click="dialog=true">+ Add Project</v-btn>
+          <v-btn
+            elevation="3"
+            rounded
+            color="teal"
+            class="white--text"
+            @click="dialog = true"
+            >+ Add Project</v-btn
+          >
         </v-flex>
       </v-layout>
       <v-layout row>
@@ -19,9 +26,22 @@
             <v-layout row align-center>
               <v-card-title>{{ project.name }}</v-card-title>
               <v-card-text>{{ project.description }}</v-card-text>
-              <v-card-text>Created on {{ project.date == null ? '(Not Specified)' : project.date }}</v-card-text>
+              <v-card-text
+                >Created on
+                {{
+                  project.date == null ? "(Not Specified)" : project.date
+                }}</v-card-text
+              >
               <v-card-actions class="d-flex justify-end">
-                <v-btn color="primary" :to="{path: 'project', query: {projectId: project.project_id}}" text>View Project</v-btn>
+                <v-btn
+                  color="primary"
+                  :to="{
+                    path: 'project',
+                    query: { projectId: project.project_id },
+                  }"
+                  text
+                  >View Project</v-btn
+                >
               </v-card-actions>
             </v-layout>
           </v-card>
@@ -29,48 +49,53 @@
       </v-layout>
     </v-container>
     <v-row justify="center">
-    <v-dialog
-      v-model="dialog"
-      persistent
-      max-width="600px"
-    >
-      <ProjectForm @toggleDialog="toggleDialog" :data="data"/>
-    </v-dialog>
-  </v-row>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <ProjectForm @toggleDialog="toggleDialog" />
+      </v-dialog>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import ProjectForm from '../components/ProjectForm'
+import ProjectForm from "../components/ProjectForm";
+
 export default {
-  setup() {},
   data() {
     return {
       hidden: false,
-      dialog: false
+      dialog: false,
+      projects: [],
     };
   },
   created() {
-    // this.$store.dispatch('fetchCurrentUser')
-  },
-  props: {
-    data: Object,
+    this.fetchProjects();
   },
   components: {
-    ProjectForm
+    ProjectForm,
   },
   methods: {
     toggleDialog() {
-      this.dialog = false
-    }
+      this.fetchProjects();
+      this.dialog = false;
+    },
+    fetchProjects() {
+      fetch(`/api/projects`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return [];
+          }
+        })
+        .then((data) => {
+          this.projects = data;
+        })
+        .catch((e) => console.log(e));
+    },
   },
   computed: {
     getProjects() {
-      if (this.$store.getters.getCurrentUser) {
-        return this.$store.getters.getCurrentUser.project;
-      } else {
-        return [];
-      }
+      return this.projects;
     }
   }
 };

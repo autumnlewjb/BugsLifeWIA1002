@@ -1,12 +1,14 @@
 <template>
-  <v-container>
+  <v-container v-if="getIssue">
     <v-layout row justify-space-around class="ma-5">
       <v-flex xs12 md7>
         <v-container>
           <h1>
-            {{ getIssue.title }} 
+            {{ getIssue.title }}
             <v-btn @click="editIssue" plain>Edit</v-btn>
-            <v-btn @click="toggleDeleteDialog(false)" plain color="red">Delete</v-btn>
+            <v-btn @click="toggleDeleteDialog(false)" plain color="red"
+              >Delete</v-btn
+            >
           </h1>
         </v-container>
         <v-container>
@@ -37,9 +39,9 @@
           <p>
             Tag: <br />
             <!-- <v-chip-group> -->
-              <v-chip v-for="tag in getIssue.tag" :key="tag" class="ma-1">{{
-                tag
-              }}</v-chip>
+            <v-chip v-for="tag in getIssue.tag" :key="tag" class="ma-1">{{
+              tag
+            }}</v-chip>
             <!-- </v-chip-group> -->
           </p>
           <p>
@@ -51,7 +53,7 @@
             {{ getIssue.assignee == null ? "Nobody for now" : getIssue.assignee }}
           </p>
           <p>
-            Timestamp: <br />
+            Last updated: <br />
             {{ getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp }}
           </p>
         </v-container>
@@ -64,6 +66,7 @@
           :key="comment.id"
           :comment="comment"
           :issueId="issueId"
+          @updateComment="updateComment"
         />
         <v-card class="pa-5 ma-5" outlined>
           <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
@@ -75,20 +78,23 @@
     </v-layout>
     <v-dialog v-model="dialog" persistent max-width="600px">
       <IssueForm
-        @toggleDialog="toggleDialog"
+        @toggleDialog="toggleEditDialog"
         :data="data"
         :issue="getIssue"
         :projectId="projectId"
       />
     </v-dialog>
-    <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
+    <ConfirmDelete
+      @toggleDeleteDialog="toggleDeleteDialog"
+      :showDialog="confirmDeleteDialog"
+    />
   </v-container>
 </template>
 
 <script>
 import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
-import ConfirmDelete from "../components/ConfirmDelete"
+import ConfirmDelete from "../components/ConfirmDelete";
 
 export default {
   setup() {},
@@ -100,18 +106,13 @@ export default {
       issue: null,
       text: "",
       dialog: false,
-      confirmDeleteDialog: false
+      confirmDeleteDialog: false,
     };
   },
   created() {
     this.projectId = this.$route.query.projectId;
     this.issueId = this.$route.query.issueId;
-    this.project = this.$store.getters.getCurrentUser.project.find(
-      (project) => project.project_id == this.projectId
-    );
-    this.issue = this.project.issue.find(
-      (issue) => issue.issue_id == this.issueId
-    );
+    this.fetchIssue();
   },
   props: {
     data: Object,
@@ -119,11 +120,11 @@ export default {
   components: {
     Comment,
     IssueForm,
-    ConfirmDelete
+    ConfirmDelete,
   },
   methods: {
-    postComment() {
-      fetch(`/api/${this.issueId}/comment/create`, {
+    async postComment() {
+      await fetch(`/api/${this.issueId}/comment/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,49 +142,64 @@ export default {
           }
         })
         .catch((e) => console.log(e));
+      this.fetchIssue();
     },
-    toggleDialog() {
-      this.dialog = !this.dialog
+    toggleEditDialog() {
+      this.dialog = !this.dialog;
+      this.fetchIssue();
     },
     toggleDeleteDialog(userResponse) {
       this.confirmDeleteDialog = !this.confirmDeleteDialog;
       if (userResponse) {
         this.deleteIssue();
+        this.fetchIssue();
       }
     },
     editIssue() {
       this.dialog = true;
     },
     deleteIssue() {
-      fetch(`/api/project/${this.projectId}/delete/issue/${this.issueId}`,{
-        method: 'DELETE'
+      fetch(`/api/project/${this.projectId}/delete/issue/${this.issueId}`, {
+        method: "DELETE",
       })
-      .then((res) => {
-        if (res.status == 200) {
-          console.log("delete successful")
-          this.$store.dispatch('fetchCurrentUser')
-          this.$router.push({name: 'Project', query: {projectId: this.projectId}})
-        } else {
-          console.log("delete unsuccessful")
-        }
-      })
-      .catch((e) => console.log(e));
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("delete successful");
+            this.$store.dispatch("fetchCurrentUser");
+            this.$router.push({
+              name: "Project",
+              query: { projectId: this.projectId },
+            });
+          } else {
+            console.log("delete unsuccessful");
+          }
+        })
+        .catch((e) => console.log(e));
+    },
+    fetchIssue() {
+      fetch(`/api/issue/${this.issueId}`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => (this.issue = data))
+        .catch((e) => console.log(e));
+    },
+    updateComment() {
+      console.log("comment updated")
+      this.fetchIssue();
     }
   },
   computed: {
     getComments() {
-      return this.$store.getters.getCurrentUser.project
-        .find((project) => project.project_id == this.projectId)
-        .issue.find((issue) => issue.issue_id == this.issueId).comment;
+      return this.issue.comment;
     },
     getIssue() {
-      const p = this.$store.getters.getCurrentUser.project.find(
-        (project) => project.project_id == this.projectId
-      );
-      return p.issue.find(
-        (issue) => issue.issue_id == this.issueId
-      );
-    }
+      return this.issue;
+    },
   },
 };
 </script>

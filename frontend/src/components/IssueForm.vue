@@ -67,7 +67,7 @@ export default {
       this.tag = this.issue.tag.join();
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
-      this.action = 'edit'
+      this.action = 'edit';
     }
   },
   methods: {
@@ -78,9 +78,9 @@ export default {
       this.descriptionText = "";
       this.assignee = ""
     },
-    onSubmit(action) {
+    async onSubmit(action) {
       if (action == "add") {
-        fetch(`/api/${this.projectId}/issue/create`, {
+        await fetch(`/api/${this.projectId}/issue/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export default {
           .catch((e) => console.log(e));
       } else if (action == "edit") {
         console.log(this.title)
-        fetch(`/api/${this.projectId}/${this.issue.issue_id}/updateIssue`, {
+        await fetch(`/api/${this.projectId}/${this.issue.issue_id}/updateIssue`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             this.$store.dispatch('fetchCurrentUser');
-            console.log("update successful")
+            console.log("update successful");
           } else {
             console.log("update unsuccessful");
           }
@@ -139,6 +139,6 @@ export default {
     data: Object,
     projectId: String,
     issue: Object
-  },
+  }
 };
 </script>

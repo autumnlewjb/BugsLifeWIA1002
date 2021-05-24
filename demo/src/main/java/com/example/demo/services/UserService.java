@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class UserService {
     @Autowired
-    private RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 
