@@ -6,6 +6,7 @@ import Projects from '../views/Projects'
 import Project from '../views/Project'
 import Issues from '../views/Issues'
 import Issue from '../views/Issue'
+import Search from '../views/Search'
 
 import Vue from 'vue'
 
@@ -48,6 +49,11 @@ const routes = [
         name: 'Issue',
         component: Issue
     },
+    {
+        path: '/search',
+        name: 'Search',
+        component: Search
+    }
 ]
 
 const router = new VueRouter({routes: routes, mode: 'history'})

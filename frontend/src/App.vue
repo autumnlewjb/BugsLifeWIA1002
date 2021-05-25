@@ -54,6 +54,7 @@ export default {
       drawer: true,
       items: [
         { title: "Projects", icon: "mdi-book", route:"Projects", click: this.goToProject },
+        { title: "Search", icon: "mdi-magnify", route: "Search", click: this.goToSearch },
         { title: "Logout", icon: "mdi-logout", route:"Login", click: this.logOut },
       ],
       mini: true,
@@ -80,6 +81,9 @@ export default {
         }
       })
     },
+    goToSearch() {
+      this.$router.push({name: 'Search'}).catch(() => {})
+    }
   },
   computed: {
     userAuthenticated() {

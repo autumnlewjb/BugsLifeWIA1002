@@ -53,8 +53,8 @@ public class IssueController {
         return ResponseEntity.ok(issue);
     }
 
-    @GetMapping("/{project_id}/issue/{issue_id}")
-    public ResponseEntity<Issue> getIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
+    @GetMapping("issue/{issue_id}")
+    public ResponseEntity<Issue> getIssue(@PathVariable Integer issue_id) {
         Issue issue = issueService.findIssuesById(issue_id);
         return ResponseEntity.ok(issue);
     }

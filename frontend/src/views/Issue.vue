@@ -185,7 +185,7 @@ export default {
         .catch((e) => console.log(e));
     },
     fetchIssue() {
-      fetch(`/api/${this.projectId}/issue/${this.issueId}`)
+      fetch(`/api/issue/${this.issueId}`)
         .then((res) => {
           if (res.status == 200) {
             return res.json();
