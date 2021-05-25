@@ -61,12 +61,7 @@ export default {
   },
   components: {},
   created() {
-    if (localStorage.data) {
-      this.data = JSON.parse(localStorage.data);
-      this.drawer = true;
-    } else {
-      this.drawer = false;
-    }
+    this.$store.dispatch('fetchCurrentUser');
   },
   destroyed() {
   },

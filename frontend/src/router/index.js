@@ -15,6 +15,10 @@ Vue.use(VueRouter)
 
 const routes = [
     {
+        path: '/',
+        name: 'Home',
+    },
+    {
         path: '/login',
         name: 'Login',
         component: Login
@@ -51,6 +55,8 @@ const router = new VueRouter({routes: routes, mode: 'history'})
 router.beforeEach((to, from, next) => {
     if (to.name != 'Login' && !store.getters.getCurrentUser) {
         next({name: "Login"});
+    } else if (to.name == 'Login' && store.getters.getCurrentUser) {
+        next({name: 'Projects'});
     } else {
         next();
     }

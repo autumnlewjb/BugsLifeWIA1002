@@ -29,27 +29,19 @@ export default {
   },
   methods: {
     async onSubmit(user) {
-      const exist = this.users.find(
-        (userInDB) =>
-          userInDB.username == user.username &&
-          userInDB.password == userInDB.password
-      );
-      if (exist == null) {
-        const res = await fetch(`/api/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(user)
-        })
+      const res = await fetch(`/api/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user)
+      })
 
-        if (res.status === 200) {
-          console.log("registered");
-          router.push({"name": "Login"})
-        } else {
-          alert("Registration failed! ")
-        }
-
+      if (res.status === 200) {
+        console.log("registered");
+        router.push({"name": "Login"});
+      } else {
+        alert("Registration failed! ");
       }
     },
   },

@@ -76,7 +76,7 @@ export default {
       this.dialog = true;
     },
     deleteProject() {
-      fetch(`/api/${this.$store.getters.getUsername}/${this.projectId}`, {
+      fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}`, {
         method: "DELETE",
       })
         .then((res) => {

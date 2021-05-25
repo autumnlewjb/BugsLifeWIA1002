@@ -35,7 +35,7 @@
               </v-card-text>
               <v-card-text>
                 {{
-                  issue.descriptionText == null
+                  issue.descriptionText == null || issue.descriptionText == ''
                     ? "(Description not specified)"
                     : issue.descriptionText
                 }}</v-card-text
