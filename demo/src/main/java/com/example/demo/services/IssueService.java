@@ -61,4 +61,9 @@ public class IssueService {
         issue.setProject(null);
         issueRepository.delete(issue);
     }
+
+    public List<Issue> findAll() {
+        return issueRepository.findAll();
+    }
+
 }

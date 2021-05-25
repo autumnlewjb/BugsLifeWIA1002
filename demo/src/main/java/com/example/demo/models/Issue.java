@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @Indexed
 @Table(name = "issue")
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class Issue implements Serializable{
     @Id
@@ -39,7 +39,6 @@ public class Issue implements Serializable{
     @KeywordField
     @ElementCollection
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
-    @JsonIgnore
     private List<String> tag;
 
     @FullTextField (analyzer="ISSUE")

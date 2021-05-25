@@ -39,7 +39,7 @@ public class DemoApplication implements CommandLineRunner {
     public void run(String[] args) throws IOException {
         /*ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
-        InputStream inputStream = TypeReference.class.getResourceAsStream("/json/JsonTesting.json");
+        InputStream inputStream = TypeReference.class.getResourceAsStream("/json/BugsLife.json");
         try {
             Role admin = new Role("ADMIN");
             Role ordinaryUser = new Role("USER");

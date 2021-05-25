@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "react")
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class React {
 
