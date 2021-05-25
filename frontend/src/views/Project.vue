@@ -28,6 +28,7 @@
       <ProjectForm
         :project="getProject"
         @toggleDialog="toggleDialog"
+        @toggleForbiddenDialog="toggleForbiddenDialog"
         :data="data"
       />
     </v-dialog>
@@ -35,6 +36,7 @@
       @toggleDeleteDialog="toggleDeleteDialog"
       :showDialog="confirmDeleteDialog"
     />
+    <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
   </v-container>
 </template>
 
@@ -42,6 +44,7 @@
 import Issues from "../views/Issues";
 import ProjectForm from "../components/ProjectForm";
 import ConfirmDelete from "../components/ConfirmDelete";
+import Forbidden from "../components/Forbidden"
 
 export default {
   data() {
@@ -51,6 +54,7 @@ export default {
       showIssues: false,
       dialog: false,
       confirmDeleteDialog: false,
+      forbiddenDialog: false
     };
   },
   setup() {},
@@ -76,7 +80,7 @@ export default {
       this.dialog = true;
     },
     deleteProject() {
-      fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}`, {
+      fetch(`/api/${this.projectId}`, {
         method: "DELETE",
       })
         .then((res) => {
@@ -84,7 +88,9 @@ export default {
             console.log("delete successful");
             this.$store.dispatch("fetchCurrentUser");
             this.$router.push({ name: "Projects" });
-          } else {
+          } else if (res.status == 403) {
+            this.forbiddenDialog = true;
+          }else {
             console.log("delete unsuccessful");
           }
         })
@@ -115,11 +121,19 @@ export default {
         })
         .catch((e) => console.log(e));
     },
+    closeForbiddenDialog() {
+      this.forbiddenDialog = false;
+    },
+    toggleForbiddenDialog() {
+      console.log("toggle")
+      this.forbiddenDialog = true;
+    }
   },
   components: {
     Issues,
     ProjectForm,
     ConfirmDelete,
+    Forbidden
   },
   computed: {
     getProject() {

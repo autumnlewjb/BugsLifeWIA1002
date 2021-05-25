@@ -66,6 +66,7 @@
           :key="comment.id"
           :comment="comment"
           :issueId="issueId"
+          :projectId="projectId"
           @updateComment="updateComment"
         />
         <v-card class="pa-5 ma-5" outlined>
@@ -79,6 +80,7 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <IssueForm
         @toggleDialog="toggleEditDialog"
+        @toggleForbiddenDialog="toggleForbiddenDialog"
         :data="data"
         :issue="getIssue"
         :projectId="projectId"
@@ -88,6 +90,7 @@
       @toggleDeleteDialog="toggleDeleteDialog"
       :showDialog="confirmDeleteDialog"
     />
+    <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
   </v-container>
 </template>
 
@@ -95,6 +98,7 @@
 import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
+import Forbidden from "../components/Forbidden"
 
 export default {
   setup() {},
@@ -107,6 +111,7 @@ export default {
       text: "",
       dialog: false,
       confirmDeleteDialog: false,
+      forbiddenDialog: false
     };
   },
   created() {
@@ -121,10 +126,11 @@ export default {
     Comment,
     IssueForm,
     ConfirmDelete,
+    Forbidden
   },
   methods: {
     async postComment() {
-      await fetch(`/api/${this.issueId}/comment/create`, {
+      await fetch(`/api/${this.projectId}/${this.issueId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,7 +165,7 @@ export default {
       this.dialog = true;
     },
     deleteIssue() {
-      fetch(`/api/project/${this.projectId}/delete/issue/${this.issueId}`, {
+      fetch(`/api/${this.projectId}/${this.issueId}`, {
         method: "DELETE",
       })
         .then((res) => {
@@ -170,14 +176,16 @@ export default {
               name: "Project",
               query: { projectId: this.projectId },
             });
-          } else {
+          } else if (res.status == 403) {
+            this.forbiddenDialog = true;
+          }else {
             console.log("delete unsuccessful");
           }
         })
         .catch((e) => console.log(e));
     },
     fetchIssue() {
-      fetch(`/api/issue/${this.issueId}`)
+      fetch(`/api/${this.projectId}/issue/${this.issueId}`)
         .then((res) => {
           if (res.status == 200) {
             return res.json();
@@ -191,6 +199,12 @@ export default {
     updateComment() {
       console.log("comment updated")
       this.fetchIssue();
+    },
+    closeForbiddenDialog() {
+      this.forbiddenDialog = false;
+    },
+    toggleForbiddenDialog() {
+      this.forbiddenDialog = true;
     }
   },
   computed: {

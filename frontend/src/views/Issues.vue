@@ -29,7 +29,7 @@
                 >
               </v-card-title>
               <v-card-text>
-                <v-chip-group>
+                <v-chip-group v-if="issue.tag">
                   <v-chip v-for="tag in issue.tag" :key="tag" class="mx-1">{{ tag }}</v-chip>
                 </v-chip-group>
               </v-card-text>
@@ -100,7 +100,7 @@ export default {
       this.fetchIssues();
     },
     fetchIssues() {
-      fetch(`/api/${this.projectId}/issues`)
+      fetch(`/api/${this.projectId}`)
     .then((res) => {
       if (res.status == 200) {
         return res.json();

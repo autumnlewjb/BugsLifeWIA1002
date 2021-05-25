@@ -46,136 +46,145 @@
       </v-card>
     </v-dialog>
     <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
+    <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
   </div>
 </template>
 
 <script>
 import ConfirmDelete from "../components/ConfirmDelete"
+import Forbidden from "../components/Forbidden"
 export default {
   setup() {},
   components: {
-    ConfirmDelete
+    ConfirmDelete,
+    Forbidden
   },
   data() {
     return {
-      angry: this.comment.react.find((r) => r.reaction === "angry"),
-      happy: this.comment.react.find((r) => r.reaction === "happy"),
-      thumbsup: this.comment.react.find((r) => r.reaction === "thumbsup"),
+      angry: this.comment.react.filter((r) => r.reaction === "angry"),
+      happy: this.comment.react.filter((r) => r.reaction === "happy"),
+      thumbsup: this.comment.react.filter((r) => r.reaction === "thumbsup"),
       angryCount: 0,
       happyCount: 0,
       thumbsupCount: 0,
       dialog: false,
       text: this.comment.text,
-      confirmDeleteDialog: false
+      confirmDeleteDialog: false,
+      commentId: this.comment.comment_id,
+      forbiddenDialog: false
     };
   },
   created() {
-    this.angryCount = this.angry ? this.angry.count : 0;
-    this.happyCount = this.happy ? this.happy.count : 0;
-    this.thumbsupCount = this.thumbsup ? this.thumbsup.count : 0;
+    // this.angryCount = this.angry ? this.angry.count : 0;
+    // this.happyCount = this.happy ? this.happy.count : 0;
+    // this.thumbsupCount = this.thumbsup ? this.thumbsup.count : 0;
+    this.angryCount = this.angry.length;
+    this.happyCount = this.happy.length;
+    this.thumbsupCount = this.thumbsup.length;
   },
   props: {
     comment: Object,
     issueId: undefined,
+    projectId: undefined
   },
   methods: {
     async addEmoji(str) {
       if (str == "happy") {
-        var url = `/api/${this.comment.comment_id}/reaction/create`;
-        var met = "POST";
-        var data = {
-          reaction: "happy",
-          count: 1,
-        };
-        if (this.happy) {
-          url = `/api/${this.comment.comment_id}/${this.happy.react_id}/updateReaction`;
-          met = "PUT";
-          data = {
-            reaction: "happy",
-            count: this.happyCount + 1,
-          };
-        }
-        await fetch(url, {
-          method: met,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((res) => {
-            if (res.status == 200) {
-              this.$store.dispatch("fetchCurrentUser");
-              console.log("successful");
+      //   var url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
+      //   var met = "POST";
+      //   var data = {
+      //     reaction: "happy",
+      //     count: 1,
+      //   };
+      //   if (this.happy) {
+      //     url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.happy.react_id}`;
+      //     met = "PUT";
+      //     data = {
+      //       reaction: "happy",
+      //       count: this.happyCount + 1,
+      //     };
+      //   }
+      //   await fetch(url, {
+      //     method: met,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(data),
+      //   })
+      //     .then((res) => {
+      //       if (res.status == 200) {
+      //         this.$store.dispatch("fetchCurrentUser");
+      //         console.log("successful");
               this.happyCount ++;
-            } else {
-              console.log("failed");
-            }
-          })
-          .catch((e) => console.log(e));
+      //       } else {
+      //         console.log("failed");
+      //       }
+      //     })
+      //     .catch((e) => console.log(e));
       } else if (str == "angry") {
-        url = `/api/${this.comment.comment_id}/reaction/create`;
-        met = "POST";
-        data = {
-          reaction: "angry",
-          count: 1,
-        };
-        if (this.angry) {
-          url = `/api/${this.comment.comment_id}/${this.angry.react_id}/updateReaction`;
-          met = "PUT";
-          data = {
-            reaction: "angry",
-            count: this.angryCount + 1,
-          };
-        }
-        await fetch(url, {
-          method: met,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((res) => {
-            if (res.status == 200) {
-              this.$store.dispatch("fetchCurrentUser");
-              console.log("successful");
+        // url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
+        // met = "POST";
+        // data = {
+        //   reaction: "angry",
+        //   count: 1,
+        // };
+        // if (this.angry) {
+        //   url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.angry.react_id}`;
+        //   met = "PUT";
+        //   data = {
+        //     reaction: "angry",
+        //     count: this.angryCount + 1,
+        //   };
+        // }
+        // await fetch(url, {
+        //   method: met,
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(data),
+        // })
+        //   .then((res) => {
+        //     if (res.status == 200) {
+        //       this.$store.dispatch("fetchCurrentUser");
+        //       console.log("successful");
               this.angryCount ++;
-            } else {
-              console.log("failed");
-            }
-          })
-          .catch((e) => console.log(e));
+        //     } else {
+        //       console.log("failed");
+        //     }
+        //   })
+        //   .catch((e) => console.log(e));
       } else {
-        url = `/api/${this.comment.comment_id}/reaction/create`;
-        met = "POST";
-        data = {
-          reaction: "thumbsup",
-          count: 1,
-        };
-        if (this.thumbsup) {
-          url = `/api/${this.comment.comment_id}/${this.thumbsup.react_id}/updateReaction`;
-          met = "PUT";
-          data = {
-            reaction: "thumbsup",
-            count: this.thumbsupCount + 1,
-          };
-        }
-        await fetch(url, {
-          method: met,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((res) => {
-            if (res.status == 200) {
-              this.$store.dispatch("fetchCurrentUser");
-              console.log("successful");
+      //   url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
+      //   met = "POST";
+      //   data = {
+      //     reaction: "thumbsup",
+      //     count: 1,
+      //   };
+      //   if (this.thumbsup) {
+      //     url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.thumbsup.react_id}`;
+      //     met = "PUT";
+      //     data = {
+      //       reaction: "thumbsup",
+      //       count: this.thumbsupCount + 1,
+      //     };
+      //   }
+      //   await fetch(url, {
+      //     method: met,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(data),
+      //   })
+      //     .then((res) => {
+      //       if (res.status == 200) {
+      //         this.$store.dispatch("fetchCurrentUser");
+      //         console.log("successful");
               this.thumbsupCount ++;
-            } else {
-              console.log("failed");
-            }
-          })
-          .catch((e) => console.log(e));
+      //       } else {
+      //         console.log("failed");
+      //       }
+      //     })
+      //     .catch((e) => console.log(e));
       }
       this.$emit('updateComment')
     },
@@ -190,13 +199,15 @@ export default {
     },
     async deleteComment() {
       await fetch(
-        `/api/issue/${this.issueId}/delete/comment/${this.comment.comment_id}`,
+        `/api/${this.projectId}/${this.issueId}/${this.commentId}`,
         {
           method: "DELETE",
         }
       ).then((res) => {
         if (res.status == 200) {
           this.$store.dispatch("fetchCurrentUser");
+        } else if (res.status == 403) {
+          this.forbiddenDialog = true;
         } else {
           console.log("delete unsuccessful");
         }
@@ -204,7 +215,7 @@ export default {
       this.$emit('updateComment');
     },
     async editComment() {
-      await fetch(`/api/${this.issueId}/${this.comment.comment_id}/updateComment`, {
+      await fetch(`/api/${this.projectId}/${this.issueId}/${this.commentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -219,6 +230,8 @@ export default {
             this.$store.dispatch("fetchCurrentUser");
             console.log("update successful");
             this.toggleEditDialog();
+          } else if (res.status == 403) {
+            this.forbiddenDialog = true;
           } else {
             console.log("update failed");
           }
@@ -226,6 +239,9 @@ export default {
         .catch((e) => console.log(e));
       this.$emit('updateComment');
     },
+    closeForbiddenDialog() {
+      this.forbiddenDialog = false;
+    }
   },
   computed: {
     getHappy() {

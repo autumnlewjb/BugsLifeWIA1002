@@ -53,6 +53,12 @@ public class IssueController {
         return ResponseEntity.ok(issue);
     }
 
+    @GetMapping("/{project_id}/issue/{issue_id}")
+    public ResponseEntity<Issue> getIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
+        Issue issue = issueService.findIssuesById(issue_id);
+        return ResponseEntity.ok(issue);
+    }
+
     @PutMapping("{project_id}/{issue_id}")
     public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue){
         Issue issue = issueService.findIssuesById(issue_id);

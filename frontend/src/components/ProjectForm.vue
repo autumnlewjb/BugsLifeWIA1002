@@ -49,7 +49,7 @@ export default {
   methods: {
     async onSubmit(action) {
         if (action == 'add') {
-            await fetch(`/api/${this.$store.getters.getCurrentUser.user_id}/project/create`, {
+            await fetch(`/api/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ export default {
                 }
             }).catch((e) => console.log(e))
         } else if (action == 'edit') {
-          await fetch(`/api/${this.$store.getters.getCurrentUser.username}/${this.projectId}/update`, {
+          await fetch(`/api/${this.projectId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -82,7 +82,9 @@ export default {
                 if (res.status == 200) {
                     console.log("edit project")
                     this.$store.dispatch('fetchCurrentUser')
-                } else {
+                } else if (res.status == 403) {
+                  this.$emit('toggleForbiddenDialog');
+                }else {
                     alert("Project Not Edited !!")
                 }
             }).catch((e) => console.log(e))

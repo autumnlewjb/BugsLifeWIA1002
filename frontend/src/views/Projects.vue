@@ -79,7 +79,7 @@ export default {
       this.dialog = false;
     },
     fetchProjects() {
-      fetch(`/api/projects`)
+      fetch(`/api/`)
         .then((res) => {
           if (res.status == 200) {
             return res.json();

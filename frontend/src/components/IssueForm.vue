@@ -64,7 +64,7 @@ export default {
     if (this.issue) {
       this.title = this.issue.title;
       this.priority = this.issue.priority;
-      this.tag = this.issue.tag.join();
+      this.tag = this.issue.tag?.join();
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
       this.action = 'edit';
@@ -80,7 +80,7 @@ export default {
     },
     async onSubmit(action) {
       if (action == "add") {
-        await fetch(`/api/${this.projectId}/issue/create`, {
+        await fetch(`/api/${this.projectId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag.split(",").map((val) => val.trim()),
+            tag: this.tag?.split(",").map((val) => val.trim()),
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()
@@ -107,7 +107,7 @@ export default {
           .catch((e) => console.log(e));
       } else if (action == "edit") {
         console.log(this.title)
-        await fetch(`/api/${this.projectId}/${this.issue.issue_id}/updateIssue`, {
+        await fetch(`/api/${this.projectId}/${this.issue.issue_id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -117,7 +117,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag.split(",").map((val) => val.trim()),
+            tag: this.tag?.split(",").map((val) => val.trim()),
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()
@@ -127,7 +127,9 @@ export default {
           if (res.status == 200) {
             this.$store.dispatch('fetchCurrentUser');
             console.log("update successful");
-          } else {
+          } else if (res.status == 403) {
+            this.$emit('toggleForbiddenDialog');
+          }else {
             console.log("update unsuccessful");
           }
         })

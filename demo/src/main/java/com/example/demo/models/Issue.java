@@ -39,7 +39,6 @@ public class Issue implements Serializable{
     @KeywordField
     @ElementCollection
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
-    @JsonIgnore
     private List<String> tag;
 
     @FullTextField (analyzer="ISSUE")

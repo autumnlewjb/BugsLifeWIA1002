@@ -62,7 +62,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/register").permitAll()
                 .anyRequest().authenticated().and()
-                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
+                .logout().logoutUrl("/api/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies(jwtCookieName);

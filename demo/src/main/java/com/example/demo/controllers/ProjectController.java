@@ -27,6 +27,12 @@ public class ProjectController {
         return ResponseEntity.ok(projectList);
     }
 
+    @GetMapping("/project/{project_id}")
+    public ResponseEntity<Project> getProject(@PathVariable Integer project_id) {
+        Project project = projectService.findProjectWithId(project_id);
+        return ResponseEntity.ok(project);
+    }
+
     @PostMapping("/")
     public ResponseEntity<Project> createProject(@RequestBody Project project) {
         projectService.createProject(project);
