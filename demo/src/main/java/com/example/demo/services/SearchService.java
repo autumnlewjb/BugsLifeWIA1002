@@ -18,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -80,6 +78,21 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
+    private Page<Project> searchProjectWithSort(Pageable pageable, String query, String[] sort) {
+        SearchSession session = Search.session(entityManager);
+        SearchResult<Project> result = session.search(Project.class)
+                .where(
+                        f -> f.match()
+                                .fields("name", "description")
+                                .matching(query).fuzzy(1)
+                )
+                .sort(
+                        f -> f.field(sort[0]).order(SortOrder.valueOf(sort[1].toUpperCase()))
+                )
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
     public Page<Issue> searchIssue(Pageable pageable, String query) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Issue> result = session.search(Issue.class)
@@ -92,7 +105,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    private Page<Issue> searchWithSortAndFilter(Pageable pageable, String query, String[] sort, String[] filter) {
+    private Page<Issue> searchIssueWithSortAndFilter(Pageable pageable, String query, String[] sort, String[] filter) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Issue> result = session.search(Issue.class)
                 .where(
@@ -109,7 +122,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    private Page<Issue> searchWithSort(Pageable pageable, String query, String[] sort) {
+    private Page<Issue> searchIssueWithSort(Pageable pageable, String query, String[] sort) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Issue> result = session.search(Issue.class)
                 .where(
@@ -124,7 +137,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    private Page<Issue> searchWithFilter(Pageable pageable, String query, String[] filter) {
+    private Page<Issue> searchIssueWithFilter(Pageable pageable, String query, String[] filter) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Issue> result = session.search(Issue.class)
                 .where(
@@ -132,6 +145,18 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
                                 .should(f.match().fields("title", "descriptionText", "comment.text")
                                         .matching(query).fuzzy(1))
                                 .must(f.match().field(filter[0]).matching(filter[1]).fuzzy(0))
+                )
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
+    }
+
+    public Page<Issue> searchComment(Pageable pageable, String query) {
+        SearchSession session = Search.session(entityManager);
+        SearchResult<Issue> result = session.search(Issue.class)
+                .where(
+                        f -> f.match().fields("comment.text")
+                                .matching(query)
+                                .fuzzy(1)
                 )
                 .fetch((int) pageable.getOffset(), pageable.getPageSize());
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
@@ -148,16 +173,21 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
             case "user":
                 return searchUser(pageable, query);
             case "project":
+                if (needSort) {
+                    return searchProjectWithSort(pageable, query, sortArr);
+                }
                 return searchProject(pageable, query);
             case "issue":
                 if (needSort && needFilter) {
-                    return searchWithSortAndFilter(pageable, query, sortArr, filterArr);
+                    return searchIssueWithSortAndFilter(pageable, query, sortArr, filterArr);
                 } else if (needSort) {
-                    return searchWithSort(pageable, query, sortArr);
+                    return searchIssueWithSort(pageable, query, sortArr);
                 } else if (needFilter) {
-                    return searchWithFilter(pageable, query, filterArr);
+                    return searchIssueWithFilter(pageable, query, filterArr);
                 }
-                return searchIssue(pageable,query);
+                return searchIssue(pageable, query);
+            case "comment":
+                return searchComment(pageable, query);
         }
         return searchAll(pageable, query);
     }

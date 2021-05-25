@@ -38,6 +38,7 @@ public class Project implements Serializable {
     @Column(columnDefinition = "text", name = "description")
     private String description;
 
+    @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date date;
