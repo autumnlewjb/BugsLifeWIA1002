@@ -48,19 +48,14 @@ public class ProjectService {
     public Project findProjectWithId(Integer project_id){
         return projectRepository.findProjectById(project_id);
     }
-    
-    //@PreAuthorize("#project.user.username == authentication.name")
-    public void deleteProject(Project project){
-        /*project.getUser().getProject().remove(project);
-        project.removeUser();*/
-        projectRepository.delete(project);
-    }
 
-    public void updateProject(String username, Project oldProject, Project updatedProject) {
+    @PreAuthorize("#oldProject.user.username == authentication.name")
+    public void updateProject(Project oldProject, Project updatedProject) {
+        updatedProject.setProject_id(oldProject.getProject_id());
         //find all issues from old project
         List<Issue> allIssue = issueRepository.findByProject(oldProject);
         //find user related to old project
-        User user = userService.getUser(username);
+        User user = oldProject.getUser();
         //set updatedProject to user
         user.getProject().set(user.getProjectIndex(oldProject), updatedProject);
         //set updatedProject to all issues
@@ -72,5 +67,12 @@ public class ProjectService {
         //set issues for the updatedProject
         updatedProject.setIssue(allIssue);
         projectRepository.save(updatedProject);
+    }
+    
+    @PreAuthorize("#project.user.username == authentication.name")
+    public void deleteProject(Project project){
+        project.getUser().getProject().remove(project);
+        project.removeUser();
+        projectRepository.delete(project);
     }
 }

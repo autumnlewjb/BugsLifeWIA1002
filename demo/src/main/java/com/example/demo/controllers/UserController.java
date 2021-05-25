@@ -5,6 +5,9 @@ import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,52 +19,49 @@ import javax.transaction.Transactional;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/user/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> userList = userService.getUsers();
-        return new ResponseEntity<>(userList,HttpStatus.OK);
+        return ResponseEntity.ok(userList);
     }
-
-    //Duplicated endpoint
-    /*@PostMapping("/user/create")
-    public ResponseEntity<?> createUser(@RequestBody User user) throws SQLException {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        try {
-            userService.createUser(user);
-        } catch (SQLException ex){
-            throw new SQLException(ex.getMessage(),ex.getSQLState());
-        } catch (Exception ex){
-            throw new RuntimeException(ex.getMessage(), ex.getCause());
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }*/
 
     @GetMapping("/user")
-    public ResponseEntity<User> getUser(@RequestBody User user){
-        return new ResponseEntity<>(userService.getUser(user.getUsername()),HttpStatus.OK);
-    }
-    
-    @Transactional
-    @DeleteMapping("/{username}")
-    public  ResponseEntity<?> deleteUser(@PathVariable String username){
-        userService.deleteUser(username);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<User> getCurrentUser(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userService.getUser(authentication.getName()));
     }
 
-    @PutMapping("/{username}/update")
-    public ResponseEntity<?> updateUser(@RequestBody User updatedUser, @PathVariable String username){
-        User user = userService.getUser(username);
+    @GetMapping("/user/{username}")
+    public ResponseEntity<User> getOtherUser(@PathVariable String username){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getName().equals(username)){
+            return getCurrentUser();
+        }
+        return ResponseEntity.ok(userService.getUser(username));
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<?> updateUser(@RequestBody User updatedUser){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUser(authentication.getName());
         updatedUser.setUser_id(user.getUser_id());
         userService.updateUser(user, updatedUser);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @Transactional
+    @DeleteMapping("/user")
+    public ResponseEntity<?> deleteUser(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        userService.deleteUser(authentication.getName());
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }

@@ -57,7 +57,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/register").permitAll()
-                //.antMatchers("/api/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated().and()
                 .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
                 .clearAuthentication(true)

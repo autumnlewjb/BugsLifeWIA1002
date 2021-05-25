@@ -1,6 +1,5 @@
 package com.example.demo.exception;
 
-import javassist.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.search.util.common.SearchException;

@@ -27,14 +27,14 @@ public class React {
     private Integer count;
 
     @CreatedBy
-    private String ReactionBy;
+    private String reactionBy;
 
     public String getReactionBy() {
-        return ReactionBy;
+        return reactionBy;
     }
 
     public void setReactionBy(String reactionBy) {
-        ReactionBy = reactionBy;
+        this.reactionBy = reactionBy;
     }
 
     public Integer getReact_id() {

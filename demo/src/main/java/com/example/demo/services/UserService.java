@@ -10,13 +10,13 @@ import com.example.demo.repository.UserRepository;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
 public class UserService {
-    @Autowired
-    private RoleRepository roleRepository;
+
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 

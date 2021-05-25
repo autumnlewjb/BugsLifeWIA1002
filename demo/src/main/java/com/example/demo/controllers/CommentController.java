@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import java.util.List;
 
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Comment;
 import com.example.demo.models.Issue;
 import com.example.demo.services.CommentService;
@@ -25,38 +26,50 @@ public class CommentController {
         this.issueService = issueService;
     }
 
-    @GetMapping("/{issue_id}/comments")
+    @GetMapping("/{project_id}/{issue_id}")
     public ResponseEntity<List<Comment>> getCommentsByIssue(@PathVariable Integer issue_id) {
         Issue issue = issueService.findIssuesById(issue_id);
+        if (issue == null) {
+            throw new ResourceNotFoundException("issue", "id", issue_id);
+        }
         List<Comment> commentList=commentService.findCommentsByIssue(issue);
-        return new ResponseEntity<>(commentList, HttpStatus.OK);
+        return ResponseEntity.ok(commentList);
     }
 
-    @PostMapping("/{issue_id}/comment/create")
-    public ResponseEntity<Comment> createComments(@RequestBody Comment comment, @PathVariable Integer issue_id) {
+    @PostMapping("{project_id}/{issue_id}")
+    public ResponseEntity<Comment> createComments(@PathVariable Integer issue_id, @RequestBody Comment comment) {
         Issue issue = issueService.findIssuesById(issue_id);
+        if (issue == null) {
+            throw new ResourceNotFoundException("issue", "id", issue_id);
+        }
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
-    }
-    
-    @DeleteMapping("/issue/{issue_id}/delete/comment/{comment_id}")
-    public ResponseEntity<Comment> deleteComment(@PathVariable Integer issue_id, @PathVariable Integer comment_id){
-        Issue issue=issueService.findIssuesById(issue_id);
-        Comment comment=commentService.findCommentById(comment_id);
-        issue.getComment().remove(comment);
-        comment.setIssue(null);
-        commentService.deleteComment(comment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        return ResponseEntity.ok(comment);
     }
 
-    @PutMapping("{issue_id}/{comment_id}/updateComment")
+    @PutMapping("{project_id}/{issue_id}/{comment_id}")
     public ResponseEntity<?> updateComment( @PathVariable Integer issue_id, @PathVariable Integer comment_id, @RequestBody Comment updatedComment){
         Comment comment = commentService.findCommentById(comment_id);
-        updatedComment.setComment_id(comment.getComment_id());
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
         commentService.updateComment(issue_id, comment, updatedComment);
-        return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @DeleteMapping("{project_id}/{issue_id}/{comment_id}")
+    public ResponseEntity<?> deleteComment(@PathVariable Integer issue_id, @PathVariable Integer comment_id){
+        Issue issue=issueService.findIssuesById(issue_id);
+        if (issue == null) {
+            throw new ResourceNotFoundException("issue", "id", issue_id);
+        }
+        Comment comment=commentService.findCommentById(comment_id);
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
+        commentService.deleteComment(issue, comment);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }

@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -51,19 +54,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         try {
             if (jwtUtil.validateToken(jwt)) {
-                if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = myUserDetailsService.loadUserByUsername(jwtUtil.extractUsername(jwt));
+                String username = jwtUtil.extractUsername(jwt);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || !authentication.getName().equals(username)) {
+                    UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                             = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
                 if (httpRequest.getRequestURI().equals("/api/login")) {
-                    //Return authenticated user to homepage when they request for login page
-                    httpResponse.sendRedirect("/api/project-dashboard");
+                    httpResponse.setStatus(200);
                 }
             }
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException | AuthenticationException e) {
             logger.error(e.getMessage());
             httpRequest.setAttribute("exception", "Invalid JWT Token. Please login again.");
         }
