@@ -26,6 +26,7 @@ public class UserService {
         this.projectRepository = projectRepository;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getUsers() {
         return userRepository.findAll();
     }

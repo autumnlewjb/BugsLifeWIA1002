@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 @Indexed
 @Table(name = "comment")
-//@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class Comment {
     

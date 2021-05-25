@@ -25,7 +25,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> userList = userService.getUsers();

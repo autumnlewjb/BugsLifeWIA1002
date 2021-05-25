@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @Indexed
 @Table(name = "issue")
-//@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class Issue implements Serializable{
     @Id
