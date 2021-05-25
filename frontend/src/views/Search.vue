@@ -57,7 +57,8 @@ export default {
       totalPages: 0,
       isLoading: false,
       page: 1,
-      searchType: ""
+      searchType: "",
+      query: ""
     };
   },
   watch: {
@@ -101,7 +102,7 @@ export default {
           })
           .then((data) => {
             this.isLoading = false;
-            this.query = this.search;
+            this.query = query;
             this.page = 1;
             const { content, totalPages } = data;
             this.totalPages = totalPages;
