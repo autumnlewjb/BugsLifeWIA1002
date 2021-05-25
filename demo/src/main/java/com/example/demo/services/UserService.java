@@ -10,12 +10,12 @@ import com.example.demo.repository.UserRepository;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
 public class UserService {
-    @Autowired
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 
@@ -40,9 +40,9 @@ public class UserService {
     public List<Project> getProjectByUser(User user) {
         return projectRepository.findProjectsByUser(user); 
     }
-
+    
     public void deleteUser(String username){
-        userRepository.delete(getUser(username));
+        userRepository.deleteUserByUsername(username);
     }
 
     public User getUserById(Integer id) {

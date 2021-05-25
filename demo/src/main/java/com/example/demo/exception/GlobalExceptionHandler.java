@@ -1,8 +1,8 @@
 package com.example.demo.exception;
 
-import javassist.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.search.util.common.SearchException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,12 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.web.csrf.CsrfException;
-import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -44,22 +40,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>("Server refused to authorize the request", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(Exception ex) {
         logger.error(ex.getMessage());
-        return new ResponseEntity<>("Cannot find the requested element", HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleUncaughtException(Exception ex) {
-        logger.error(ex.getMessage());
-        return new ResponseEntity<>("Please contact the technician for assistant",HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({SQLException.class, DataAccessException.class})
     public ResponseEntity<Object> handleDatabaseException() {
         return new ResponseEntity<>("An error occurred while communicating with database server",
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SearchException.class)
+    public ResponseEntity<Object> handleSearchException(Exception ex) {
+        logger.error(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleUncaughtException(Exception ex) {
+        logger.error(ex.getMessage());
+        return new ResponseEntity<>("Please contact the technician for assistant",HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

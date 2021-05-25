@@ -3,9 +3,13 @@ package com.example.demo.models;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Indexed
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
@@ -22,23 +27,31 @@ public class Issue implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer issue_id;
 
+    @FullTextField (analyzer="NAME")
     private String title;
 
+    @GenericField(sortable = Sortable.YES)
     private int priority;
 
+    @KeywordField
     private String status;
 
+    @KeywordField
     @ElementCollection
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
+    @JsonIgnore
     private List<String> tag;
 
+    @FullTextField (analyzer="ISSUE")
     @Lob @Basic(fetch = FetchType.LAZY) @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
 
+    @CreatedBy
     private String createdBy;
 
     private String assignee;
 
+    @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date timestamp;
@@ -48,6 +61,7 @@ public class Issue implements Serializable{
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comment;

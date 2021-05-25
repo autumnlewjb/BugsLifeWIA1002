@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Indexed
 @Table(name = "comment")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
@@ -22,6 +27,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer comment_id;
 
+    @FullTextField
     @Column(name = "text", nullable = true)
     private String text;
 
@@ -33,6 +39,9 @@ public class Comment {
     @CreatedDate
     private Date timestamp;
 
+    @CreatedBy
+    private String user;
+
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
@@ -40,6 +49,14 @@ public class Comment {
 
     public int getReactionIndex(React react){
         return this.react.indexOf(react);
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public Issue getIssue() {

@@ -6,6 +6,7 @@ import com.example.demo.models.React;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.ReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,11 +38,16 @@ public class ReactService {
         return reactRepository.findReactionByID(react_id);
     }
 
-    public void deleteReaction(React react) {
+    @PreAuthorize("#react.reactionBy == authentication.name")
+    public void deleteReaction(Comment comment, React react) {
+        comment.getReact().remove(react);
+        react.setComment(null);
         reactRepository.delete(react);
     }
 
+    @PreAuthorize("#react.reactionBy == authentication.name")
     public void updateReaction(Integer comment_id, React react, React updatedReact) {
+        updatedReact.setReact_id(react.getReact_id());
         Comment comment = commentRepository.findCommentById(comment_id);
         comment.getReact().set(comment.getReactionIndex(react), updatedReact);
         updatedReact.setComment(comment);

@@ -10,6 +10,7 @@ import com.example.demo.repository.ProjectRepository;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,15 +53,13 @@ public class ProjectService {
         return projectRepository.findProjectById(project_id);
     }
 
-    public void deleteProject(Project project){
-        projectRepository.delete(project);
-    }
-
-    public void updateProject(String username, Project oldProject, Project updatedProject) {
+    @PreAuthorize("#oldProject.user.username == authentication.name")
+    public void updateProject(Project oldProject, Project updatedProject) {
+        updatedProject.setProject_id(oldProject.getProject_id());
         //find all issues from old project
         List<Issue> allIssue = issueRepository.findByProject(oldProject);
         //find user related to old project
-        User user = userService.getUser(username);
+        User user = oldProject.getUser();
         //set updatedProject to user
         user.getProject().set(user.getProjectIndex(oldProject), updatedProject);
         //set updatedProject to all issues
@@ -72,5 +71,12 @@ public class ProjectService {
         //set issues for the updatedProject
         updatedProject.setIssue(allIssue);
         projectRepository.save(updatedProject);
+    }
+    
+    @PreAuthorize("#project.user.username == authentication.name")
+    public void deleteProject(Project project){
+        project.getUser().getProject().remove(project);
+        project.removeUser();
+        projectRepository.delete(project);
     }
 }

@@ -13,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,18 +23,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "project")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
+@Indexed
 public class Project implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer project_id;
 
+    @FullTextField (analyzer="NAME")
     @Column(name = "name")
     private String name;
 
+    @FullTextField (analyzer="PROJECT")
     @Column(name = "description")
     private String description;
-    
+
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date date;

@@ -2,6 +2,7 @@ package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -24,6 +25,17 @@ public class React {
     private String reaction;
 
     private Integer count;
+
+    @CreatedBy
+    private String reactionBy;
+
+    public String getReactionBy() {
+        return reactionBy;
+    }
+
+    public void setReactionBy(String reactionBy) {
+        this.reactionBy = reactionBy;
+    }
 
     public Integer getReact_id() {
         return react_id;

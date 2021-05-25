@@ -8,8 +8,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 
+import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+//import org.jboss.logging.annotations.Field;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -27,7 +30,7 @@ public class User implements Serializable{
     @Column(nullable=false, updatable=true, unique = true)
     private String email;
 
-    @FullTextField
+    @FullTextField (analyzer="NAME")
     @Column(nullable = false, updatable = true, unique = true)
     private String username;
     
@@ -38,7 +41,7 @@ public class User implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
     
-    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @ManyToMany(fetch=FetchType.LAZY,cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "Users_Roles", joinColumns = {
             @JoinColumn(name = "User_id") }, inverseJoinColumns = {
             @JoinColumn(name = "Role_id") })

@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Comment;
 import com.example.demo.models.React;
 import com.example.demo.services.CommentService;
@@ -26,38 +27,49 @@ public class ReactController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/{comment_id}/reactions")
+    @GetMapping("/{project_id}/{issue_id}/{comment_id}")
     public ResponseEntity<List<React>> getReaction(@PathVariable Integer comment_id){
         Comment comment = commentService.findCommentById(comment_id);
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
         List<React> reactList = reactService.getReactionsByComment(comment);
-        return new ResponseEntity<>(reactList, HttpStatus.OK);
+        return ResponseEntity.ok(reactList);
     }
 
-    @PostMapping("/{comment_id}/reaction/create")
+    @PostMapping("/{project_id}/{issue_id}/{comment_id}")
     public ResponseEntity<React> createReaction(@PathVariable Integer comment_id, @RequestBody React react){
         Comment comment = commentService.findCommentById(comment_id);
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
         comment.getReact().add(react);
         react.setComment(comment);
         reactService.createReaction(react);
-        return new ResponseEntity<>(react, HttpStatus.OK);
+        return ResponseEntity.ok(react);
     }
 
-    @DeleteMapping("/{comment_id}/{react_id}/deleteReaction")
-    public  ResponseEntity<React> deleteReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id){
-        Comment comment = commentService.findCommentById(comment_id);
+    @PutMapping("/{project_id}/{issue_id}/{comment_id}/{react_id}")
+    public ResponseEntity<?> updateReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id, @RequestBody React updatedReact){
         React react = reactService.findReactionByID(react_id);
-        comment.getReact().remove(react);
-        react.setComment(null);
-        reactService.deleteReaction(react);
-        return new ResponseEntity<>(react, HttpStatus.OK);
-    }
-
-    @PutMapping("/{comment_id}/{react_id}/updateReaction")
-    public ResponseEntity<React> updateReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id, @RequestBody React updatedReact){
-        React react = reactService.findReactionByID(react_id);
-        updatedReact.setReact_id(react_id);
+        if (react == null) {
+            throw new ResourceNotFoundException("react", "id", react_id);
+        }
         reactService.updateReaction(comment_id, react, updatedReact);
-        return new ResponseEntity<>(updatedReact, HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
 
+    @DeleteMapping("/{project_id}/{issue_id}/{comment_id}/{react_id}")
+    public  ResponseEntity<?> deleteReaction(@PathVariable Integer comment_id, @PathVariable Integer react_id){
+        Comment comment = commentService.findCommentById(comment_id);
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
+        React react = reactService.findReactionByID(react_id);
+        if (react == null) {
+            throw new ResourceNotFoundException("react", "id", react_id);
+        }
+        reactService.deleteReaction(comment, react);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

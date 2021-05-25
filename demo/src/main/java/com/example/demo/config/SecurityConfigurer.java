@@ -1,5 +1,7 @@
-package com.example.demo.security;
+package com.example.demo.config;
 
+import com.example.demo.security.JwtAuthenticationEntryPoint;
+import com.example.demo.security.MyUserDetailsService;
 import com.example.demo.security.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,9 +61,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/register").permitAll()
-                //.antMatchers("/api/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated().and()
-                .logout().logoutUrl("/api/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                .logout().logoutUrl("/api/logout").logoutSuccessUrl("/api/login")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies(jwtCookieName);

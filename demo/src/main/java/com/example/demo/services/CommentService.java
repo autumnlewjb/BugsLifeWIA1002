@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ReactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,13 +42,17 @@ public class CommentService {
     public Comment findCommentById(Integer comment_id) {
         return commentRepository.findCommentById(comment_id);
     }
-    
-    public void deleteComment(Comment comment) {
+
+    @PreAuthorize("#comment.user == authentication.name")
+    public void deleteComment(Issue issue, Comment comment) {
+        issue.getComment().remove(comment);
+        comment.setIssue(null);
         commentRepository.delete(comment);
     }
 
-
+    @PreAuthorize("#comment.user == authentication.name")
     public void updateComment(Integer issue_id, Comment comment, Comment updatedComment) {
+        updatedComment.setComment_id(comment.getComment_id());
         List<React> allReactions = reactRepository.findReactionByComment(comment);
         Issue issue = issueRepository.findIssueById(issue_id);
         issue.getComment().set(issue.getCommentIndex(comment), updatedComment);
