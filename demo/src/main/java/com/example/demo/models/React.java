@@ -26,17 +26,6 @@ public class React {
 
     private Integer count;
 
-    @CreatedBy
-    private String reactionBy;
-
-    public String getReactionBy() {
-        return reactionBy;
-    }
-
-    public void setReactionBy(String reactionBy) {
-        this.reactionBy = reactionBy;
-    }
-
     public Integer getReact_id() {
         return react_id;
     }

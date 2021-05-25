@@ -3,14 +3,14 @@ package com.example.demo.controllers;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
-import com.example.demo.models.User;
 import com.example.demo.services.IssueService;
 import com.example.demo.services.ProjectService;
-import com.example.demo.services.UserService;
+import com.example.demo.services.ReportService;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import javax.transaction.Transactional;
-import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api")
@@ -33,11 +33,13 @@ public class IssueController {
 
     private final IssueService issueService;
     private final ProjectService projectService;
+    private final ReportService reportService;
 
     @Autowired
-    public IssueController(IssueService issueService, ProjectService projectService) {
+    public IssueController(IssueService issueService, ProjectService projectService, ReportService reportService) {
         this.issueService = issueService;
         this.projectService = projectService;
+        this.reportService = reportService;
     }
 
     // FIXME this view is giving TransientObjectException probably due to the cascade type
@@ -251,4 +253,8 @@ public class IssueController {
         return response;
     }
 
+    @GetMapping("/{project_id}/generateReport")
+    public String exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
+        return reportService.exportReport(project_id);
+    }
 }
