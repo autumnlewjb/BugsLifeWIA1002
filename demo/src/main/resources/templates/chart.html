@@ -37,10 +37,10 @@
             type: 'column'
         },
         title: {
-            text: 'Tags'
+            text: 'Tags Bar Chart'
         },
         subtitle: {
-            text: 'Details'
+            text: 'Tags counter in a glance'
         },
         xAxis: {
             categories: [[${tags}]],
@@ -81,10 +81,10 @@
         type: 'pie'
     },
     title: {
-        text: 'Tags'
+        text: 'Status Pie Chart'
     },
     tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        pointFormat: '{series.name}: <b>{point.y}</b>'
     },
     accessibility: {
         point: {
@@ -102,7 +102,7 @@
         }
     },
     series: [{
-        name: 'Tag',
+        name: 'Status counter',
         colorByPoint: true,
         data: [[${try}]]
     }]

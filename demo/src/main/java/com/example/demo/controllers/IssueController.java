@@ -281,17 +281,27 @@ public class IssueController {
         return reportService.exportReport(project_id);
     }
 
-    @GetMapping("/charts")
-    public String getAllEmployee(Model model){
-        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(10));
+    @GetMapping("/{project_id}/charts")
+    public String getAllEmployee(@PathVariable Integer project_id, Model model){
+        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
         List<String> tagList = new ArrayList<>();
-        List<Integer> counterList = new ArrayList<>();
+        List<Integer> tagCounterList = new ArrayList<>();
+        List<String> statusList = new ArrayList<>();
+        List<Integer> statusCounterList = new ArrayList<>();
         Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
+        Integer resolved = 0, open = 0, closed = 0, unresolved = 0, inProgress = 0;
+
         tagList.add("Frontend");
         tagList.add("Backend");
         tagList.add("First bug");
         tagList.add("Enhancement");
         tagList.add("Suggestion");
+
+        statusList.add("Resolved");
+        statusList.add("Unresolved");
+        statusList.add("Open");
+        statusList.add("Closed");
+        statusList.add("In progress");
 
         for (Issue issue : issues){
             int counter = issue.getTag().size();
@@ -314,20 +324,44 @@ public class IssueController {
             }
         }
 
-        counterList.add(frontend);
-        counterList.add(backend);
-        counterList.add(firstBug);
-        counterList.add(enhancement);
-        counterList.add(suggestion);
+        tagCounterList.add(frontend);
+        tagCounterList.add(backend);
+        tagCounterList.add(firstBug);
+        tagCounterList.add(enhancement);
+        tagCounterList.add(suggestion);
+
+        for (Issue issue : issues){
+            if (issue.getStatus().equalsIgnoreCase("Resolved")){
+                resolved++;
+            }
+            else if (issue.getStatus().equalsIgnoreCase("Unresolved")){
+                unresolved++;
+            }
+            else if (issue.getStatus().equalsIgnoreCase("Open")){
+                open++;
+            }
+            else if (issue.getStatus().equalsIgnoreCase("closed")){
+                closed++;
+            }
+            else{
+                inProgress++;
+            }
+        }
+
+        statusCounterList.add(resolved);
+        statusCounterList.add(unresolved);
+        statusCounterList.add(open);
+        statusCounterList.add(closed);
+        statusCounterList.add(inProgress);
 
         List<PieChart> pieCharts = new ArrayList<>();
-        for (int i = 0; i < counterList.size(); i++) {
-            PieChart pieChart = new PieChart(tagList.get(i), counterList.get(i));
+        for (int i = 0; i < statusList.size(); i++) {
+            PieChart pieChart = new PieChart(statusList.get(i), statusCounterList.get(i));
             pieCharts.add(pieChart);
         }
 
         model.addAttribute("tags", tagList);
-        model.addAttribute("counter", counterList);
+        model.addAttribute("counter", tagCounterList);
         model.addAttribute("try", pieCharts);
         return "chart";
 
