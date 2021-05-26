@@ -300,7 +300,7 @@ export default {
       console.log(val);
       if (this.searchType != 'issue') return;
       if (val.length > 0 || this.filterTags.length > 0) {
-        this.filterColor = "amber";
+        this.filterColor = "amber darken-4";
       } else if (this.filterActive) {
         this.filterColor = "primary";
       } else {
@@ -350,7 +350,7 @@ export default {
       console.log(val);
       if (this.searchType != 'issue') return;
       if (val.length > 0 || this.filterStatus.length > 0) {
-        this.filterColor = "amber";
+        this.filterColor = "amber darken-4";
       } else if (this.filterActive) {
         this.filterColor = "primary";
       } else {
@@ -437,7 +437,7 @@ export default {
     },
     getSortColor() {
       if (this.sortData.length > 0) {
-        return "amber";
+        return "amber darken-4";
       } else if (this.sortActive) {
         return "primary";
       }else {
@@ -446,7 +446,7 @@ export default {
     },
     getFilterColor() {
       if (this.filterTags.length > 0 || this.filterStatus.length > 0) {
-        return "amber";
+        return "amber darken-4";
       } else if (this.filterActive) {
         return "primary";
       } else {
@@ -466,7 +466,7 @@ export default {
       this.filterActive = false;
       this.sortActive = !this.sortActive;
       if (this.sortData.length > 0) {
-        this.sortColor = "amber";
+        this.sortColor = "amber darken-4";
       } else if (this.sortActive) {
         this.sortColor = "primary";
       }else {
@@ -477,7 +477,7 @@ export default {
       this.sortActive = false;
       this.filterActive = !this.filterActive;
       if (this.filterTags.length > 0 || this.filterStatus.length > 0) {
-        this.filterColor = "amber";
+        this.filterColor = "amber darken-4";
       } else if (this.filterActive) {
         this.filterColor = "primary";
       } else {
