@@ -21,7 +21,7 @@
           ></v-textarea>
         </v-row>
         <v-row>
-          <v-text-field label="Tag (use comma to separate multiple tags)" v-model="tag"></v-text-field>
+          <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips multiple></v-combobox>
         </v-row>
         <br />
         <p class="body-1">Priority: <br /></p>
@@ -55,17 +55,18 @@ export default {
     return {
       title: "",
       priority: 0,
-      tag: "",
+      tag: [],
       descriptionText: "",
       assignee: "",
-      action: 'add'
+      action: 'add',
+      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement']
     };
   },
   created() {
     if (this.issue) {
       this.title = this.issue.title;
       this.priority = this.issue.priority;
-      this.tag = this.issue.tag?.join();
+      this.tag = this.issue.tag;
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
       this.action = 'edit';
@@ -75,7 +76,7 @@ export default {
     clearForm() {
       this.title = "";
       this.priority = 0;
-      this.tag = "";
+      this.tag = [];
       this.descriptionText = "";
       this.assignee = ""
     },
@@ -91,7 +92,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag?.split(",").map((val) => val.trim()),
+            tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()
@@ -118,7 +119,7 @@ export default {
             descriptionText: this.descriptionText,
             priority: this.priority,
             status: "In progress",
-            tag: this.tag?.split(",").map((val) => val.trim()),
+            tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
             timestamp: Date.now()

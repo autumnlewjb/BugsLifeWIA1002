@@ -8,7 +8,7 @@
                 <v-select solo :items="filterSubjects" label="Filter by" v-model="filterSubject"></v-select>
               </v-col>
               <v-col sm="8" md="8">
-                <v-text-field solo label="Value" v-model="filter"></v-text-field>
+                <v-combobox solo label="Value" v-model="filter" :items="getOptions"></v-combobox>
               </v-col>
             </v-row>
             <v-row>
@@ -45,8 +45,12 @@ export default {
   created() {
     this.filterTagsArray = this.tags;
     this.filterStatusArray = this.status;
-    this.filterTags = this.tags.join(",");
-    this.filterStatus = this.status.join(",");
+    if (this.filterTagsArray.length > 0) {
+      this.filter = this.filterTagsArray[0];
+      this.filterSubject = "tag";
+    } else if (this.filterStatusArray.length > 0) {
+      this.filterSubject = "status";
+    }
   },
   methods: {
     clearAll() {
@@ -66,6 +70,19 @@ export default {
         this.filterTagsArray.push(this.filter);
       } else {
         this.filterStatusArray.push(this.filter);
+      }
+    }
+  }, 
+  computed: {
+    getOptions() {
+      if (!this.filterSubject) {
+        return [];
+      }
+
+      if (this.filterSubject == 'tag') {
+        return ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'];
+      } else {
+        return ['Open', 'Resolved', 'Closed', 'In progress', 'Reopened'];
       }
     }
   }

@@ -37,7 +37,24 @@
       </v-navigation-drawer>
     </nav>
     <v-main>
-      <v-container :class="{'pa-16': $vuetify.breakpoint.mdAndUp, 'pa-5': $vuetify.breakpoint.smAndDown}">
+      <v-container v-if="$route.name != 'Search'">
+        <v-layout>
+          <v-flex sm0 md8></v-flex>
+          <v-flex>
+            <v-combobox
+              placeholder="Search for projects, issues and more"
+              filled
+              rounded
+              prepend-icon="mdi-magnify"
+              append-icon=""
+              @click="$router.push({name: 'Search'})"
+              dense
+            ></v-combobox>
+          </v-flex>
+        </v-layout>
+        
+      </v-container>
+      <v-container :class="{'pa-10': $vuetify.breakpoint.mdAndUp, 'pa-3': $vuetify.breakpoint.smAndDown}">
         <router-view
         ></router-view>
       </v-container>

@@ -4,12 +4,17 @@
       <v-layout row justify-space-around>
         <v-flex xs12 md8>
           <h1 class="subheading">Project Dashboard
-            <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor">
-              <v-icon>mdi-sort</v-icon>
-            </v-btn>
-            <v-btn plain icon @click="handleClick('filter')" disabled>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor" v-bind="attrs" v-on="on">
+                  <v-icon>mdi-sort</v-icon>
+                </v-btn>
+              </template>
+              <span>Sort</span>
+            </v-tooltip>
+            <!-- <v-btn plain icon @click="handleClick('filter')" disabled>
               <v-icon>mdi-filter</v-icon>
-            </v-btn>
+            </v-btn> -->
           </h1>
         </v-flex>
         <v-flex xs12 md2>

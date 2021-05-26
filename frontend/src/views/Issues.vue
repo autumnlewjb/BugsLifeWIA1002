@@ -5,12 +5,22 @@
         <v-layout row>
           <v-flex xs12 md8>
             <h1 class="subheading">Issue Dashboard
-              <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor">
-                <v-icon>mdi-sort</v-icon>
-              </v-btn>
-              <v-btn plain icon @click="handleClick('filter')" :color="getFilterButtonColor">
-                <v-icon>mdi-filter</v-icon>
-              </v-btn>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor" v-bind="attrs" v-on="on">
+                    <v-icon>mdi-sort</v-icon>
+                  </v-btn>
+                </template>
+                <span>Sort</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn plain icon @click="handleClick('filter')" :color="getFilterButtonColor" v-on="on" v-bind="attrs">
+                    <v-icon>mdi-filter</v-icon>
+                  </v-btn>
+                </template>
+                <span>Filter</span>
+              </v-tooltip>
             </h1>
           </v-flex>
           <v-flex xs12 md2 class="d-flex justify-end">
@@ -45,7 +55,12 @@
               </v-card-title>
               <v-card-text>
                 <v-chip-group v-if="issue.tag">
-                  <v-chip v-for="tag in issue.tag" :key="tag" class="mx-1">{{ tag }}</v-chip>
+                  <v-tooltip bottom v-for="tag in issue.tag" :key="tag">
+                    <template v-slot:activator="{on, attrs}">
+                      <v-chip class="mx-1" @click="handleChipClick(tag)" v-on="on" v-bind="attrs">{{ tag }}</v-chip>
+                    </template>
+                    <span>Filter by "{{tag}}"</span>
+                  </v-tooltip>
                 </v-chip-group>
               </v-card-text>
               <v-card-text>
@@ -212,6 +227,10 @@ export default {
       }
 
       return url;
+    },
+    handleChipClick(tag) {
+      this.tags = [];
+      this.tags.push(tag);
     }
   },
   computed: {
