@@ -25,7 +25,7 @@ public class ReportService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public String exportReport(Integer project_id) throws FileNotFoundException, JRException {
+    public void exportReport(Integer project_id) throws FileNotFoundException, JRException {
         Project project = projectRepository.findProjectById(project_id);
         List<Issue> issues = issueRepository.findByProject(project);
         File file = ResourceUtils.getFile("classpath:report.jrxml");
@@ -35,6 +35,5 @@ public class ReportService {
         parameters.put("projectName", project.getName());
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, datasource);
         JasperExportManager.exportReportToHtmlFile(jasperPrint,"report.html");
-        return "Report generated";
     }
 }
