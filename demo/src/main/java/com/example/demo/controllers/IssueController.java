@@ -279,4 +279,49 @@ public class IssueController {
     public String exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
         return reportService.exportReport(project_id);
     }
+
+    @GetMapping("/{project_id}/barChart")
+    public String getAllEmployee(@PathVariable Integer project_id, Model model){
+        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
+        List<String> tagList = new ArrayList<>();
+        List<Integer> counterList = new ArrayList<>();
+        Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
+        tagList.add("Frontend");
+        tagList.add("Backend");
+        tagList.add("First bug");
+        tagList.add("Enhancement");
+        tagList.add("Suggestion");
+
+        for (Issue issue : issues){
+            int counter = issue.getTag().size();
+            for (int i = 0; i < counter; i++) {
+                if (issue.getTag().get(i).equalsIgnoreCase("Frontend")){
+                    frontend++;
+                }
+                if (issue.getTag().get(i).equalsIgnoreCase("Backend")){
+                    backend++;
+                }
+                if (issue.getTag().get(i).equalsIgnoreCase("First Bug")){
+                    firstBug++;
+                }
+                if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")){
+                    enhancement++;
+                }
+                if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")){
+                    suggestion++;
+                }
+            }
+        }
+
+        counterList.add(frontend);
+        counterList.add(backend);
+        counterList.add(firstBug);
+        counterList.add(enhancement);
+        counterList.add(suggestion);
+
+        model.addAttribute("tags", tagList);
+        model.addAttribute("counter", counterList);
+        return "barChart";
+
+    }
 }
