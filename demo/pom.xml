@@ -131,7 +131,13 @@
             <version>2.3.0</version>
         </dependency>
                 
-	</dependencies>
+</dependencies>
+	<repositories>
+<repository>
+        <id> jaspersoft-repo</id>
+        <url>https://jaspersoft.jfrog.io/jaspersoft/jaspersoft-repo</url>
+</repository>
+</repositories>
 
 	<build>
 		<plugins>
