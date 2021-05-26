@@ -22,13 +22,13 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Project findProjectById(Integer id);
 
     @Query(
-            value = "select p from Project p join p.issue ad group by p Order By p.issue.size asc ",
+            value = "select p from Project p join p.issue ad group by p Order By size(p.issue) asc ",
             countQuery = "select count(p) from Project p"
     )
     List<Project> findAllWithCountAsc();
 
     @Query(
-            value = "select p from Project p join p.issue ad group by p Order By p.issue.size desc ",
+            value = "select p from Project p join p.issue ad group by p Order By size(p.issue) desc ",
             countQuery = "select count(p) from Project p"
     )
     List<Project> findAllWithCountDesc();
