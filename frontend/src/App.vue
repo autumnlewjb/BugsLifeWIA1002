@@ -37,7 +37,7 @@
       </v-navigation-drawer>
     </nav>
     <v-main>
-      <v-container v-if="$route.name != 'Search'">
+      <v-container v-if="$route.name != 'Search' && userAuthenticated">
         <v-layout>
           <v-flex sm0 md8></v-flex>
           <v-flex>

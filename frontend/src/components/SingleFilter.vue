@@ -82,7 +82,7 @@ export default {
       if (this.filterSubject == 'tag') {
         return ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'];
       } else {
-        return ['Open', 'Resolved', 'Closed', 'In progress', 'Reopened'];
+        return ['Open', 'Resolved', 'Closed', 'In Progress', 'Reopened'];
       }
     }
   }
