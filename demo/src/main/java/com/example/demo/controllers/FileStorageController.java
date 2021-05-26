@@ -43,7 +43,7 @@ public class FileStorageController {
         try {
             File fileFromDatabase = fileStorageService.storeFile(file);
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
+                    .path("/api/download/")
                     .path(fileFromDatabase.getId().toString())
                     .toUriString();
             return new FileResponse(fileFromDatabase.getFileName(),fileDownloadUri,file.getContentType(), file.getSize());
