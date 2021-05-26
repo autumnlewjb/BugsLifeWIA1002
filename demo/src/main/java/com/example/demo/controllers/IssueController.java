@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
 
-@RestController
+@Controller
 @RequestMapping("/api")
 public class IssueController {
 
@@ -280,9 +281,9 @@ public class IssueController {
         return reportService.exportReport(project_id);
     }
 
-    @GetMapping("/{project_id}/barChart")
-    public String getAllEmployee(@PathVariable Integer project_id, Model model){
-        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
+    @GetMapping("/charts")
+    public String getAllEmployee(Model model){
+        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(10));
         List<String> tagList = new ArrayList<>();
         List<Integer> counterList = new ArrayList<>();
         Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
@@ -319,9 +320,42 @@ public class IssueController {
         counterList.add(enhancement);
         counterList.add(suggestion);
 
+        List<PieChart> pieCharts = new ArrayList<>();
+        for (int i = 0; i < counterList.size(); i++) {
+            PieChart pieChart = new PieChart(tagList.get(i), counterList.get(i));
+            pieCharts.add(pieChart);
+        }
+
         model.addAttribute("tags", tagList);
         model.addAttribute("counter", counterList);
-        return "barChart";
+        model.addAttribute("try", pieCharts);
+        return "chart";
 
+    }
+
+    static class PieChart{
+        String name;
+        Integer y;
+
+        public PieChart(String name, Integer value) {
+            this.name = name;
+            this.y = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Integer getY() {
+            return y;
+        }
+
+        public void setY(Integer y) {
+            this.y = y;
+        }
     }
 }
