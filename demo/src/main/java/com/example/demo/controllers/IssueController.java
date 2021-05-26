@@ -57,12 +57,14 @@ public class IssueController {
 
     // FIXME this view is giving TransientObjectException probably due to the cascade type
     @GetMapping("/{project_id}")
-    public ResponseEntity<List<Issue>> getAllIssues(@PathVariable Integer project_id) {
+    public ResponseEntity<List<Issue>> getAllIssues(@PathVariable Integer project_id,
+                                                    @RequestParam(defaultValue = "timestamp,desc") String sort,
+                                                    @RequestParam(defaultValue = "none") String filter) {
         Project project = projectService.findProjectWithId(project_id);
         if (project == null) {
             throw new ResourceNotFoundException("project", "id", project_id);
         }
-        List<Issue> issueList = issueService.findIssuesByProject(project);
+        List<Issue> issueList = issueService.findIssuesWithSortAndFilter(sort, filter, project);
         return ResponseEntity.ok(issueList);
     }
 

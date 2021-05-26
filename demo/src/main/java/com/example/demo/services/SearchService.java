@@ -193,11 +193,11 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
     }
 
     private boolean getSort(String[] arr) {
-        return !arr[0].equals("relevance") || !arr[1].equals("desc");
+        return !arr[0].equalsIgnoreCase("relevance") || !arr[1].equalsIgnoreCase("desc");
     }
 
     private boolean getFilter(String[] filter) {
-        return !filter[0].equals("none");
+        return !filter[0].equalsIgnoreCase("none");
     }
 
 }
