@@ -27,7 +27,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 
 @Controller
@@ -283,8 +285,8 @@ public class IssueController {
     }
 
     @GetMapping("/{project_id}/generateReport")
-    public String exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
-        return reportService.exportReport(project_id);
+    public void exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
+        reportService.exportReport(project_id);
     }
 
     @GetMapping("/{project_id}/charts")
@@ -295,7 +297,7 @@ public class IssueController {
         List<String> statusList = new ArrayList<>();
         List<Integer> statusCounterList = new ArrayList<>();
         Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
-        Integer resolved = 0, open = 0, closed = 0, unresolved = 0, inProgress = 0;
+        Integer resolved = 0, open = 0, closed = 0, reopened = 0, inProgress = 0;
 
         tagList.add("Frontend");
         tagList.add("Backend");
@@ -304,7 +306,7 @@ public class IssueController {
         tagList.add("Suggestion");
 
         statusList.add("Resolved");
-        statusList.add("Unresolved");
+        statusList.add("Reopened");
         statusList.add("Open");
         statusList.add("Closed");
         statusList.add("In progress");
@@ -340,8 +342,8 @@ public class IssueController {
             if (issue.getStatus().equalsIgnoreCase("Resolved")){
                 resolved++;
             }
-            else if (issue.getStatus().equalsIgnoreCase("Unresolved")){
-                unresolved++;
+            else if (issue.getStatus().equalsIgnoreCase("Reopened")){
+                reopened++;
             }
             else if (issue.getStatus().equalsIgnoreCase("Open")){
                 open++;
@@ -355,7 +357,7 @@ public class IssueController {
         }
 
         statusCounterList.add(resolved);
-        statusCounterList.add(unresolved);
+        statusCounterList.add(reopened);
         statusCounterList.add(open);
         statusCounterList.add(closed);
         statusCounterList.add(inProgress);
@@ -366,9 +368,18 @@ public class IssueController {
             pieCharts.add(pieChart);
         }
 
+        List<String> headers = Arrays.asList("ID", "Title", "Priority", "Tag", "Created by", "Assignee");
+        List<Map<String, Object>> rows = new ArrayList<>();
+        int counter = 1;
+        for (Issue issue : issues){
+            rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
+        }
+
         model.addAttribute("tags", tagList);
         model.addAttribute("counter", tagCounterList);
         model.addAttribute("try", pieCharts);
+        model.addAttribute("headers", headers);
+        model.addAttribute("rows", rows);
         return "chart";
 
     }
