@@ -19,6 +19,7 @@
             Date created:
             {{ getProject.date == null ? "Not specified" : getProject.date }}
           </p>
+          <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary">View Charts</v-btn>
         </v-container>
       </v-flex>
     </v-layout>
