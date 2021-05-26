@@ -3,7 +3,14 @@
     <v-container style="min-height: 80vh">
       <v-layout row justify-space-around>
         <v-flex xs12 md8>
-          <h1 class="subheading">Project Dashboard</h1>
+          <h1 class="subheading">Project Dashboard
+            <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor">
+              <v-icon>mdi-sort</v-icon>
+            </v-btn>
+            <v-btn plain icon @click="handleClick('filter')" disabled>
+              <v-icon>mdi-filter</v-icon>
+            </v-btn>
+          </h1>
         </v-flex>
         <v-flex xs12 md2>
           <v-btn
@@ -14,6 +21,14 @@
             @click="dialog = true"
             >+ Add Project</v-btn
           >
+        </v-flex>
+      </v-layout>
+      <v-layout row justify-content-center>
+        <v-flex xs12 md12 v-if="showFilterForm">
+          <SingleFilter/>
+        </v-flex>
+        <v-flex xs12 md12 v-if="showSortForm">
+          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData"/>
         </v-flex>
       </v-layout>
       <v-layout row>
@@ -58,6 +73,8 @@
 
 <script>
 import ProjectForm from "../components/ProjectForm";
+import SingleFilter from "../components/SingleFilter";
+import SingleSort from "../components/SingleSort";
 
 export default {
   data() {
@@ -65,21 +82,45 @@ export default {
       hidden: false,
       dialog: false,
       projects: [],
+      showFilterForm: false,
+      showSortForm: false,
+      filterActive: false,
+      sortActive: false,
+      sortData: [],
+      sortSubjects: ['date'],
+      tags: [],
+      status: []
     };
   },
   created() {
-    this.fetchProjects();
+    this.fetchProjects(`/api/`);
   },
   components: {
     ProjectForm,
+    SingleFilter,
+    SingleSort
+  },
+  watch: {
+    sortData(val) {
+      const focus = val[0];
+      var url;
+      if (focus) {
+        url = `/api/?sort=${focus.subject},${focus.order}`;
+        this.sortActive = true;
+      } else {
+        url = `/api/`;
+        this.sortActive = false;
+      }
+      this.fetchProjects(url);
+    }
   },
   methods: {
     toggleDialog() {
-      this.fetchProjects();
+      this.fetchProjects(`/api/`);
       this.dialog = false;
     },
-    fetchProjects() {
-      fetch(`/api/`)
+    fetchProjects(url) {
+      fetch(url)
         .then((res) => {
           if (res.status == 200) {
             return res.json();
@@ -92,10 +133,31 @@ export default {
         })
         .catch((e) => console.log(e));
     },
+    handleClick(item) {
+      if (item == 'sort') {
+        this.showSortForm = !this.showSortForm;
+        this.showFilterForm = false;
+      } else {
+        this.showFilterForm = !this.showFilterForm;
+        this.showSortForm = false;
+      }
+    }
   },
   computed: {
     getProjects() {
       return this.projects;
+    },
+    getSortButtonColor() {
+      if (this.sortActive) {
+        return "amber darken-4";
+      } else if (this.showSortForm) {
+        return "primary";
+      } else {
+        return "undefined";
+      }
+    },
+    getFilterButtonColor() {
+      return this.showFilterForm && this.filterActive;
     }
   }
 };

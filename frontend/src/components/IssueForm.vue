@@ -31,6 +31,7 @@
             full-icon="mdi-exclamation"
             empty-icon="mdi-exclamation"
             color="red"
+            length="10"
           >
           </v-rating>
         </v-row>

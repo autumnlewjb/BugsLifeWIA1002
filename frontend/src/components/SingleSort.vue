@@ -79,7 +79,10 @@ export default {
   methods: {
     addNewSort() {
       if (this.sortSubject == '' || this.sortOrder == '') return;
-      this.clearAll();
+      const len = this.sortData.length;
+      for (var i=0; i<len; i++) {
+        this.sortData.pop();
+      }
       this.sortData.push({
         subject: this.sortSubject,
         order: this.sortOrder
@@ -93,8 +96,8 @@ export default {
       for (var i=0; i<len; i++) {
         this.sortData.pop();
       }
-      // this.sortSubject = '';
-      // this.sortOrder = '';
+      this.sortSubject = '';
+      this.sortOrder = '';
       // this.$emit('acceptSortQuery', this.sortData)
     },
     applySort() {
