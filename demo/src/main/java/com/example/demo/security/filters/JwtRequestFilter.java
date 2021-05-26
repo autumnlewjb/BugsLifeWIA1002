@@ -53,21 +53,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
         try {
-            if (jwtUtil.validateToken(jwt)) {
-                String username = jwtUtil.extractUsername(jwt);
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication == null || !authentication.getName().equals(username)) {
-                    UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
-                if (httpRequest.getRequestURI().equals("/api/login")) {
-                    httpResponse.setStatus(200);
+            if(jwt!=null) {
+                if (jwtUtil.validateToken(jwt)) {
+                    String username = jwtUtil.extractUsername(jwt);
+                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                    if (authentication == null  || !authentication.getName().equals(username)) {
+                        UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                                = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
+                    if (httpRequest.getRequestURI().equals("/api/login")) {
+                        httpResponse.setStatus(200);
+                    }
                 }
             }
-        } catch (JwtException | IllegalArgumentException | AuthenticationException e) {
+        } catch (JwtException | AuthenticationException e) {
             logger.error(e.getMessage());
             httpRequest.setAttribute("exception", "Invalid JWT Token. Please login again.");
         }

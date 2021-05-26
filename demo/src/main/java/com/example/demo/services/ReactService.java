@@ -30,7 +30,9 @@ public class ReactService {
         return reactRepository.findReactionByComment(comment);
     }
 
-    public React createReaction(React react) {
+    public React createReaction(Comment comment, React react) {
+        comment.getReact().add(react);
+        react.setComment(comment);
         return reactRepository.save(react);
     }
 
@@ -38,14 +40,10 @@ public class ReactService {
         return reactRepository.findReactionByID(react_id);
     }
 
-    @PreAuthorize("#react.reactionBy == authentication.name")
-    public void deleteReaction(Comment comment, React react) {
-        comment.getReact().remove(react);
-        react.setComment(null);
+    public void deleteReaction(React react) {
         reactRepository.delete(react);
     }
 
-    @PreAuthorize("#react.reactionBy == authentication.name")
     public void updateReaction(Integer comment_id, React react, React updatedReact) {
         updatedReact.setReact_id(react.getReact_id());
         Comment comment = commentRepository.findCommentById(comment_id);

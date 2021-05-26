@@ -35,9 +35,10 @@ public class Project implements Serializable {
     private String name;
 
     @FullTextField (analyzer="PROJECT")
-    @Column(name = "description")
+    @Column(columnDefinition = "text", name = "description")
     private String description;
 
+    @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date date;
