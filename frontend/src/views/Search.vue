@@ -36,12 +36,20 @@
       </v-col>
     </v-row>
     <SortForm
-      v-if="sortActive"
+      v-if="sortActive && multipleFilterAndSort"
       :sortSubjects="availableSort"
       :alreadyInSort="sortData"
       @acceptSortQuery="acceptSortQuery"
     />
-    <FilterForm v-if="filterActive" :filterSubjects="availableFilter" :tags="filterTags" :status="filterStatus"/>
+    <SingleSort
+      v-if="sortActive && !multipleFilterAndSort"
+      :sortSubjects="availableSort"
+      :alreadyInSort="sortData"
+      @acceptSortQuery="acceptSortQuery"/>
+    <FilterForm v-if="filterActive && multipleFilterAndSort" :filterSubjects="availableFilter" :tags="filterTags" :status="filterStatus"/>
+    <SingleFilter
+      v-if="filterActive && !multipleFilterAndSort" :filterSubjects="availableFilter" :tags="filterTags" :status="filterStatus"
+    />
     <v-container v-if="items.length > 0" class="min-height: 500px">
       <v-row class="d-flex justify-center">
         <v-col cols="12" sm="12" md="10">
@@ -88,11 +96,15 @@
 <script>
 import SortForm from "../components/SortForm";
 import FilterForm from "../components/FilterForm"
+import SingleSort from "../components/SingleSort"
+import SingleFilter from '../components/SingleFilter';
 export default {
   setup() {},
   components: {
     SortForm,
-    FilterForm
+    FilterForm,
+    SingleSort,
+    SingleFilter
   },
   data() {
     return {
@@ -111,7 +123,8 @@ export default {
       availableFilter: [],
       filterTags: [],
       filterStatus: [],
-      filterColor: ''
+      filterColor: '',
+      multipleFilterAndSort: false,
     };
   },
   watch: {

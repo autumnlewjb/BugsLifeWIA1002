@@ -2,7 +2,7 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-container>
+          <v-container v-if="allowMultiple">
             <v-row v-for="(item, index) in sortData" :key="index" justify="center">
               <v-col sm="6" md="6">
                 <v-select :items="sortSubjects" solo label="sort by" v-model="item.subject" disabled></v-select>
@@ -26,7 +26,7 @@
                   <v-radio label="Descending" value="desc"></v-radio>
                 </v-radio-group>
               </v-col>
-              <v-col sm="2" md="2">
+              <v-col sm="2" md="2" v-if="allowMultiple">
                 <v-btn text icon @click="addNewSort">
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
@@ -56,16 +56,21 @@ export default {
       sortData: [],
       sortSubject: "",
       sortOrder: "",
-      availableSortSubjects: []
+      availableSortSubjects: [],
+      allowMultiple: false
     }
   },
   created() {
     this.sortData = this.alreadyInSort;
     this.availableSortSubjects = this.sortSubjects;
+    if (this.sortData.length > 0) {
+        this.sortSubject = this.sortData[0].subject;
+        this.sortOrder = this.sortData[0].order;
+    }
   },
   watch: {
     sortData(val) {
-      this.availableSortSubjects = this.sortSubjects.filter((item) => val.filter((data) => data.subject == item).length == 0);
+      // this.availableSortSubjects = this.sortSubjects.filter((item) => val.filter((data) => data.subject == item).length == 0);
       console.log(this.availableSortSubjects);
       console.log("-")
       console.log(val);
@@ -74,12 +79,13 @@ export default {
   methods: {
     addNewSort() {
       if (this.sortSubject == '' || this.sortOrder == '') return;
+      this.clearAll();
       this.sortData.push({
         subject: this.sortSubject,
         order: this.sortOrder
       });
-      this.sortSubject = "";
-      this.sortOrder = "";
+      // this.sortSubject = "";
+      // this.sortOrder = "";
       console.log(this.sortData);
     },
     clearAll() {
@@ -87,8 +93,8 @@ export default {
       for (var i=0; i<len; i++) {
         this.sortData.pop();
       }
-      this.sortSubject = '';
-      this.sortOrder = '';
+      // this.sortSubject = '';
+      // this.sortOrder = '';
       // this.$emit('acceptSortQuery', this.sortData)
     },
     applySort() {
