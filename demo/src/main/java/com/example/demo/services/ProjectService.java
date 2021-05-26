@@ -35,6 +35,13 @@ public class ProjectService {
     public List<Project> findAllProjectsWithSort(String sort) {
         String[] sortArr = sort.split(",");
         Sort order;
+        if (sortArr[0].equalsIgnoreCase("issueNum")) {
+            if (sortArr[1].equalsIgnoreCase("asc")) {
+                return projectRepository.findAllWithCountAsc();
+            } else if (sortArr[1].equalsIgnoreCase("desc")) {
+                return projectRepository.findAllWithCountDesc();
+            }
+        }
         if (sortArr[1].equalsIgnoreCase("asc")) {
             order = Sort.by(Sort.Direction.ASC, sortArr[0]);
         } else {

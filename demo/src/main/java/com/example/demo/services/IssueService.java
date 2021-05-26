@@ -36,6 +36,13 @@ public class IssueService {
     public List<Issue> findIssuesWithSortAndFilter(String sort, String filter, Project project) {
         String[] sortArr = sort.split(",");
         Sort order;
+        if (sortArr[0].equalsIgnoreCase("commentNum")) {
+            if (sortArr[1].equalsIgnoreCase("asc")) {
+                return issueRepository.findAllWithCountAsc();
+            } else if (sortArr[1].equalsIgnoreCase("desc")) {
+                return issueRepository.findAllWithCountDesc();
+            }
+        }
         if (sortArr[1].equalsIgnoreCase("asc")) {
             order = Sort.by(Sort.Direction.ASC, sortArr[0]);
         } else {
