@@ -23,7 +23,9 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
     List<Issue> findAllByProjectAndStatus(Project project, String status, Sort sort);
 
-    @Query(
+    List<Issue> findAllByProjectAndStatusAndTag(Project project, String status,String tag, Sort sort);
+
+    /*@Query(
             value = "select i from Issue i join i.comment ad group by i Order By size(i.comment) asc ",
             countQuery = "select count(i) from Issue i"
     )
@@ -33,5 +35,5 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
             value = "select i from Issue i join i.comment ad group by i Order By size(i.comment) desc ",
             countQuery = "select count(i) from Issue i"
     )
-    List<Issue> findAllWithCountDesc();
+    List<Issue> findAllWithCountDesc();*/
 }

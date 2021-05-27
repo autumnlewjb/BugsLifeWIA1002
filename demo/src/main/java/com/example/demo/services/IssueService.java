@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,28 +34,42 @@ public class IssueService {
         return issueRepository.findByProject(project);
     }
 
-    public List<Issue> findIssuesWithSortAndFilter(String sort, String filter, Project project) {
-        String[] sortArr = sort.split(",");
-        Sort order;
-        if (sortArr[0].equalsIgnoreCase("commentNum")) {
-            if (sortArr[1].equalsIgnoreCase("asc")) {
-                return issueRepository.findAllWithCountAsc();
-            } else if (sortArr[1].equalsIgnoreCase("desc")) {
-                return issueRepository.findAllWithCountDesc();
+    public List<Issue> findIssuesWithSortAndFilter(String[] sortArr, String[] filterArr, Project project) {
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sortArr[0].contains(",")) {
+            for (String element : sortArr) {
+                String[] sort = element.split(",");
+                orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
+            }
+        } else {
+            orders.add(new Sort.Order(getSortDirection(sortArr[1]), sortArr[0]));
+        }
+        if (filterArr[0].contains(",")) {
+            String[] statusFilter;
+            String[] tagFilter;
+            if (filterArr[0].contains("status")) {
+                statusFilter = filterArr[0].split(",");
+                tagFilter = filterArr[1].split(",");
+            } else {
+                statusFilter = filterArr[1].split(",");
+                tagFilter = filterArr[0].split(",");
+            }
+            return issueRepository.findAllByProjectAndStatusAndTag(project, statusFilter[1], tagFilter[1], Sort.by(orders));
+        } else {
+            if (filterArr[0].equalsIgnoreCase("status")) {
+                return issueRepository.findAllByProjectAndStatus(project, filterArr[1], Sort.by(orders));
+            } else if (filterArr[0].equalsIgnoreCase("tag")) {
+                return issueRepository.findAllByProjectAndTag(project, filterArr[1], Sort.by(orders));
             }
         }
-        if (sortArr[1].equalsIgnoreCase("asc")) {
-            order = Sort.by(Sort.Direction.ASC, sortArr[0]);
-        } else {
-            order = Sort.by(Sort.Direction.DESC, sortArr[0]);
+        return issueRepository.findByProject(project, Sort.by(orders));
+    }
+
+    private Sort.Direction getSortDirection(String direction) {
+        if (direction.equalsIgnoreCase("asc")) {
+            return Sort.Direction.ASC;
         }
-        String[] filterArr = filter.split(",");
-        if (filterArr[0].equalsIgnoreCase("status")) {
-            return issueRepository.findAllByProjectAndStatus(project, filterArr[1], order);
-        } else if (filterArr[0].equalsIgnoreCase("tag")) {
-            return issueRepository.findAllByProjectAndTag(project, filterArr[1], order);
-        }
-        return issueRepository.findByProject(project, order);
+        return Sort.Direction.DESC;
     }
 
     public Issue createIssue(Issue issue) {

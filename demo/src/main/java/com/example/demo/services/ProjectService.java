@@ -5,12 +5,15 @@ import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
+import net.bytebuddy.TypeCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,22 +35,24 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public List<Project> findAllProjectsWithSort(String sort) {
-        String[] sortArr = sort.split(",");
-        Sort order;
-        if (sortArr[0].equalsIgnoreCase("issueNum")) {
-            if (sortArr[1].equalsIgnoreCase("asc")) {
-                return projectRepository.findAllWithCountAsc();
-            } else if (sortArr[1].equalsIgnoreCase("desc")) {
-                return projectRepository.findAllWithCountDesc();
+    public List<Project> findAllProjectsWithSort(String[] sortArr) {
+        List<Order> orders = new ArrayList<>();
+        if (sortArr[0].contains(",")) {
+            for (String element : sortArr) {
+                String[] sort = element.split(",");
+                orders.add(new Order(getSortDirection(sort[1]), sort[0]));
             }
-        }
-        if (sortArr[1].equalsIgnoreCase("asc")) {
-            order = Sort.by(Sort.Direction.ASC, sortArr[0]);
         } else {
-            order = Sort.by(Sort.Direction.DESC, sortArr[0]);
+            orders.add(new Order(getSortDirection(sortArr[1]), sortArr[0]));
         }
-        return projectRepository.findAll(order);
+        return projectRepository.findAll(Sort.by(orders));
+    }
+
+    private Sort.Direction getSortDirection(String direction) {
+        if (direction.equalsIgnoreCase("asc")) {
+            return Sort.Direction.ASC;
+        }
+        return Sort.Direction.DESC;
     }
 
     public List<Project> findProjectsWithName(Project project) {
