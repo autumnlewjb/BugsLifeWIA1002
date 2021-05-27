@@ -5,7 +5,6 @@ import com.example.demo.models.Role;
 import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.hibernate.search.mapper.orm.Search;
@@ -16,6 +15,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -31,13 +31,16 @@ public class DemoApplication implements CommandLineRunner {
     @Autowired
     UserService userService;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
 
     @Override
     public void run(String[] args) throws IOException {
-        /*ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/BugsLife.json");
         try {
@@ -55,7 +58,9 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Users Saved!");
         } catch (IOException e) {
             System.out.println("Unable to save users: " + e.getMessage());
-        }*/
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("Users Saved!");
+        }
     }
 
 

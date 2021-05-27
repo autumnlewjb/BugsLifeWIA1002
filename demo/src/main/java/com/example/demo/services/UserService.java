@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class UserService {
-
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 

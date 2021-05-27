@@ -1,0 +1,100 @@
+<template>
+  <v-card>
+    <v-card-title>
+      <span class="headline">{{title}}</span>
+    </v-card-title>
+    <v-card-text>
+      <v-container>
+        <v-row>
+            <v-text-field label="Project Name" v-model="name" required></v-text-field>
+        </v-row>
+        <v-row>
+            <v-textarea solo
+              label="Project Description"
+              v-model="description"
+            ></v-textarea>
+        </v-row>
+      </v-container>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="blue darken-1" text @click="onSubmit('close')"> Close </v-btn>
+      <v-btn color="blue darken-1" text @click="onSubmit(action)"> Save </v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: "ProjectForm",
+  setup() {},
+  data() {
+    return {
+        title: 'Add New Project',
+        name: '',
+        description: '',
+        action: 'add',
+        projectId: 0
+    };
+  },
+  created() {
+    if (this.project) {
+      this.action = 'edit';
+      this.name = this.project.name;
+      this.description = this.project.description;
+      this.title = 'Edit Project';
+      this.projectId = this.project.project_id;
+    }
+  },
+  methods: {
+    async onSubmit(action) {
+        if (action == 'add') {
+            await fetch(`/api/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: this.name,
+                    description: this.description,
+                    date: Date.now()
+                })
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log("added new project")
+                    this.$store.dispatch('fetchCurrentUser')
+                } else {
+                    alert("Project Not Added !!")
+                }
+            }).catch((e) => console.log(e))
+        } else if (action == 'edit') {
+          await fetch(`/api/${this.projectId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: this.name,
+                    description: this.description,
+                    date: Date.now()
+                })
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log("edit project")
+                    this.$store.dispatch('fetchCurrentUser')
+                } else if (res.status == 403) {
+                  this.$emit('toggleForbiddenDialog');
+                }else {
+                    alert("Project Not Edited !!")
+                }
+            }).catch((e) => console.log(e))
+        }
+        this.$emit('toggleDialog')
+    }
+  },
+  props: {
+    data: Object,
+    project: Object
+  }
+};
+</script>
