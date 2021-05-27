@@ -19,8 +19,12 @@ import java.util.Map;
 @RequestMapping("/api")
 public class SearchController {
 
+    private final SearchService searchService;
+
     @Autowired
-    SearchService searchService;
+    public SearchController(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
     @GetMapping("/search")
     public ResponseEntity<Page<User>> searchPersons(Pageable pageable, @RequestParam("query") String query) {
@@ -45,10 +49,9 @@ public class SearchController {
             Pageable pageable,
             @RequestParam String query,
             @RequestParam(defaultValue = "all") String scope,
-            @RequestParam(defaultValue = "relevance,desc") String sort,
-            @RequestParam(defaultValue = "none") String filter) {
-        Map<String, String> map = Map.of("query", query, "scope", scope, "sort", sort, "filter", filter);
-        Page<?> result = searchService.search(pageable, map);
+            @RequestParam(defaultValue = "relevance,desc") String[] sort,
+            @RequestParam(defaultValue = "none,none") String[] filter) {
+        Page<?> result = searchService.search(pageable, query, scope, sort, filter);
         return ResponseEntity.ok(result);
     }
 
