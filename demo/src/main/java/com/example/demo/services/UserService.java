@@ -10,9 +10,11 @@ import com.example.demo.repository.UserRepository;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+@Scope("singleton")
 @Service
 @Transactional
 public class UserService {

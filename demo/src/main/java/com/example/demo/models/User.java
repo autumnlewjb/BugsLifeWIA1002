@@ -7,6 +7,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -46,6 +47,13 @@ public class User implements Serializable{
             @JoinColumn(name = "User_id") }, inverseJoinColumns = {
             @JoinColumn(name = "Role_id") })
     private List<Role> roles=new ArrayList <>();
+      
+    @Transient
+    private Stack<Integer> undo=new Stack<>();
+    @Transient
+    private Stack<Integer> issueIdRefer=new Stack<>();
+    @Transient
+    private Stack<Comment> redo=new Stack<>();
 
     public User() {}
 
@@ -109,6 +117,18 @@ public class User implements Serializable{
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Stack<Integer> getUndo() {
+        return undo;
+    }
+
+    public Stack<Integer> getIssueIdRefer() {
+        return issueIdRefer;
+    }
+
+    public Stack<Comment> getRedo() {
+        return redo;
     }
     
 }

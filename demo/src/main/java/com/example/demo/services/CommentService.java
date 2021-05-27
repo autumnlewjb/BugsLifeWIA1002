@@ -30,7 +30,11 @@ public class CommentService {
         this.issueRepository = issueRepository;
         this.reactRepository = reactRepository;
     }
-
+    
+    public List<Comment> findAllComments() {
+        return commentRepository.findAll();
+    }
+    
     public List<Comment> findCommentsByIssue(Issue issue) {
         return commentRepository.findByIssue(issue);
     }
