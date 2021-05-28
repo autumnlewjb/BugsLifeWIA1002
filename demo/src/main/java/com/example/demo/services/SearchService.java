@@ -212,7 +212,6 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
                                         "comment.text")
                                         .matching(query).fuzzy())
                                 .must(f.match().field(filter.get(0)).matching(filter.get(1)))
-                                .must(f.match().field(filter.get(2)).matching(filter.get(3)))
                 )
                 .sort(
                         f -> f.field(sort.get(0)).order(SortOrder.valueOf(sort.get(1).toUpperCase()))
@@ -232,6 +231,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
                                         "comment.text")
                                         .matching(query).fuzzy())
                                 .must(f.match().field(filter.get(0)).matching(filter.get(1)))
+                                .must(f.match().field(filter.get(2)).matching(filter.get(3)))
                 )
                 .sort(
                         f -> f.field(sort.get(0)).order(SortOrder.valueOf(sort.get(1).toUpperCase()))
