@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class FileStorageController {
 
-    private FileStorageService fileStorageService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
     public FileStorageController(FileStorageService fileStorageService) {
