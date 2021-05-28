@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.hibernate.annotations.Formula;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -51,6 +52,9 @@ public class Project implements Serializable {
     @JsonManagedReference
     @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval = true)
     private List<Issue> issue;
+
+    @Formula("(select count(*) from Issue i where i.project_id = project_id)")
+    private Integer issueNum;
 
     public Project() {}
 
@@ -130,5 +134,13 @@ public class Project implements Serializable {
     
     public void removeUser() {
         this.user=null;
+    }
+
+    public Integer getIssueNum() {
+        return issueNum;
+    }
+
+    public void setIssueNum(Integer issueNum) {
+        this.issueNum = issueNum;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import static com.example.demo.controllers.AuthController.referUser;
 import java.util.List;
 
 import com.example.demo.exception.ResourceNotFoundException;
@@ -42,6 +43,8 @@ public class CommentController {
         if (issue == null) {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
+        referUser.getUndo().push(issue_id);
+        referUser.getUndo().push(comment.getComment_id());
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
@@ -71,5 +74,34 @@ public class CommentController {
         commentService.deleteComment(issue, comment);
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
+    
+    @GetMapping("/{username}/comment/undo")
+    public ResponseEntity<Comment> undoComment(@PathVariable String username) {
+        if(!referUser.getUndo().isEmpty()) {
+            Integer reference=referUser.getUndo().pop();
+            Comment comment=commentService.findCommentById(reference);
+            deleteComment(comment.getIssue().getIssue_id(), reference);
+            referUser.getRedo().push(comment);
+            referUser.getIssueIdRefer().push(referUser.getUndo().pop());
+            return new ResponseEntity<>(comment,HttpStatus.OK);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    @GetMapping("/{username}/comment/redo")
+    public ResponseEntity<Comment> redoComment(@PathVariable String username) {
+        if(!referUser.getRedo().isEmpty()) {
+            Comment comment=referUser.getRedo().pop();
+            comment.setComment_id(null);
+            comment.setReact(null);
+            createComments(referUser.getIssueIdRefer().pop(),comment);
+            comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
+            return new ResponseEntity<>(comment,HttpStatus.OK);
+        }
+        else {
+            return null;
+        }
+    }
 }

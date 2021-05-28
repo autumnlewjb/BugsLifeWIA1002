@@ -18,6 +18,7 @@ public class AuthController {
     private final LoginService loginService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    public static User referUser;
 
     @Autowired
     public AuthController(LoginService loginService, UserService userService, PasswordEncoder passwordEncoder) {
@@ -41,6 +42,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<User> loginPost(@RequestBody AuthenticateRequest authenticateRequest) {
         loginService.authenticate(authenticateRequest.getUsername(),authenticateRequest.getPassword());
+        referUser=userService.getUser(authenticateRequest.getUsername());
         return loginService.logIn(authenticateRequest);
     }
 

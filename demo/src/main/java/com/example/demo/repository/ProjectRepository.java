@@ -21,7 +21,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("select p from Project p where p.project_id = ?1")
     Project findProjectById(Integer id);
 
-    @Query(
+    /*@Query(
             value = "select p from Project p join p.issue ad group by p Order By size(p.issue) asc ",
             countQuery = "select count(p) from Project p"
     )
@@ -31,5 +31,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             value = "select p from Project p join p.issue ad group by p Order By size(p.issue) desc ",
             countQuery = "select count(p) from Project p"
     )
-    List<Project> findAllWithCountDesc();
+    List<Project> findAllWithCountDesc();*/
 }
