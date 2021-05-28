@@ -4,13 +4,14 @@ import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface IssueRepository extends JpaRepository<Issue, Long> {
+public interface IssueRepository extends JpaRepository<Issue, Long>, JpaSpecificationExecutor<Issue> {
     @Query("select i from Issue i where i.project = ?1")
     List<Issue> findByProject(Project project);
 
@@ -19,21 +20,4 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
     List<Issue> findByProject(Project project, Sort sort);
 
-    List<Issue> findAllByProjectAndTag(Project project, String tag, Sort sort);
-
-    List<Issue> findAllByProjectAndStatus(Project project, String status, Sort sort);
-
-    List<Issue> findAllByProjectAndStatusAndTag(Project project, String status,String tag, Sort sort);
-
-    /*@Query(
-            value = "select i from Issue i join i.comment ad group by i Order By size(i.comment) asc ",
-            countQuery = "select count(i) from Issue i"
-    )
-    List<Issue> findAllWithCountAsc();
-
-    @Query(
-            value = "select i from Issue i join i.comment ad group by i Order By size(i.comment) desc ",
-            countQuery = "select count(i) from Issue i"
-    )
-    List<Issue> findAllWithCountDesc();*/
 }

@@ -6,6 +6,7 @@ import com.example.demo.models.Project;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
+import com.example.demo.repository.specification.IssueSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,8 +35,9 @@ public class IssueService {
         return issueRepository.findByProject(project);
     }
 
-    public List<Issue> findIssuesWithSortAndFilter(String[] sortArr, String[] filterArr, Project project) {
+    public List<Issue> findIssuesByProjectWithSortAndFilter(String[] sortArr, String[] filterArr, Project project) {
         List<Sort.Order> orders = new ArrayList<>();
+        List<String> filterList = new ArrayList<>();
         if (sortArr[0].contains(",")) {
             for (String element : sortArr) {
                 String[] sort = element.split(",");
@@ -45,22 +47,21 @@ public class IssueService {
             orders.add(new Sort.Order(getSortDirection(sortArr[1]), sortArr[0]));
         }
         if (filterArr[0].contains(",")) {
-            String[] statusFilter;
-            String[] tagFilter;
-            if (filterArr[0].contains("status")) {
-                statusFilter = filterArr[0].split(",");
-                tagFilter = filterArr[1].split(",");
-            } else {
-                statusFilter = filterArr[1].split(",");
-                tagFilter = filterArr[0].split(",");
+            for (String element : filterArr) {
+                String[] split = element.split(",");
+                filterList.add(split[0]);
+                filterList.add(split[1]);
             }
-            return issueRepository.findAllByProjectAndStatusAndTag(project, statusFilter[1], tagFilter[1], Sort.by(orders));
         } else {
-            if (filterArr[0].equalsIgnoreCase("status")) {
-                return issueRepository.findAllByProjectAndStatus(project, filterArr[1], Sort.by(orders));
-            } else if (filterArr[0].equalsIgnoreCase("tag")) {
-                return issueRepository.findAllByProjectAndTag(project, filterArr[1], Sort.by(orders));
+            if (!filterArr[0].equals("none")) {
+                filterList.add(filterArr[0]);
+                filterList.add(filterArr[1]);
             }
+        }
+        if (!filterList.isEmpty()) {
+            return issueRepository
+                    .findAll(IssueSpecification.belongsToProject(project)
+                            .and(IssueSpecification.getSpecificationFromFilters(filterList)));
         }
         return issueRepository.findByProject(project, Sort.by(orders));
     }
