@@ -16,7 +16,7 @@
             </v-row>
           </v-container>
           <v-form>
-            <v-row>
+            <v-row v-if="availableSortSubjects.length > 0" justify="center">
               <v-col sm="6" md="6">
                 <v-select :items="availableSortSubjects" solo label="sort by" v-model="sortSubject"></v-select>
               </v-col>
@@ -26,14 +26,14 @@
                   <v-radio label="Descending" value="desc"></v-radio>
                 </v-radio-group>
               </v-col>
-              <v-col sm="2" md="2">
+              <v-col sm="2" md="2" v-if="availableSortSubjects.length > 1">
                 <v-btn text icon @click="addNewSort">
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
             <v-row class="d-flex justify-end">
-              <v-btn text @click="applySort">Apply</v-btn>
+              <v-btn text @click="applySort" v-if="availableSortSubjects.length > 0">Apply</v-btn>
               <v-btn text @click="clearAll">Clear All</v-btn>
             </v-row>
           </v-form>

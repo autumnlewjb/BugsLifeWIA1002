@@ -33,7 +33,8 @@
           <SingleFilter/>
         </v-flex>
         <v-flex xs12 md12 v-if="showSortForm">
-          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData"/>
+          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="!multipleSort"/>
+          <SortForm :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="multipleSort"/>
         </v-flex>
       </v-layout>
       <v-layout row>
@@ -80,6 +81,7 @@
 import ProjectForm from "../components/ProjectForm";
 import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
+import SortForm from "../components/SortForm";
 
 export default {
   data() {
@@ -94,7 +96,8 @@ export default {
       sortData: [],
       sortSubjects: ['date'],
       tags: [],
-      status: []
+      status: [],
+      multipleSort: true
     };
   },
   created() {
@@ -103,14 +106,15 @@ export default {
   components: {
     ProjectForm,
     SingleFilter,
-    SingleSort
+    SingleSort,
+    SortForm
   },
   watch: {
     sortData(val) {
-      const focus = val[0];
       var url;
-      if (focus) {
-        url = `/api/?sort=${focus.subject},${focus.order}`;
+      if (val.length > 0) {
+        url = `/api/?`;
+        val.forEach((element) => url += `&sort=${element.subject},${element.order}`)
         this.sortActive = true;
       } else {
         url = `/api/`;

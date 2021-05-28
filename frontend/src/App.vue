@@ -47,7 +47,7 @@
               rounded
               prepend-icon="mdi-magnify"
               append-icon=""
-              @click="$router.push({name: 'Search'})"
+              @focus="$router.push({name: 'Search'})"
               dense
             ></v-combobox>
           </v-flex>

@@ -36,10 +36,12 @@
         </v-layout>
         <v-layout row justify-content-center>
           <v-flex xs12 md12 v-if="showFilterForm">
-            <SingleFilter :filterSubjects="filterSubjects" :tags="tags" :status="status"/>
+            <SingleFilter :filterSubjects="filterSubjects" :tags="tags" :status="status" v-if="!multipleFilterAndSort"/>
+            <FilterForm :filterSubjects="filterSubjects" :tags="tags" :status="status" v-if="multipleFilterAndSort" />
           </v-flex>
           <v-flex xs12 md12 v-if="showSortForm">
-            <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData"/>
+            <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="!multipleFilterAndSort"/>
+            <SortForm :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="multipleFilterAndSort"/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -106,6 +108,8 @@
 import IssueForm from "../components/IssueForm";
 import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
+import SortForm from "../components/SortForm";
+import FilterForm from "../components/FilterForm";
 
 export default {
   setup() {},
@@ -126,8 +130,12 @@ export default {
       filterSubjects: ['tag', 'status'],
       queryParams: {
         sort: [],
-        filter: []
-      }
+        filter: {
+          tag: [],
+          status: []
+        }
+      },
+      multipleFilterAndSort: true
     };
   },
   props: {
@@ -140,14 +148,15 @@ export default {
   components: {
     IssueForm,
     SingleFilter,
-    SingleSort
+    SingleSort,
+    SortForm,
+    FilterForm
   },
   watch: {
     sortData(val) {
-      const focus = val[0];
       this.queryParams.sort = [];
-      if (focus) {
-        this.queryParams.sort.push(`${focus.subject},${focus.order}`);
+      if (val.length > 0) {
+        val.forEach(element => this.queryParams.sort.push(`${element.subject},${element.order}`));
         this.sortActive = true;
       } else {
         this.sortActive = false;
@@ -155,10 +164,9 @@ export default {
       this.fetchIssues();
     },
     tags(val) {
-      const focus = val[0];
-      this.queryParams.filter = [];
+      this.queryParams.filter.tag = [];
       if (focus) {
-        this.queryParams.filter.push(`tag,${focus}`);
+        val.forEach(element => this.queryParams.filter.tag.push(`tag,${element}`));
         this.filterActive = true;
       } else {
         this.filterActive = false;
@@ -166,12 +174,11 @@ export default {
       this.fetchIssues();
     },
     status(val) {
-      const focus = val[0];
-      this.queryParams.filter = [];
+      this.queryParams.filter.status = [];
       if (focus) {
-        this.queryParams.filter.push(`status,${focus}`);
+        val.forEach(element => this.queryParams.filter.status.push(`status,${element}`));
         this.filterActive = true;
-      } else {
+      } else { 
         this.filterActive = false;
       }
       this.fetchIssues();
@@ -209,7 +216,7 @@ export default {
     getRequestUrl() {
       var url = `/api/${this.projectId}`;
       const sort = this.queryParams.sort;
-      const filter = this.queryParams.filter;
+      const filter = [... this.queryParams.filter.tag, ... this.queryParams.filter.status];
       if (sort.length > 0 || filter.length > 0) {
         url = url + '?';
       } 
@@ -225,6 +232,8 @@ export default {
           url += `&filter=${element}`;
         })
       }
+      this.sortActive = this.queryParams.sort.length > 0;
+      this.filterActive = this.queryParams.filter.tag.length + this.queryParams.filter.status.length;
 
       return url;
     },

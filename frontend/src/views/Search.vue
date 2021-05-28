@@ -125,7 +125,7 @@ export default {
       filterTags: [],
       filterStatus: [],
       filterColor: '',
-      multipleFilterAndSort: false,
+      multipleFilterAndSort: true,
     };
   },
   watch: {
@@ -216,7 +216,7 @@ export default {
         url = `/api?`;
       }
 
-      url = `${url}&query=${this.query}&size=5&page=${val - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(val - 1, 0)}`;
       if (this.sortData.length > 0 && (this.searchType == "project" || this.searchType == "issue")) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -251,7 +251,7 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });
@@ -272,7 +272,7 @@ export default {
         url = `/api?scope=issue`;
       }
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (val.length > 0) {
         val.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -322,7 +322,7 @@ export default {
       }
       var url = `/api?scope=issue`;
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (this.sortData.length > 0) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -355,13 +355,13 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });
     },
     filterTags(val) {
-      console.log(val);
+      console.log("filterTags changed");
       if (this.searchType != 'issue') return;
       if (val.length > 0 || this.filterStatus.length > 0) {
         this.filterColor = "amber darken-4";
@@ -372,7 +372,7 @@ export default {
       }
       var url = `/api?scope=issue`;
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (this.sortData.length > 0) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -402,7 +402,7 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });

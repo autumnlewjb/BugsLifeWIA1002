@@ -5,16 +5,15 @@
           <v-form>
             <v-row>
               <v-col sm="12" md="12">
-                <v-text-field solo label="Issue Tags" v-model="filterTags"></v-text-field>
+                <v-combobox solo label="Issue Tags" v-model="filterTags" :items="tagOptions" multiple></v-combobox>
               </v-col>
             </v-row>
             <v-row>
               <v-col sm="12" md="12">
-                <v-text-field solo label="Issue Status" v-model="filterStatus"></v-text-field>
+                <v-combobox solo label="Issue Status" v-model="filterStatus" :items="filterOptions" multiple></v-combobox>
               </v-col>
             </v-row>
             <v-row class="d-flex justify-end">
-              <v-btn text @click="applyFilter">Apply</v-btn>
               <v-btn text @click="clearAll">Clear All</v-btn>
             </v-row>
           </v-form>
@@ -35,17 +34,19 @@ export default {
   },
   data() {
     return {
-      filterTags: "",
-      filterStatus: "",
+      filterTags: [],
+      filterStatus: [],
       filterTagsArray: [],
-      filterStatusArray: []
+      filterStatusArray: [],
+      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
+      filterOptions: ['Open', 'Resolved', 'Closed', 'In Progress', 'Reopened']
     }
   },
   created() {
     this.filterTagsArray = this.tags;
     this.filterStatusArray = this.status;
-    this.filterTags = this.tags.join(",");
-    this.filterStatus = this.status.join(",");
+    this.filterTagsArray.forEach(element => this.filterTags.push(element));
+    this.filterStatusArray.forEach(element => this.filterStatus.push(element));
   },
   watch: {
     filterTags(val) {
@@ -53,18 +54,14 @@ export default {
       for (var i=0; i<len; i++) {
         this.filterTagsArray.pop();
       }
-      if (val.length == 0) return;
-      val.split(",").map(item => {
-        this.filterTagsArray.push(item.trim());
-      });
+      val?.forEach(element => this.filterTagsArray.push(element));
     },
     filterStatus(val) {
       const len = this.filterStatusArray.length;
       for (var i=0; i<len; i++) {
         this.filterStatusArray.pop();
       }
-      if (val.length == 0) return;
-      val.split(",").map(item => this.filterStatusArray.push(item.trim()));
+      val?.forEach(element => this.filterStatusArray.push(element));
     }
   },
   computed: {
@@ -72,12 +69,9 @@ export default {
   },
   methods: {
     clearAll() {
-      this.filterTags = '';
-      this.filterStatus = '';
+      this.filterTags = [];
+      this.filterStatus = [];
     },
-    applyFilter() {
-      
-    }
   }
 }
 </script>
