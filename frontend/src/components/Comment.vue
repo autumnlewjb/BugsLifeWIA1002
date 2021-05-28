@@ -15,13 +15,13 @@
       <v-card-text>
         <v-layout row>
           <v-flex xs6 md8>
-            <v-chip @click="addEmoji('angry')" class="ma-1">
+            <v-chip @click="handleEmojiClick('Angry', angryColor == undefined)" class="ma-1" :disabled="!enableAngry" :color="angryColor">
               &#128520; {{ angryCount }}
             </v-chip>
-            <v-chip @click="addEmoji('happy')" class="ma-1">
+            <v-chip @click="handleEmojiClick('Happy', happyColor == undefined)" class="ma-1" :disabled="!enableHappy" :color="happyColor">
               &#128516; {{ happyCount }}
             </v-chip>
-            <v-chip @click="addEmoji('thumbsup')" class="ma-1">
+            <v-chip @click="handleEmojiClick('Thumbsup', thumbsupColor == undefined)" class="ma-1" :disabled="!enableThumbsup" :color="thumbsupColor">
               &#128077; {{ thumbsupCount }}
             </v-chip>
           </v-flex>
@@ -61,9 +61,9 @@ export default {
   },
   data() {
     return {
-      angry: this.comment.react.filter((r) => r.reaction === "angry"),
-      happy: this.comment.react.filter((r) => r.reaction === "happy"),
-      thumbsup: this.comment.react.filter((r) => r.reaction === "thumbsup"),
+      angry: [],
+      happy: [],
+      thumbsup: [],
       angryCount: 0,
       happyCount: 0,
       thumbsupCount: 0,
@@ -71,122 +71,94 @@ export default {
       text: this.comment.text,
       confirmDeleteDialog: false,
       commentId: this.comment.comment_id,
-      forbiddenDialog: false
+      forbiddenDialog: false,
+      myReaction: null,
+      enableReaction: false,
+      happyColor: undefined,
+      angryColor: undefined,
+      thumbsupColor: undefined,
+      commentObj: null,
+      enableHappy: false,
+      enableAngry: false,
+      enableThumbsup: false
     };
   },
   created() {
-    // this.angryCount = this.angry ? this.angry.count : 0;
-    // this.happyCount = this.happy ? this.happy.count : 0;
-    // this.thumbsupCount = this.thumbsup ? this.thumbsup.count : 0;
-    this.angryCount = this.angry.length;
-    this.happyCount = this.happy.length;
-    this.thumbsupCount = this.thumbsup.length;
+    this.commentObj = this.comment;
   },
   props: {
     comment: Object,
     issueId: undefined,
     projectId: undefined
   },
-  methods: {
-    async addEmoji(str) {
-      if (str == "happy") {
-      //   var url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
-      //   var met = "POST";
-      //   var data = {
-      //     reaction: "happy",
-      //     count: 1,
-      //   };
-      //   if (this.happy) {
-      //     url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.happy.react_id}`;
-      //     met = "PUT";
-      //     data = {
-      //       reaction: "happy",
-      //       count: this.happyCount + 1,
-      //     };
-      //   }
-      //   await fetch(url, {
-      //     method: met,
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(data),
-      //   })
-      //     .then((res) => {
-      //       if (res.status == 200) {
-      //         this.$store.dispatch("fetchCurrentUser");
-      //         console.log("successful");
-              this.happyCount ++;
-      //       } else {
-      //         console.log("failed");
-      //       }
-      //     })
-      //     .catch((e) => console.log(e));
-      } else if (str == "angry") {
-        // url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
-        // met = "POST";
-        // data = {
-        //   reaction: "angry",
-        //   count: 1,
-        // };
-        // if (this.angry) {
-        //   url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.angry.react_id}`;
-        //   met = "PUT";
-        //   data = {
-        //     reaction: "angry",
-        //     count: this.angryCount + 1,
-        //   };
-        // }
-        // await fetch(url, {
-        //   method: met,
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(data),
-        // })
-        //   .then((res) => {
-        //     if (res.status == 200) {
-        //       this.$store.dispatch("fetchCurrentUser");
-        //       console.log("successful");
-              this.angryCount ++;
-        //     } else {
-        //       console.log("failed");
-        //     }
-        //   })
-        //   .catch((e) => console.log(e));
+  watch: {
+    comment(val) {
+      this.commentObj = val;
+    },
+    commentObj(val) {
+      console.log("change");
+      this.angry = this.comment.react.filter((r) => r.reaction.toLowerCase() === "angry");
+      this.happy = this.comment.react.filter((r) => r.reaction.toLowerCase() === "happy");
+      this.thumbsup = this.comment.react.filter((r) => r.reaction.toLowerCase() === "thumbsup");
+      this.angryCount = this.angry.length;
+      this.happyCount = this.happy.length;
+      this.thumbsupCount = this.thumbsup.length;
+      this.myReaction = val.react.find((r) => r.reactionBy == this.$store.getters.getCurrentUser.username);
+      if (this.myReaction) {
+        this.enableHappy = this.myReaction.reaction == 'Happy';
+        this.enableAngry = this.myReaction.reaction == 'Angry';
+        this.enableThumbsup = this.myReaction.reaction == 'Thumbsup';
+        this.happyColor = !this.enableReaction && this.myReaction.reaction == 'Happy' ? 'blue' : undefined;
+        this.angryColor = !this.enableReaction && this.myReaction.reaction == 'Angry' ? 'blue' : undefined;
+        this.thumbsupColor = !this.enableReaction && this.myReaction.reaction == 'Thumbsup' ? 'blue' : undefined;
       } else {
-      //   url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
-      //   met = "POST";
-      //   data = {
-      //     reaction: "thumbsup",
-      //     count: 1,
-      //   };
-      //   if (this.thumbsup) {
-      //     url = `/api/${this.projectId}/${this.issueId}/${this.commentId}/${this.thumbsup.react_id}`;
-      //     met = "PUT";
-      //     data = {
-      //       reaction: "thumbsup",
-      //       count: this.thumbsupCount + 1,
-      //     };
-      //   }
-      //   await fetch(url, {
-      //     method: met,
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(data),
-      //   })
-      //     .then((res) => {
-      //       if (res.status == 200) {
-      //         this.$store.dispatch("fetchCurrentUser");
-      //         console.log("successful");
-              this.thumbsupCount ++;
-      //       } else {
-      //         console.log("failed");
-      //       }
-      //     })
-      //     .catch((e) => console.log(e));
+        this.enableHappy = true;
+        this.enableAngry = true;
+        this.enableThumbsup = true;
+        this.happyColor = undefined;
+        this.thumbsupColor = undefined;
+        this.angryColor = undefined;
       }
-      this.$emit('updateComment')
+    }
+  },
+  methods: {
+    handleEmojiClick(str, notReacted) {
+      if (notReacted) {
+        this.addEmoji(str);
+      } else {
+        this.removeEmoji();
+      }
+    },
+    async addEmoji(str) {
+      var url = `/api/${this.projectId}/${this.issueId}/${this.commentId}`;
+      var data = {
+        reaction: str,
+      };
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((res) => {
+          if (res.status == 200) {
+            this.$store.dispatch("fetchCurrentUser");
+            console.log("successful");
+          } else {
+            console.log("failed");
+          }
+        })
+        .catch((e) => console.log(e));
+      this.$emit('updateComment');
+    },
+    removeEmoji() {
+      fetch(`/api/${this.projectId}/${this.issueId}/${this.commentId}/del`, {
+        method: 'DELETE'
+      })
+      .then(() => {
+        this.$emit('updateComment');
+      })
     },
     toggleEditDialog() {
       this.dialog = !this.dialog;
