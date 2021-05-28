@@ -47,11 +47,13 @@ public class User implements Serializable{
             @JoinColumn(name = "User_id") }, inverseJoinColumns = {
             @JoinColumn(name = "Role_id") })
     private List<Role> roles=new ArrayList <>();
-      
+     
+    @Transient
+    private Stack<Integer> issueIdUndo=new Stack<>();
     @Transient
     private Stack<Integer> undo=new Stack<>();
     @Transient
-    private Stack<Integer> issueIdRefer=new Stack<>();
+    private Stack<Integer> issueIdRedo=new Stack<>();
     @Transient
     private Stack<Comment> redo=new Stack<>();
 
@@ -119,12 +121,16 @@ public class User implements Serializable{
         this.roles = roles;
     }
 
+    public Stack<Integer> getIssueIdUndo() {
+        return issueIdUndo;
+    }
+
     public Stack<Integer> getUndo() {
         return undo;
     }
 
-    public Stack<Integer> getIssueIdRefer() {
-        return issueIdRefer;
+    public Stack<Integer> getIssueIdRedo() {
+        return issueIdRedo;
     }
 
     public Stack<Comment> getRedo() {
