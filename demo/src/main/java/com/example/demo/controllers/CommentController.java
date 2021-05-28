@@ -43,7 +43,7 @@ public class CommentController {
         if (issue == null) {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
-        referUser.getUndo().push(issue_id);
+        referUser.getIssueIdUndo().push(issue_id);
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
@@ -72,16 +72,21 @@ public class CommentController {
             throw new ResourceNotFoundException("comment", "id", comment_id);
         }
         commentService.deleteComment(issue, comment);
+        if(referUser.getUndo().contains(comment_id)) {
+            int index=referUser.getUndo().indexOf(comment_id);
+            referUser.getUndo().remove(index);
+            referUser.getIssueIdUndo().remove(index);
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
     
     @GetMapping("/undo")
-    public ResponseEntity<Comment> undoComment(@PathVariable String username) {
+    public ResponseEntity<Comment> undoComment() {
         if(!referUser.getUndo().isEmpty()) {
             Integer reference=referUser.getUndo().pop();
-            referUser.getIssueIdRefer().push(referUser.getUndo().pop());
+            referUser.getIssueIdRedo().push(referUser.getIssueIdUndo().pop());
             Comment comment=commentService.findCommentById(reference);
-            deleteComment(referUser.getIssueIdRefer().peek(), reference);
+            deleteComment(referUser.getIssueIdRedo().peek(), reference);
             referUser.getRedo().push(comment);
             return ResponseEntity.ok(comment);
         }
@@ -91,12 +96,12 @@ public class CommentController {
     }
     
     @GetMapping("/redo")
-    public ResponseEntity<Comment> redoComment(@PathVariable String username) {
+    public ResponseEntity<Comment> redoComment() {
         if(!referUser.getRedo().isEmpty()) {
             Comment comment=referUser.getRedo().pop();
             comment.setComment_id(null);
             comment.setReact(null);
-            createComments(referUser.getIssueIdRefer().pop(),comment);
+            createComments(referUser.getIssueIdRedo().pop(),comment);
             comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
             return ResponseEntity.ok(comment);
         }

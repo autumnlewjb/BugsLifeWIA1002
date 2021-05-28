@@ -26,11 +26,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
-    
+    @Value("${spring.datasource.url}")
+    private String database;
+    @Value("${spring.datasource.username}")
+    private String databaseUsername;
+    @Value("${spring.datasource.password}")
+    private String databasePassword;
     private Connection connection=null;
     private PreparedStatement preparedStatement;
     private Statement statement=null;
@@ -88,8 +94,8 @@ public class UserController {
     }
     
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/{username}/JSON_FILE")
-    public ResponseEntity<?> getJson(@PathVariable String username) {
+    @GetMapping("/JSON")
+    public ResponseEntity<?> getJson() {
         ArrayList<JSONObject> JSONListWithRole=new ArrayList<>();
         ArrayList<JSONObject> JSONListWithoutRole=new ArrayList<>();
         List<JSONObject> projectList = new ArrayList<>();
@@ -98,7 +104,7 @@ public class UserController {
         List<JSONObject> reactList = new ArrayList<>();
         List<JSONObject> tagList = new ArrayList<>();
         try{
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/db", "root", "u20cee8ab23");
+            connection = DriverManager.getConnection(database, databaseUsername, databasePassword);
             statement = connection.createStatement();
             preparedStatement = connection.prepareStatement("SELECT * FROM user;");
             userSelect = preparedStatement.executeQuery();
@@ -315,6 +321,8 @@ public class UserController {
             
             
             try{
+                //Two text files and json files for roles and without roles each
+                //The JSON file that can be read by our program is without the roles one
                 FileWriter file=new FileWriter("log_file.json");
                 mapper.writeValue(file, JSONListWithoutRole);
                 file.close();
@@ -327,7 +335,7 @@ public class UserController {
                 file=new FileWriter("log_file_role.txt");
                 mapper.writeValue(file, JSONListWithRole);
                 file.close();
-                return new ResponseEntity<>(JSONListWithRole, HttpStatus.OK);
+                return ResponseEntity.ok(JSONListWithRole);
             }
             catch(IOException e){
                 System.out.println("Error with output file");
