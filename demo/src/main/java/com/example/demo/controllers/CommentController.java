@@ -44,10 +44,10 @@ public class CommentController {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         referUser.getUndo().push(issue_id);
-        referUser.getUndo().push(comment.getComment_id());
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
+        referUser.getUndo().push(comment.getComment_id());
         return ResponseEntity.ok(comment);
     }
 
@@ -75,22 +75,22 @@ public class CommentController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
     
-    @GetMapping("/{username}/comment/undo")
+    @GetMapping("/undo")
     public ResponseEntity<Comment> undoComment(@PathVariable String username) {
         if(!referUser.getUndo().isEmpty()) {
             Integer reference=referUser.getUndo().pop();
-            Comment comment=commentService.findCommentById(reference);
-            deleteComment(comment.getIssue().getIssue_id(), reference);
-            referUser.getRedo().push(comment);
             referUser.getIssueIdRefer().push(referUser.getUndo().pop());
-            return new ResponseEntity<>(comment,HttpStatus.OK);
+            Comment comment=commentService.findCommentById(reference);
+            deleteComment(referUser.getIssueIdRefer().peek(), reference);
+            referUser.getRedo().push(comment);
+            return ResponseEntity.ok(comment);
         }
         else {
             return null;
         }
     }
     
-    @GetMapping("/{username}/comment/redo")
+    @GetMapping("/redo")
     public ResponseEntity<Comment> redoComment(@PathVariable String username) {
         if(!referUser.getRedo().isEmpty()) {
             Comment comment=referUser.getRedo().pop();
@@ -98,7 +98,7 @@ public class CommentController {
             comment.setReact(null);
             createComments(referUser.getIssueIdRefer().pop(),comment);
             comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
-            return new ResponseEntity<>(comment,HttpStatus.OK);
+            return ResponseEntity.ok(comment);
         }
         else {
             return null;

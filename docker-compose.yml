@@ -11,10 +11,10 @@ services:
         image: mysql:latest
         environment:
             - MYSQL_ROOT_PASSWORD=secret
+            - MYSQL_DATABASE=db
+        command: --lower_case_table_names=1
         ports:
             - 3306:3306
-        volumes:
-            - ./demo/User.sql:/docker-entrypoint-initdb.d/User.sql
     frontend-app:
         build: ./frontend/
         ports:
