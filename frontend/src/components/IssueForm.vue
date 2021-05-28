@@ -91,7 +91,7 @@ export default {
             title: this.title,
             descriptionText: this.descriptionText,
             priority: this.priority,
-            status: "In progress",
+            status: "Open",
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",

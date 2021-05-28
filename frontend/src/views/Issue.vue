@@ -123,12 +123,12 @@ export default {
     this.fetchIssue();
   },
   watch: {
-    select(prev, curr) {
+    select(val) {
       if (!this.issueLoaded) {
         this.issueLoaded = true;
         return;
       }
-      this.issue.status = curr;
+      this.issue.status = val;
       fetch(`/api/${this.projectId}/${this.issueId}`, {
         method: 'PUT',
         headers: {
@@ -138,7 +138,7 @@ export default {
       })
       .then((res) => {
         this.fetchIssue();
-        if (res.status == 403 && prev !== '') {
+        if (res.status == 403) {
           this.forbiddenDialog = true;
         } else if (res.status != 200) {
           alert('Issue not updated!');
