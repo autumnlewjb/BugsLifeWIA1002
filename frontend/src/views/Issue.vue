@@ -34,7 +34,7 @@
           </p>
           <p>
             Status: <br />
-            {{ getIssue.status }}
+            <v-combobox :items="items" v-model="select"></v-combobox>
           </p>
           <p>
             Tag: <br />
@@ -111,13 +111,40 @@ export default {
       text: "",
       dialog: false,
       confirmDeleteDialog: false,
-      forbiddenDialog: false
+      forbiddenDialog: false,
+      items: [],
+      select: "",
+      issueLoaded: false
     };
   },
   created() {
     this.projectId = this.$route.query.projectId;
     this.issueId = this.$route.query.issueId;
     this.fetchIssue();
+  },
+  watch: {
+    select(prev, curr) {
+      if (!this.issueLoaded) {
+        this.issueLoaded = true;
+        return;
+      }
+      this.issue.status = curr;
+      fetch(`/api/${this.projectId}/${this.issueId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.issue)
+      })
+      .then((res) => {
+        this.fetchIssue();
+        if (res.status == 403 && prev !== '') {
+          this.forbiddenDialog = true;
+        } else if (res.status != 200) {
+          alert('Issue not updated!');
+        }
+      })
+    }
   },
   props: {
     data: Object,
@@ -193,7 +220,27 @@ export default {
             return null;
           }
         })
-        .then((data) => (this.issue = data))
+        .then((data) => {
+          this.issue = data;
+          this.select = data.status;
+          switch (data.status) {
+            case 'Open':
+              this.items = ['Resolved', 'Closed', 'In Progress'];
+              break;
+            case 'Resolved':
+              this.items = ['Closed', 'Reopened'];
+              break;
+            case 'Closed':
+              this.items = ['Reopened'];
+              break;
+            case 'In Progress':
+              this.items = ['Closed', 'Resolved'];
+              break;
+            case 'Reopened':
+              this.items = ['Resolved'];
+              break;
+          }
+        })
         .catch((e) => console.log(e));
     },
     updateComment() {
