@@ -36,7 +36,7 @@ public class IssueSpecification {
     }
 
     public static Specification<Issue> belongsToProject(Project project) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("project"), project.getProject_id());
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("project"), project.getProjectId());
     }
 
 }

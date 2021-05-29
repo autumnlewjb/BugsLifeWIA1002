@@ -28,7 +28,8 @@ public class Project implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer project_id;
+    @Column(name = "project_id")
+    private Integer projectId;
 
     @FullTextField(analyzer = "NAME")
     @Column(name = "name")
@@ -93,12 +94,12 @@ public class Project implements Serializable {
         this.user = user;
     }
 
-    public Integer getProject_id() {
-        return project_id;
+    public Integer getProjectId() {
+        return projectId;
     }
 
-    public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 
     public String getName() {

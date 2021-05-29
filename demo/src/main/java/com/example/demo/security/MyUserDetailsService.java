@@ -5,11 +5,9 @@
  */
 package com.example.demo.security;
 
+import com.example.demo.models.Role;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -17,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.Collection;
 
 @Service
 @Transactional
@@ -39,7 +40,7 @@ public class MyUserDetailsService implements UserDetailsService{
     }
     
     private static Collection<? extends GrantedAuthority> getAuthorities(User user) {
-        String userRoles[]=user.getRoles().stream().map((role)->role.getName()).toArray(String[]::new);
+        String[] userRoles =user.getRoles().stream().map(Role::getName).toArray(String[]::new);
         Collection<GrantedAuthority> authorities=AuthorityUtils.createAuthorityList(userRoles);
         return authorities;
     }

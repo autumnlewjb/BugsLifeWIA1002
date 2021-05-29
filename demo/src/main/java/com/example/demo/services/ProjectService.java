@@ -76,7 +76,7 @@ public class ProjectService {
     }
 
     public void updateProject(Project oldProject, Project updatedProject) {
-        updatedProject.setProject_id(oldProject.getProject_id());
+        updatedProject.setProjectId(oldProject.getProjectId());
         //find all issues from old project
         List<Issue> allIssue = issueRepository.findByProject(oldProject);
         //find user related to old project

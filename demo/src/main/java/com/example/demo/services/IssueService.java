@@ -87,7 +87,7 @@ public class IssueService {
     }
 
     public void updateIssue(Integer project_id, Issue issue, Issue updatedIssue) {
-        updatedIssue.setIssue_id(issue.getIssue_id());
+        updatedIssue.setIssueId(issue.getIssueId());
         List<Comment> allComments = commentRepository.findByIssue(issue);
         Project project = projectRepository.findProjectById(project_id);
         project.getIssue().set(project.getIssueIndex(issue), updatedIssue);
