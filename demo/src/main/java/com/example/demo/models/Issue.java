@@ -8,6 +8,8 @@ import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -26,6 +28,7 @@ import org.hibernate.envers.NotAudited;
 public class Issue implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericField(sortable = Sortable.YES)
     private Integer issue_id;
 
     @FullTextField(analyzer = "NAME")
@@ -53,10 +56,16 @@ public class Issue implements Serializable {
 
     private String assignee;
 
+    @LastModifiedBy
+    private String modifiedBy;
+
     @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date timestamp;
+
+    @LastModifiedDate
+    private Date modifiedDate;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -173,5 +182,21 @@ public class Issue implements Serializable {
 
     public void setCommentNum(Integer commentNum) {
         this.commentNum = commentNum;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

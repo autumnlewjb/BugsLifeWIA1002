@@ -28,6 +28,7 @@ public class Project implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericField(sortable = Sortable.YES)
     private Integer project_id;
 
     @FullTextField(analyzer = "NAME")
