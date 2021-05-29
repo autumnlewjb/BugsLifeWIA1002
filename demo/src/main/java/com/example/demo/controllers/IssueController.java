@@ -26,10 +26,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import javax.transaction.Transactional;
 
 @Controller
@@ -93,7 +95,7 @@ public class IssueController {
     }
 
     @PutMapping("{project_id}/{issue_id}")
-    public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue){
+    public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue) {
         Issue issue = issueService.findIssuesById(issue_id);
         if (issue == null) {
             throw new ResourceNotFoundException("issue", "id", issue_id);
@@ -101,7 +103,7 @@ public class IssueController {
         issueService.updateIssue(project_id, issue, updatedIssue);
         return ResponseEntity.ok(HttpStatus.OK);
     }
-    
+
     @Transactional
     @DeleteMapping("/{project_id}/{issue_id}")
     public ResponseEntity<?> deleteIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
@@ -127,7 +129,7 @@ public class IssueController {
         return null;*/
     }
 
-    @GetMapping("{project_id}/report/get")
+    /*@GetMapping("{project_id}/report/get")
     public ResponseEntity<Resource> generateReport(@PathVariable Integer project_id) throws IOException, DocumentException {
         Project project = projectService.findProjectWithId(project_id);
         List<Issue> issues = issueService.findIssuesByProject(project);
@@ -287,10 +289,10 @@ public class IssueController {
     @GetMapping("/{project_id}/generateReport")
     public void exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
         reportService.exportReport(project_id);
-    }
+    }*/
 
     @GetMapping("/{project_id}/charts")
-    public String getAllEmployee(@PathVariable Integer project_id, Model model){
+    public String getAllEmployee(@PathVariable Integer project_id, Model model) {
         List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
         List<String> tagList = new ArrayList<>();
         List<Integer> tagCounterList = new ArrayList<>();
@@ -311,22 +313,22 @@ public class IssueController {
         statusList.add("Closed");
         statusList.add("In progress");
 
-        for (Issue issue : issues){
+        for (Issue issue : issues) {
             int counter = issue.getTag().size();
             for (int i = 0; i < counter; i++) {
-                if (issue.getTag().get(i).equalsIgnoreCase("Frontend")){
+                if (issue.getTag().get(i).equalsIgnoreCase("Frontend")) {
                     frontend++;
                 }
-                if (issue.getTag().get(i).equalsIgnoreCase("Backend")){
+                if (issue.getTag().get(i).equalsIgnoreCase("Backend")) {
                     backend++;
                 }
-                if (issue.getTag().get(i).equalsIgnoreCase("First Bug")){
+                if (issue.getTag().get(i).equalsIgnoreCase("First Bug")) {
                     firstBug++;
                 }
-                if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")){
+                if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")) {
                     enhancement++;
                 }
-                if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")){
+                if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")) {
                     suggestion++;
                 }
             }
@@ -338,20 +340,16 @@ public class IssueController {
         tagCounterList.add(enhancement);
         tagCounterList.add(suggestion);
 
-        for (Issue issue : issues){
-            if (issue.getStatus().equalsIgnoreCase("Resolved")){
+        for (Issue issue : issues) {
+            if (issue.getStatus().equalsIgnoreCase("Resolved")) {
                 resolved++;
-            }
-            else if (issue.getStatus().equalsIgnoreCase("Reopened")){
+            } else if (issue.getStatus().equalsIgnoreCase("Reopened")) {
                 reopened++;
-            }
-            else if (issue.getStatus().equalsIgnoreCase("Open")){
+            } else if (issue.getStatus().equalsIgnoreCase("Open")) {
                 open++;
-            }
-            else if (issue.getStatus().equalsIgnoreCase("closed")){
+            } else if (issue.getStatus().equalsIgnoreCase("closed")) {
                 closed++;
-            }
-            else{
+            } else {
                 inProgress++;
             }
         }
@@ -368,23 +366,64 @@ public class IssueController {
             pieCharts.add(pieChart);
         }
 
-        List<String> headers = Arrays.asList("ID", "Title", "Priority", "Tag", "Created by", "Assignee");
+        List<String> headers = Arrays.asList("ID", "Title", "Status", "Priority", "Tag", "Created by", "Assignee");
         List<Map<String, Object>> rows = new ArrayList<>();
         int counter = 1;
-        for (Issue issue : issues){
-            rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
+        for (Issue issue : issues) {
+            rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Status", issue.getStatus(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
         }
 
+        int days = LocalDate.now().lengthOfMonth();
+        List<Integer> totalDays = new ArrayList<>();
+        for (int i = 1; i <= days; i++) {
+            totalDays.add(i);
+        }
+
+        List<LocalDate> allDates = new ArrayList<>();
+        Month currentMonth = LocalDate.now().getMonth();
+        int currentYear = LocalDate.now().getYear();
+        YearMonth ym = YearMonth.of(currentYear, currentMonth);
+        LocalDate firstOfMonth = ym.atDay(1);
+        LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
+        firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
+
+        List<Integer> issueCounter = new ArrayList<>();
+        for (int i = 0; i < allDates.size(); i++) {
+            int isCounter = 0;
+            boolean found = false;
+            for (Issue issue : issues) {
+                if (issue.getTimestamp().equals(Date.from(allDates.get(i).atStartOfDay(ZoneId.systemDefault()).toInstant()))){
+                    found = true;
+                    isCounter++;
+                }
+            }
+            if (found){
+                issueCounter.add(isCounter);
+            }
+            else issueCounter.add(0);
+        }
+
+        List<Integer> issueCumulativeCounter = new ArrayList<>();
+
+        int cumulativeCounter = 0;
+        for (int i = 0; i < days; i++) {
+            cumulativeCounter += issueCounter.get(i);
+            issueCumulativeCounter.add(cumulativeCounter);
+        }
+
+        model.addAttribute("cumulativeCounter", issueCumulativeCounter);
+        model.addAttribute("issueCounter", issueCounter);
+        model.addAttribute("days", totalDays);
         model.addAttribute("tags", tagList);
         model.addAttribute("counter", tagCounterList);
-        model.addAttribute("try", pieCharts);
+        model.addAttribute("data", pieCharts);
         model.addAttribute("headers", headers);
         model.addAttribute("rows", rows);
         return "chart";
 
     }
 
-    static class PieChart{
+    static class PieChart {
         String name;
         Integer y;
 
