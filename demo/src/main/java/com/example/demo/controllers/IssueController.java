@@ -86,6 +86,11 @@ public class IssueController {
         project.getIssue().add(issue);
         issue.setProject(project);
         issueService.createIssue(issue);
+        Stack<String> issueStack=new Stack<>();
+        issueStack.push(issue.getDescriptionText());
+        HashMap<Integer,Stack<String>> issueMap=new HashMap<>();
+        issueMap.put(issue.getIssueId(), issueStack);
+        referUser.getIssueUndo().put(project_id, issueMap);
         return ResponseEntity.ok(issue);
     }
 
@@ -97,12 +102,45 @@ public class IssueController {
 
     @PutMapping("{project_id}/{issue_id}")
     public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue) {
+        if(referUser.getIssueUndo()==null || !referUser.getIssueUndo().containsKey(project_id)) {
+            Stack<String> issueStack=new Stack<>();
+            issueStack.push(issueService.findIssuesById(issue_id).getDescriptionText());
+            HashMap<Integer,Stack<String>> issueMap=new HashMap<>();
+            issueMap.put(issue_id, issueStack);
+            referUser.getIssueUndo().put(project_id, issueMap);
+        }
+        else if(!referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
+            Stack<String> issueStack=new Stack<>();
+            issueStack.push(issueService.findIssuesById(issue_id).getDescriptionText());
+            referUser.getIssueUndo().get(project_id).put(issue_id, issueStack);
+        }
         Issue issue = issueService.findIssuesById(issue_id);
         if (issue == null) {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         issueService.updateIssue(project_id, issue, updatedIssue);
+        referUser.getIssueUndo().get(project_id).get(issue_id).push(issue.getDescriptionText());
+        if(referUser.getIssueRedo()!=null && referUser.getIssueRedo().containsKey(project_id)) {
+            if(referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+                referUser.getIssueRedo().get(project_id).get(issue_id).clear();
+            }
+        } 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+    
+    public void updateTheIssue(Integer project_id, Integer issue_id, Issue updatedIssue) {
+        if(referUser.getIssueUndo()==null || !referUser.getIssueUndo().containsKey(project_id)) {
+            Stack<String> issueStack=new Stack<>();
+            issueStack.push(issueService.findIssuesById(issue_id).getDescriptionText());
+            HashMap<Integer,Stack<String>> issueMap=new HashMap<>();
+            issueMap.put(issue_id, issueStack);
+            referUser.getIssueUndo().put(project_id, issueMap);
+        }
+        Issue issue = issueService.findIssuesById(issue_id);
+        if (issue == null) {
+            throw new ResourceNotFoundException("issue", "id", issue_id);
+        }
+        issueService.updateIssue(project_id, issue, updatedIssue);
     }
 
     @Transactional
@@ -117,6 +155,12 @@ public class IssueController {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         issueService.deleteIssue(project, issue);
+        if(referUser.getIssueUndo().containsKey(project_id)) {
+            referUser.getIssueUndo().remove(project_id);
+        }
+        if(referUser.getIssueRedo().containsKey(project_id)) {
+            referUser.getIssueRedo().remove(project_id);
+        }
         return ResponseEntity.ok(HttpStatus.OK);
         /*User user=userService.getUserById(project.getUser().getUser_id());
         Authentication authentication= org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
@@ -138,6 +182,73 @@ public class IssueController {
             return ResponseEntity.ok(issueService.getHistory(issue_id));
         //}
         //return null;
+    }
+    
+    @Transactional
+    @GetMapping("/issue/history")
+    public ResponseEntity<?> getAllHistory() {
+        return ResponseEntity.ok(issueService.getAllHistory());
+    }
+    
+    @GetMapping("/{project_id}/{issue_id}/undo")
+    public ResponseEntity<HashMap<?, ?>> undoIssueText(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
+        try{
+            if(referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            if(referUser.getIssueUndo().containsKey(project_id) && !referUser.getIssueUndo().get(project_id).isEmpty()) {
+                String newIssue=referUser.getIssueUndo().get(project_id).get(issue_id).pop();
+                if(!referUser.getIssueRedo().containsKey(project_id)) {
+                    Stack<String> issueStack=new Stack<>();
+                    issueStack.push(newIssue);
+                    HashMap<Integer,Stack<String>> issueMap=new HashMap<>();
+                    issueMap.put(issue_id, issueStack);
+                    referUser.getIssueRedo().put(project_id, issueMap);
+                }
+                else if(!referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+                    Stack<String> issueStack=new Stack<>();
+                    issueStack.push(newIssue);
+                    referUser.getIssueRedo().get(project_id).put(issue_id, issueStack);
+                }
+                else {
+                    referUser.getIssueRedo().get(project_id).get(issue_id).push(newIssue);
+                }
+                Issue issue=issueService.findIssuesById(issue_id);
+                issue.setDescriptionText(referUser.getIssueUndo().get(project_id).get(issue_id).peek());
+                updateTheIssue(project_id, issue_id, issue);
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("project_id", project_id);
+                map.put("issue_id", issue_id);
+                map.put("issue", issue);
+                return ResponseEntity.ok(map);
+            }
+        }
+        catch(EmptyStackException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    @GetMapping("/{project_id}/{issue_id}/redo")
+    public ResponseEntity<?> redoIssueText(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
+        if(referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if(referUser.getIssueRedo().containsKey(project_id) && !referUser.getIssueRedo().get(project_id).isEmpty()) {
+            String newIssue=referUser.getIssueRedo().get(project_id).get(issue_id).pop();
+            referUser.getIssueUndo().get(project_id).get(issue_id).add(newIssue);
+            Issue issue=issueService.findIssuesById(issue_id);
+            issue.setDescriptionText(newIssue);
+            updateTheIssue(project_id, issue_id, issue);
+            HashMap<String,Object> map=new HashMap<>();
+            map.put("project_id", project_id);
+            map.put("issue_id", issue_id);
+            map.put("issue", issue);
+            return ResponseEntity.ok(map);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     
     /*@GetMapping("{project_id}/report/get")

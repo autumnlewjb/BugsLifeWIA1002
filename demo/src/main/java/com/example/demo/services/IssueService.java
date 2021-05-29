@@ -111,7 +111,12 @@ public class IssueService {
     }
     
     public List<?> getHistory(Integer issue_id) {
-        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).getResultList();
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+    
+    public List<?> getAllHistory() {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return issueHistory;
     }
 }

@@ -48,9 +48,9 @@ public class CommentController {
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
-        referUser.getUndo().push(comment.getComment_id());
+        referUser.getCommentUndo().push(comment.getComment_id());
         referUser.getIssueIdRedo().clear();
-        referUser.getRedo().clear();
+        referUser.getCommentRedo().clear();
         return ResponseEntity.ok(comment);
     }
     
@@ -60,7 +60,7 @@ public class CommentController {
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
-        referUser.getUndo().push(comment.getComment_id());
+        referUser.getCommentUndo().push(comment.getComment_id());
     }
 
     @PutMapping("{project_id}/{issue_id}/{comment_id}")
@@ -84,23 +84,30 @@ public class CommentController {
             throw new ResourceNotFoundException("comment", "id", comment_id);
         }
         commentService.deleteComment(issue, comment);
-        if(referUser.getUndo().contains(comment_id)) {
-            int index=referUser.getUndo().indexOf(comment_id);
-            referUser.getUndo().remove(index);
+        if(referUser.getCommentUndo().contains(comment_id)) {
+            int index=referUser.getCommentUndo().indexOf(comment_id);
+            referUser.getCommentUndo().remove(index);
             referUser.getIssueIdUndo().remove(index);
         }
         return ResponseEntity.ok(HttpStatus.OK);
     }
     
-    @GetMapping("/undo")
+    @GetMapping("/comment/undo")
     public ResponseEntity<HashMap<?, ?>> undoComment() {
-        if(!referUser.getUndo().isEmpty()) {
+        if(!referUser.getCommentUndo().isEmpty()) {
+            while(commentService.findCommentById(referUser.getCommentUndo().peek())==null) {
+                referUser.getCommentUndo().pop();
+                referUser.getIssueIdUndo().pop();
+            }
+            if(referUser.getCommentUndo().isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             HashMap<String,Object> map=new HashMap<>();
-            Integer reference=referUser.getUndo().pop();
+            Integer reference=referUser.getCommentUndo().pop();
             referUser.getIssueIdRedo().push(referUser.getIssueIdUndo().pop());
             Comment comment=commentService.findCommentById(reference);
             deleteComment(referUser.getIssueIdRedo().peek(), reference);
-            referUser.getRedo().push(comment);
+            referUser.getCommentRedo().push(comment);
             Integer issueID=referUser.getIssueIdRedo().peek();
             map.put("issue_id", issueID);
             map.put("comment", comment);
@@ -111,12 +118,12 @@ public class CommentController {
         }
     }
     
-    @GetMapping("/redo")
+    @GetMapping("/comment/redo")
     public ResponseEntity<HashMap<?,?>> redoComment() {
-        if(!referUser.getRedo().isEmpty()) {
+        if(!referUser.getCommentRedo().isEmpty()) {
             HashMap<String,Object> map=new HashMap<>();
             Integer issueID=referUser.getIssueIdRedo().peek();
-            Comment comment=referUser.getRedo().pop();
+            Comment comment=referUser.getCommentRedo().pop();
             comment.setComment_id(null);
             comment.setReact(null);
             createComment(referUser.getIssueIdRedo().pop(),comment);

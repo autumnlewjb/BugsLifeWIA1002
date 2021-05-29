@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -48,11 +49,15 @@ public class User implements Serializable {
     @Transient
     private Stack<Integer> issueIdUndo = new Stack<>();
     @Transient
-    private Stack<Integer> undo = new Stack<>();
+    private Stack<Integer> commentUndo = new Stack<>();
     @Transient
     private Stack<Integer> issueIdRedo = new Stack<>();
     @Transient
-    private Stack<Comment> redo = new Stack<>();
+    private Stack<Comment> commentRedo = new Stack<>();
+    @Transient
+    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueUndo = new HashMap<>();
+    @Transient
+    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueRedo = new HashMap<>();
 
     public User() {
     }
@@ -129,16 +134,24 @@ public class User implements Serializable {
         return issueIdUndo;
     }
 
-    public Stack<Integer> getUndo() {
-        return undo;
+    public Stack<Integer> getCommentUndo() {
+        return commentUndo;
     }
 
     public Stack<Integer> getIssueIdRedo() {
         return issueIdRedo;
     }
 
-    public Stack<Comment> getRedo() {
-        return redo;
+    public Stack<Comment> getCommentRedo() {
+        return commentRedo;
+    }
+
+    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueUndo() {
+        return issueUndo;
+    }
+
+    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueRedo() {
+        return issueRedo;
     }
 
 }
