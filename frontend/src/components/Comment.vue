@@ -15,13 +15,13 @@
       <v-card-text>
         <v-layout row>
           <v-flex xs6 md8>
-            <v-chip @click="handleEmojiClick('Angry', angryColor == undefined)" class="ma-1" :disabled="!enableAngry" :color="angryColor">
+            <v-chip @click="handleEmojiClick('Angry', angryColor == undefined)" class="ma-1" :disabled="!enableAngry" :color="angryColor" :outlined="myReaction && myReaction.reaction == 'Angry'">
               &#128520; {{ angryCount }}
             </v-chip>
-            <v-chip @click="handleEmojiClick('Happy', happyColor == undefined)" class="ma-1" :disabled="!enableHappy" :color="happyColor">
+            <v-chip @click="handleEmojiClick('Happy', happyColor == undefined)" class="ma-1" :disabled="!enableHappy" :color="happyColor" :outlined="myReaction && myReaction.reaction == 'Happy'">
               &#128516; {{ happyCount }}
             </v-chip>
-            <v-chip @click="handleEmojiClick('Thumbsup', thumbsupColor == undefined)" class="ma-1" :disabled="!enableThumbsup" :color="thumbsupColor">
+            <v-chip @click="handleEmojiClick('Thumbsup', thumbsupColor == undefined)" class="ma-1" :disabled="!enableThumbsup" :color="thumbsupColor" :outlined="myReaction && myReaction.reaction == 'Thumbsup'">
               &#128077; {{ thumbsupCount }}
             </v-chip>
           </v-flex>
@@ -108,9 +108,9 @@ export default {
         this.enableHappy = this.myReaction.reaction == 'Happy';
         this.enableAngry = this.myReaction.reaction == 'Angry';
         this.enableThumbsup = this.myReaction.reaction == 'Thumbsup';
-        this.happyColor = !this.enableReaction && this.myReaction.reaction == 'Happy' ? 'blue' : undefined;
-        this.angryColor = !this.enableReaction && this.myReaction.reaction == 'Angry' ? 'blue' : undefined;
-        this.thumbsupColor = !this.enableReaction && this.myReaction.reaction == 'Thumbsup' ? 'blue' : undefined;
+        this.happyColor = !this.enableReaction && this.myReaction.reaction == 'Happy' ? '#8cc7ff' : undefined;
+        this.angryColor = !this.enableReaction && this.myReaction.reaction == 'Angry' ? '#8cc7ff' : undefined;
+        this.thumbsupColor = !this.enableReaction && this.myReaction.reaction == 'Thumbsup' ? '#8cc7ff' : undefined;
       } else {
         this.enableHappy = true;
         this.enableAngry = true;
@@ -224,4 +224,7 @@ export default {
 </script>
 
 <style scoped>
+p {
+  color: #8cc7ffd3;
+}
 </style>
