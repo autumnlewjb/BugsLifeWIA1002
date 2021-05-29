@@ -94,7 +94,20 @@ export default {
       filterActive: false,
       sortActive: false,
       sortData: [],
-      sortSubjects: ['date'],
+      sortSubjects: [
+        {
+          text: 'Name',
+          value: 'name'
+        },
+        {
+          text: 'Date',
+          value: 'date'
+        },
+        {
+          text: 'Number Of Issues',
+          value: 'issueNum'
+        }
+      ],
       tags: [],
       status: [],
       multipleSort: true

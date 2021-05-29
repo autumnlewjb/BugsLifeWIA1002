@@ -124,7 +124,25 @@ export default {
       filterActive: false,
       sortActive: false,
       sortData: [],
-      sortSubjects: ['timestamp', 'priority'],
+      // sortSubjects: ['title', 'timestamp', 'priority', 'commentNum'],
+      sortSubjects: [
+        {
+          text: 'Title',
+          value: 'title'
+        },
+        {
+          text: 'Timestamp',
+          value: 'timestamp'
+        },
+        {
+          text: 'Priority',
+          value: 'priority'
+        },
+        {
+          text: 'Number Of Comments',
+          value: 'commentNum'
+        }
+      ],
       tags: [],
       status: [],
       filterSubjects: ['tag', 'status'],

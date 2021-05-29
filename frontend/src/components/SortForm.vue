@@ -49,7 +49,7 @@
 export default {
   props: {
     sortSubjects: Array,
-    alreadyInSort: Array
+    alreadyInSort: Array,
   },
   data() {
     return {
@@ -65,15 +65,19 @@ export default {
   },
   watch: {
     sortData(val) {
-      this.availableSortSubjects = this.sortSubjects.filter((item) => val.filter((data) => data.subject == item).length == 0);
+      this.availableSortSubjects = this.sortSubjects.filter((item) => val.filter((data) => data.subject == item.value).length == 0);
       console.log(this.availableSortSubjects);
-      console.log("-")
+      console.log("-");
       console.log(val);
     }
   },
   methods: {
     addNewSort() {
       if (this.sortSubject == '' || this.sortOrder == '') return;
+      if (this.sortSubject == null) {
+        console.log("not found");
+        return;
+      }
       this.sortData.push({
         subject: this.sortSubject,
         order: this.sortOrder
