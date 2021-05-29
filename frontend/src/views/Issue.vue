@@ -75,6 +75,10 @@
             >Post Comment</v-btn
           >
         </v-card>
+        <p>
+            <a @click="handleUndoRedo('undo')" class="mx-5 text-decoration-underline">Undo last posted comment</a>
+            <a @click="handleUndoRedo('redo')" class="text-decoration-underline">Redo</a>
+        </p>
       </v-flex>
     </v-layout>
     <v-dialog v-model="dialog" persistent max-width="600px">
@@ -91,6 +95,17 @@
       :showDialog="confirmDeleteDialog"
     />
     <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
+    <v-dialog v-model="undoRedoFailed" width="500">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Undo / Redo Failed</v-card-title>
+        <v-card-text class="my-2">Seems you reach the end of the undo redo stack!</v-card-text>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn @click="undoRedoFailed = false" text>
+            Dismiss
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -114,7 +129,8 @@ export default {
       forbiddenDialog: false,
       items: [],
       select: "",
-      issueLoaded: false
+      issueLoaded: false,
+      undoRedoFailed: false
     };
   },
   created() {
@@ -252,6 +268,58 @@ export default {
     },
     toggleForbiddenDialog() {
       this.forbiddenDialog = true;
+    },
+    handleUndoRedo(action, check = true) {
+      if (action == 'undo') {
+        fetch(`/api/undo`)
+        .then((res) => {
+          if (res.status != 200) {  
+            console.log(res.status);
+            return null;
+          } else {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          if (data) {
+            if (check && data.issue_id != this.issueId) {
+              this.undoRedoFailed = true;
+              this.handleUndoRedo('redo', false);
+            } else {
+              this.updateComment();
+            }
+          } else {
+            this.undoRedoFailed = true;
+          }
+        })
+        .catch(e => console.log(e));
+      } else {
+        fetch(`/api/redo`)
+        .then((res) => {
+          console.log(res.status);
+          if (res.status != 200) {
+            return null;
+          } else {
+            console.log(res);
+            return res.json();
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          if (data) {
+            if (check && data.issue_id != this.issueId) {
+              this.undoRedoFailed = true;
+              this.handleUndoRedo('undo', false);
+            } else {
+              this.updateComment();
+            }
+          } else {
+            this.undoRedoFailed = true;
+          }
+        })
+        .catch(() => this.undoRedoFailed = true);
+      }
     }
   },
   computed: {
