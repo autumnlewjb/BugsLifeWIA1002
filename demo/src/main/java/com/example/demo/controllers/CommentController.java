@@ -93,38 +93,40 @@ public class CommentController {
     }
     
     @GetMapping("/undo")
-    public ResponseEntity<HashMap<Integer,Comment>> undoComment() {
+    public ResponseEntity<HashMap<?, ?>> undoComment() {
         if(!referUser.getUndo().isEmpty()) {
-            HashMap<Integer,Comment> map=new HashMap<>();
+            HashMap<String,Object> map=new HashMap<>();
             Integer reference=referUser.getUndo().pop();
             referUser.getIssueIdRedo().push(referUser.getIssueIdUndo().pop());
             Comment comment=commentService.findCommentById(reference);
             deleteComment(referUser.getIssueIdRedo().peek(), reference);
             referUser.getRedo().push(comment);
             Integer issueID=referUser.getIssueIdRedo().peek();
-            map.put(issueID, comment);
+            map.put("issue_id", issueID);
+            map.put("comment", comment);
             return ResponseEntity.ok(map);
         }
         else {
-            return null;
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
     
     @GetMapping("/redo")
-    public ResponseEntity<HashMap<Integer,Comment>> redoComment() {
+    public ResponseEntity<HashMap<?,?>> redoComment() {
         if(!referUser.getRedo().isEmpty()) {
-            HashMap<Integer,Comment> map=new HashMap<>();
+            HashMap<String,Object> map=new HashMap<>();
             Integer issueID=referUser.getIssueIdRedo().peek();
             Comment comment=referUser.getRedo().pop();
             comment.setComment_id(null);
             comment.setReact(null);
             createComment(referUser.getIssueIdRedo().pop(),comment);
             comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
-            map.put(issueID, comment);
+            map.put("issue_id", issueID);
+            map.put("comment", comment);
             return ResponseEntity.ok(map);
         }
         else {
-            return null;
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
