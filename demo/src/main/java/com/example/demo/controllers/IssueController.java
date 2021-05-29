@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import static com.example.demo.controllers.AuthController.referUser;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
@@ -128,7 +129,17 @@ public class IssueController {
         }
         return null;*/
     }
-
+    
+    @Transactional
+    @GetMapping("/{issue_id}/history")
+    public ResponseEntity<?> getHistory(@PathVariable Integer issue_id) {
+        Issue issue=issueService.findIssuesById(issue_id);
+        //if(referUser.getUsername().equals(issue.getCreatedBy())) {
+            return ResponseEntity.ok(issueService.getHistory(issue_id));
+        //}
+        //return null;
+    }
+    
     /*@GetMapping("{project_id}/report/get")
     public ResponseEntity<Resource> generateReport(@PathVariable Integer project_id) throws IOException, DocumentException {
         Project project = projectService.findProjectWithId(project_id);

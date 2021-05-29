@@ -14,7 +14,10 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
+@Audited
 @Entity
 @Indexed
 @Table(name = "issue")
@@ -58,15 +61,18 @@ public class Issue implements Serializable {
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
+    @NotAudited
     private Project project;
 
     @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
+    @NotAudited
     private List<Comment> comment;
 
     @GenericField(sortable = Sortable.YES)
     @Formula("(select count(*) from comment c where c.issue_id = issue_id)")
+    @NotAudited
     private Integer commentNum;
 
     public int getCommentIndex(Comment comment) {

@@ -15,11 +15,16 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
 
 @Service
 @Transactional
 public class IssueService {
 
+    @Autowired
+    EntityManager entityManager;
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
     private final CommentRepository commentRepository;
@@ -104,5 +109,9 @@ public class IssueService {
     public List<Issue> findAll() {
         return issueRepository.findAll();
     }
-
+    
+    public List<?> getHistory(Integer issue_id) {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).getResultList();
+        return issueHistory;
+    }
 }
