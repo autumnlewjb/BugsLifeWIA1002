@@ -1,5 +1,17 @@
 package com.example.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Formula;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,35 +19,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import org.hibernate.annotations.Formula;
-import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 @Entity
 @Table(name = "project")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 @Indexed
 public class Project implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer project_id;
 
-    @FullTextField (analyzer="NAME")
+    @FullTextField(analyzer = "NAME")
     @Column(name = "name")
     private String name;
 
-    @FullTextField (analyzer="PROJECT")
+    @FullTextField(analyzer = "PROJECT")
     @Column(columnDefinition = "text", name = "description")
     private String description;
 
@@ -43,23 +42,25 @@ public class Project implements Serializable {
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date date;
-    
+
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Issue> issue;
 
-    @Formula("(select count(*) from Issue i where i.project_id = project_id)")
+    @GenericField(sortable = Sortable.YES)
+    @Formula("(select count(*) from issue i where i.project_id = project_id)")
     private Integer issueNum;
 
-    public Project() {}
+    public Project() {
+    }
 
     public Project(
-        String name, String description, Date date
+            String name, String description, Date date
     ) {
         this.name = name;
         this.description = description;
@@ -80,10 +81,10 @@ public class Project implements Serializable {
         }
     }
 
-    public int getIssueIndex(Issue issue){
+    public int getIssueIndex(Issue issue) {
         return this.issue.indexOf(issue);
     }
-    
+
     public User getUser() {
         return user;
     }
@@ -95,27 +96,27 @@ public class Project implements Serializable {
     public Integer getProject_id() {
         return project_id;
     }
-    
+
     public void setProject_id(Integer project_id) {
         this.project_id = project_id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Date getDate() {
         return date;
     }
-    
+
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -131,9 +132,9 @@ public class Project implements Serializable {
     public void setIssue(List<Issue> issue) {
         this.issue = issue;
     }
-    
+
     public void removeUser() {
-        this.user=null;
+        this.user = null;
     }
 
     public Integer getIssueNum() {

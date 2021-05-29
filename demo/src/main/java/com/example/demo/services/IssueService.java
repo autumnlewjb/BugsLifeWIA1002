@@ -81,7 +81,6 @@ public class IssueService {
         return issueRepository.findIssueById(issue_id);
     }
 
-    @PreAuthorize("#issue.createdBy == authentication.name")
     public void updateIssue(Integer project_id, Issue issue, Issue updatedIssue) {
         updatedIssue.setIssue_id(issue.getIssue_id());
         List<Comment> allComments = commentRepository.findByIssue(issue);
@@ -95,7 +94,7 @@ public class IssueService {
         issueRepository.save(updatedIssue);
     }
 
-    @PreAuthorize("#issue.createdBy == authentication.name")
+    @PreAuthorize("#issue.createdBy == authentication.name or hasAuthority('ADMIN')")
     public void deleteIssue(Project project, Issue issue) {
         project.getIssue().remove(issue);
         issue.setProject(null);

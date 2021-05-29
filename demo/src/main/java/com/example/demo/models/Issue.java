@@ -20,12 +20,12 @@ import java.util.List;
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Issue implements Serializable{
+public class Issue implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer issue_id;
 
-    @FullTextField (analyzer="NAME")
+    @FullTextField(analyzer = "NAME")
     private String title;
 
     @GenericField(sortable = Sortable.YES)
@@ -39,8 +39,10 @@ public class Issue implements Serializable{
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "issue_id"))
     private List<String> tag;
 
-    @FullTextField (analyzer="ISSUE")
-    @Lob @Basic(fetch = FetchType.LAZY) @Column(columnDefinition = "text", name = "descriptionText")
+    @FullTextField(analyzer = "ISSUE")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
 
     @CreatedBy
@@ -54,7 +56,7 @@ public class Issue implements Serializable{
     private Date timestamp;
 
     @JsonBackReference
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 
@@ -63,10 +65,11 @@ public class Issue implements Serializable{
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comment;
 
-    @Formula("(select count(*) from Comment c where c.issue_id = issue_id)")
+    @GenericField(sortable = Sortable.YES)
+    @Formula("(select count(*) from comment c where c.issue_id = issue_id)")
     private Integer commentNum;
 
-    public int getCommentIndex(Comment comment){
+    public int getCommentIndex(Comment comment) {
         return this.comment.indexOf(comment);
     }
 

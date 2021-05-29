@@ -1,7 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Issue;
-import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.services.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +28,7 @@ public class SearchController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/searchProject")
+    /*@GetMapping("/searchProject")
     public ResponseEntity<Page<Project>> searchProject(Pageable pageable, @RequestParam("query") String query) {
         Page<Project> result = searchService.searchProject(pageable, query);
         return ResponseEntity.ok(result);
@@ -42,15 +38,15 @@ public class SearchController {
     public ResponseEntity<Page<Issue>> searchIssue(Pageable pageable, @RequestParam("query") String query) {
         Page<Issue> result = searchService.searchIssue(pageable, query);
         return ResponseEntity.ok(result);
-    }
+    }*/
 
     @GetMapping
-    public ResponseEntity<Page<?>> searchMultiple(
+    public ResponseEntity<Page<?>> search(
             Pageable pageable,
             @RequestParam String query,
             @RequestParam(defaultValue = "all") String scope,
-            @RequestParam(defaultValue = "relevance,desc") String[] sort,
-            @RequestParam(defaultValue = "none,none") String[] filter) {
+            @RequestParam(defaultValue = "none") String[] sort,
+            @RequestParam(defaultValue = "none") String[] filter) {
         Page<?> result = searchService.search(pageable, query, scope, sort, filter);
         return ResponseEntity.ok(result);
     }
