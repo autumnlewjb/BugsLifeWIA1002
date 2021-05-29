@@ -9,6 +9,7 @@ import com.example.demo.models.Issue;
 import com.example.demo.services.CommentService;
 
 import com.example.demo.services.IssueService;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,18 @@ public class CommentController {
         comment.setIssue(issue);
         commentService.createComments(comment);
         referUser.getUndo().push(comment.getComment_id());
+        referUser.getIssueIdRedo().clear();
+        referUser.getRedo().clear();
         return ResponseEntity.ok(comment);
+    }
+    
+    public void createComment(Integer issue_id, Comment comment) {
+        Issue issue = issueService.findIssuesById(issue_id);
+        referUser.getIssueIdUndo().push(issue_id);
+        issue.getComment().add(comment);
+        comment.setIssue(issue);
+        commentService.createComments(comment);
+        referUser.getUndo().push(comment.getComment_id());
     }
 
     @PutMapping("{project_id}/{issue_id}/{comment_id}")
@@ -81,14 +93,17 @@ public class CommentController {
     }
     
     @GetMapping("/undo")
-    public ResponseEntity<Comment> undoComment() {
+    public ResponseEntity<HashMap<Integer,Comment>> undoComment() {
         if(!referUser.getUndo().isEmpty()) {
+            HashMap<Integer,Comment> map=new HashMap<>();
             Integer reference=referUser.getUndo().pop();
             referUser.getIssueIdRedo().push(referUser.getIssueIdUndo().pop());
             Comment comment=commentService.findCommentById(reference);
             deleteComment(referUser.getIssueIdRedo().peek(), reference);
             referUser.getRedo().push(comment);
-            return ResponseEntity.ok(comment);
+            Integer issueID=referUser.getIssueIdRedo().peek();
+            map.put(issueID, comment);
+            return ResponseEntity.ok(map);
         }
         else {
             return null;
@@ -96,14 +111,17 @@ public class CommentController {
     }
     
     @GetMapping("/redo")
-    public ResponseEntity<Comment> redoComment() {
+    public ResponseEntity<HashMap<Integer,Comment>> redoComment() {
         if(!referUser.getRedo().isEmpty()) {
+            HashMap<Integer,Comment> map=new HashMap<>();
+            Integer issueID=referUser.getIssueIdRedo().peek();
             Comment comment=referUser.getRedo().pop();
             comment.setComment_id(null);
             comment.setReact(null);
-            createComments(referUser.getIssueIdRedo().pop(),comment);
+            createComment(referUser.getIssueIdRedo().pop(),comment);
             comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
-            return ResponseEntity.ok(comment);
+            map.put(issueID, comment);
+            return ResponseEntity.ok(map);
         }
         else {
             return null;
