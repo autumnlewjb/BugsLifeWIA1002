@@ -1,10 +1,8 @@
 package com.example.demo.config;
 
-import com.example.demo.models.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -17,7 +15,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
             return Optional.of("Unknown User");
         }
 
-        String username =  ((UserDetails) authentication.getPrincipal()).getUsername();
+        String username = authentication.getName();
         return Optional.of(username);
     }
 }

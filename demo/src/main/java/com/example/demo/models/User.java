@@ -1,66 +1,64 @@
 package com.example.demo.models;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import java.util.ArrayList;
-import java.util.Stack;
-
-import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-//import org.jboss.logging.annotations.Field;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 @Entity
 @Indexed
 @Table(name = "user")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class User implements Serializable{
-    
+public class User implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
     @FullTextField
-    @Column(nullable=false, updatable=true, unique = true)
+    @Column(nullable = false, updatable = true, unique = true)
     private String email;
 
-    @FullTextField (analyzer="NAME")
+    @FullTextField(analyzer = "NAME")
     @Column(nullable = false, updatable = true, unique = true)
     private String username;
-    
+
     @Column(nullable = false, updatable = true)
     private String password;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> project;
-    
-    @ManyToMany(fetch=FetchType.LAZY,cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinTable(name = "Users_Roles", joinColumns = {
-            @JoinColumn(name = "User_id") }, inverseJoinColumns = {
-            @JoinColumn(name = "Role_id") })
-    private List<Role> roles=new ArrayList <>();
-     
-    @Transient
-    private Stack<Integer> issueIdUndo=new Stack<>();
-    @Transient
-    private Stack<Integer> undo=new Stack<>();
-    @Transient
-    private Stack<Integer> issueIdRedo=new Stack<>();
-    @Transient
-    private Stack<Comment> redo=new Stack<>();
 
-    public User() {}
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "Users_Roles", joinColumns = {
+            @JoinColumn(name = "User_id")}, inverseJoinColumns = {
+            @JoinColumn(name = "Role_id")})
+    private List<Role> roles = new ArrayList<>();
+
+    @Transient
+    private Stack<Integer> issueIdUndo = new Stack<>();
+    @Transient
+    private Stack<Integer> undo = new Stack<>();
+    @Transient
+    private Stack<Integer> issueIdRedo = new Stack<>();
+    @Transient
+    private Stack<Comment> redo = new Stack<>();
+
+    public User() {
+    }
 
     public User(
-        String email, String username, String password
+            String email, String username, String password
     ) {
         this.email = email;
         this.username = username;
@@ -75,28 +73,34 @@ public class User implements Serializable{
         return new User(email, username, password);
     }
 
-    public int getProjectIndex(Project targetProject){
+    public int getProjectIndex(Project targetProject) {
         return this.project.indexOf(targetProject);
     }
 
     public Integer getUser_id() {
         return user_id;
     }
+
     public void setUser_id(Integer user_id) {
         this.user_id = user_id;
     }
+
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -136,5 +140,5 @@ public class User implements Serializable{
     public Stack<Comment> getRedo() {
         return redo;
     }
-    
+
 }
