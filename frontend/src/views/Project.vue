@@ -14,16 +14,36 @@
               >Delete</v-btn
             >
           </h1>
+        </v-container>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs8 md8>
+        <v-container>
           <p>Description: {{ getProject.description }}</p>
           <p>
             Date created:
             {{ getProject.date == null ? "Not specified" : getProject.date }}
           </p>
-          <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary">View Charts</v-btn>
         </v-container>
       </v-flex>
     </v-layout>
-    <Issues :data="data"></Issues>
+    <v-tabs>
+      <v-tab>Charts</v-tab>
+      <v-tab>Issues</v-tab>
+      <v-tab-item>
+        <v-container>
+          <!-- <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary">View Charts</v-btn> -->
+        </v-container>
+      </v-tab-item>
+      <v-tab-item>
+        <v-container>
+          <!-- <v-sheet elevation="10" class="ma-5 pa-5" rounded> -->
+          <Issues :data="data"></Issues>
+          <!-- </v-sheet> -->
+        </v-container>
+      </v-tab-item>
+    </v-tabs>
 
     <v-dialog v-model="dialog" persistent max-width="600px">
       <ProjectForm
