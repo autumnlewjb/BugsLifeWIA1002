@@ -430,12 +430,12 @@ export default {
   computed: {
     getItems() {
       this.items.map((item) => {
-        if (item.project_id) {
-          item.id = item.project_id;
+        if (item.projectId) {
+          item.id = item.projectId;
           item.route = "Project";
           item.type = "project";
-        } else if (item.issue_id) {
-          item.id = item.issue_id;
+        } else if (item.issueId) {
+          item.id = item.issueId;
           item.route = "Issue";
           item.type = "issue"
           item.name = item.title;

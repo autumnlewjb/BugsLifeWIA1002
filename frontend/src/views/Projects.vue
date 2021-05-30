@@ -58,7 +58,7 @@
                   color="primary"
                   :to="{
                     path: 'project',
-                    query: { projectId: project.project_id },
+                    query: { projectId: project.projectId },
                   }"
                   text
                   >View Project</v-btn

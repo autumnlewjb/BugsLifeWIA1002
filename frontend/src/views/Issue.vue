@@ -271,7 +271,7 @@ export default {
     },
     handleUndoRedo(action, check = true) {
       if (action == 'undo') {
-        fetch(`/api/undo`)
+        fetch(`/api/comment/undo`)
         .then((res) => {
           if (res.status != 200) {  
             console.log(res.status);
@@ -295,7 +295,7 @@ export default {
         })
         .catch(e => console.log(e));
       } else {
-        fetch(`/api/redo`)
+        fetch(`/api/comment/redo`)
         .then((res) => {
           console.log(res.status);
           if (res.status != 200) {

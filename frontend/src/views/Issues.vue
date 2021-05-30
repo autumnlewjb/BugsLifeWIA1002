@@ -83,7 +83,7 @@
                   color="primary"
                   :to="{
                     name: 'Issue',
-                    query: { projectId: projectId, issueId: issue.issue_id },
+                    query: { projectId: projectId, issueId: issue.issueId },
                   }"
                 >
                   View Issue

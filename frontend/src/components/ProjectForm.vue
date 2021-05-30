@@ -43,7 +43,7 @@ export default {
       this.name = this.project.name;
       this.description = this.project.description;
       this.title = 'Edit Project';
-      this.projectId = this.project.project_id;
+      this.projectId = this.project.projectId;
     }
   },
   methods: {

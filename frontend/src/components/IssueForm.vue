@@ -109,7 +109,7 @@ export default {
           .catch((e) => console.log(e));
       } else if (action == "edit") {
         console.log(this.title)
-        await fetch(`/api/${this.projectId}/${this.issue.issue_id}`, {
+        await fetch(`/api/${this.projectId}/${this.issue.issueId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
