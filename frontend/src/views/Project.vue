@@ -33,14 +33,15 @@
       <v-tab>Issues</v-tab>
       <v-tab-item>
         <v-container>
-          <!-- <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary">View Charts</v-btn> -->
+          <v-container class="d-flex justify-end">
+           <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon><v-icon>mdi-open-in-new</v-icon></v-btn>
+          </v-container>
+          <Charts :projectId="projectId"/>
         </v-container>
       </v-tab-item>
       <v-tab-item>
         <v-container>
-          <!-- <v-sheet elevation="10" class="ma-5 pa-5" rounded> -->
           <Issues :data="data"></Issues>
-          <!-- </v-sheet> -->
         </v-container>
       </v-tab-item>
     </v-tabs>
@@ -65,7 +66,8 @@
 import Issues from "../views/Issues";
 import ProjectForm from "../components/ProjectForm";
 import ConfirmDelete from "../components/ConfirmDelete";
-import Forbidden from "../components/Forbidden"
+import Forbidden from "../components/Forbidden";
+import Charts from "../components/Charts";
 
 export default {
   data() {
@@ -154,7 +156,8 @@ export default {
     Issues,
     ProjectForm,
     ConfirmDelete,
-    Forbidden
+    Forbidden,
+    Charts
   },
   computed: {
     getProject() {

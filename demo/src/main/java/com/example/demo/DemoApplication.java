@@ -40,7 +40,7 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
-        /*ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/BugsLife.json");
         try {
@@ -60,7 +60,7 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Unable to save users: " + e.getMessage());
         } catch (DataIntegrityViolationException e) {
             System.out.println("Users Saved!");
-        }*/
+        }
     }
 
 
