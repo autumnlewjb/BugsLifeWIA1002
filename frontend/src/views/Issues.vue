@@ -141,6 +141,10 @@ export default {
         {
           text: 'Number Of Comments',
           value: 'commentNum'
+        },
+        {
+          text: 'Issue ID',
+          value: 'issueId'
         }
       ],
       tags: [],

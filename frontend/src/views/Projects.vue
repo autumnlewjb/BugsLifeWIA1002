@@ -106,6 +106,10 @@ export default {
         {
           text: 'Number Of Issues',
           value: 'issueNum'
+        },
+        {
+          text: 'Project ID',
+          value: 'projectId'
         }
       ],
       tags: [],
