@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import com.example.demo.models.Issue;
+import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.services.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +30,17 @@ public class SearchController {
         return ResponseEntity.ok(result);
     }
 
-    /*@GetMapping("/searchProject")
+    @GetMapping("/searchProject")
     public ResponseEntity<Page<Project>> searchProject(Pageable pageable, @RequestParam("query") String query) {
-        Page<Project> result = searchService.searchProject(pageable, query);
+        Page<Project> result = searchService.searchProject(pageable, query, null);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/searchIssue")
     public ResponseEntity<Page<Issue>> searchIssue(Pageable pageable, @RequestParam("query") String query) {
-        Page<Issue> result = searchService.searchIssue(pageable, query);
+        Page<Issue> result = searchService.searchIssue(pageable, query, null, null);
         return ResponseEntity.ok(result);
-    }*/
+    }
 
     @GetMapping
     public ResponseEntity<Page<?>> search(

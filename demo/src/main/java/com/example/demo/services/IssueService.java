@@ -15,11 +15,16 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
 
 @Service
 @Transactional
 public class IssueService {
 
+    @Autowired
+    EntityManager entityManager;
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
     private final CommentRepository commentRepository;
@@ -82,7 +87,7 @@ public class IssueService {
     }
 
     public void updateIssue(Integer project_id, Issue issue, Issue updatedIssue) {
-        updatedIssue.setIssue_id(issue.getIssue_id());
+        updatedIssue.setIssueId(issue.getIssueId());
         List<Comment> allComments = commentRepository.findByIssue(issue);
         Project project = projectRepository.findProjectById(project_id);
         project.getIssue().set(project.getIssueIndex(issue), updatedIssue);
@@ -104,5 +109,14 @@ public class IssueService {
     public List<Issue> findAll() {
         return issueRepository.findAll();
     }
-
+    
+    public List<?> getHistory(Integer issue_id) {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+    
+    public List<?> getAllHistory() {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
 }

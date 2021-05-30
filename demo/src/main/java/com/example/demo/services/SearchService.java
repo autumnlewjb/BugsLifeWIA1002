@@ -75,7 +75,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    private Page<Project> searchProject(Pageable pageable, String query, List<String> sort) {
+    public Page<Project> searchProject(Pageable pageable, String query, List<String> sort) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Project> result = session.search(Project.class)
                 .where(
@@ -93,7 +93,7 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
         return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
-    private Page<Issue> searchIssue(Pageable pageable, String query, List<String> sort, List<String> filter) {
+    public Page<Issue> searchIssue(Pageable pageable, String query, List<String> sort, List<String> filter) {
         SearchSession session = Search.session(entityManager);
         SearchResult<Issue> result = session.search(Issue.class)
                 .where(f -> f.bool(b -> {
