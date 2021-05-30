@@ -16,7 +16,7 @@
             </v-row>
           </v-container>
           <v-form>
-            <v-row v-if="availableSortSubjects.length > 0" justify="center">
+            <v-row v-if="!applied && availableSortSubjects.length > 0" justify="center">
               <v-col sm="6" md="6">
                 <v-select :items="availableSortSubjects" solo label="sort by" v-model="sortSubject"></v-select>
               </v-col>
@@ -33,7 +33,7 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-end">
-              <v-btn text @click="applySort" v-if="availableSortSubjects.length > 0">Apply</v-btn>
+              <v-btn text @click="applySort" v-if="!applied && availableSortSubjects.length > 0">Apply</v-btn>
               <v-btn text @click="clearAll">Clear All</v-btn>
             </v-row>
           </v-form>
@@ -56,7 +56,8 @@ export default {
       sortData: [],
       sortSubject: "",
       sortOrder: "",
-      availableSortSubjects: []
+      availableSortSubjects: [],
+      applied: false
     }
   },
   created() {
@@ -93,11 +94,13 @@ export default {
       }
       this.sortSubject = '';
       this.sortOrder = '';
+      this.applied = false;
       // this.$emit('acceptSortQuery', this.sortData)
     },
     applySort() {
       if (this.sortSubject != '' && this.sortOrder != '') {
         this.addNewSort();
+        this.applied = true;
       }
       // this.$emit('acceptSortQuery', this.sortData);
     }

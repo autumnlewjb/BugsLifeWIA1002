@@ -409,10 +409,24 @@ export default {
     },
     searchType(val) {
       if (val == 'issue') {
-        this.availableSort = ["priority", "timestamp"];
+        this.availableSort = [
+          {
+            text: 'Priority',
+            value: 'priority'
+          },
+          {
+            text: 'Timestamp',
+            value: 'timestamp'
+          }
+        ];
         this.availableFilter = ['tag', 'status'];
       } else if (val == 'project') {
-        this.availableSort = ["timestamp"];
+        this.availableSort = [
+          {
+            text: 'Timestamp',
+            value: 'timestamp'
+          }
+        ];
         this.availableFilter = []
       } else {
         this.availableSort = [];
