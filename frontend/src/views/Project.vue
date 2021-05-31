@@ -36,19 +36,19 @@
     </v-container>
     <v-container>
       <v-tabs>
-        <v-tab>Charts</v-tab>
         <v-tab>Issues</v-tab>
+        <v-tab>Charts</v-tab>
+        <v-tab-item>
+          <v-container>
+            <Issues :data="data"></Issues>
+          </v-container>
+        </v-tab-item>
         <v-tab-item>
           <v-container>
             <v-container class="d-flex justify-end">
             <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon><v-icon>mdi-open-in-new</v-icon></v-btn>
             </v-container>
             <Charts :projectId="projectId"/>
-          </v-container>
-        </v-tab-item>
-        <v-tab-item>
-          <v-container>
-            <Issues :data="data"></Issues>
           </v-container>
         </v-tab-item>
       </v-tabs>

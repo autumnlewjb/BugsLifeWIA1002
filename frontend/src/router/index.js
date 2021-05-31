@@ -65,6 +65,8 @@ router.beforeEach((to, from, next) => {
         } else {
             next({name: "Projects"});
         }
+    } else if (to.name == 'Home' && store.getters.getCurrentUser) {
+        next({name: 'Projects'})
     } else if (to.name != 'Login' && !store.getters.getCurrentUser) {
         next({name: "Login"});
     } else if (to.name == 'Login' && store.getters.getCurrentUser) {
