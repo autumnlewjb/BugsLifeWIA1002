@@ -46,7 +46,7 @@
           >
             <v-layout row align-center>
               <v-card-title>{{ project.name }}</v-card-title>
-              <v-card-text>{{ project.description }}</v-card-text>
+              <v-card-text v-html="getDescription(project.description)"></v-card-text>
               <v-card-text
                 >Created on
                 {{
@@ -167,6 +167,11 @@ export default {
         this.showFilterForm = !this.showFilterForm;
         this.showSortForm = false;
       }
+    },
+    getDescription(str) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = str;
+      return tmp.textContent || tmp.innerText || "";
     }
   },
   computed: {
@@ -184,7 +189,7 @@ export default {
     },
     getFilterButtonColor() {
       return this.showFilterForm && this.filterActive;
-    }
+    },
   }
 };
 </script>

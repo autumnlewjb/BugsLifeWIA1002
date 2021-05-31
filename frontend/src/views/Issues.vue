@@ -103,12 +103,10 @@
                 </v-tooltip>
               </v-chip-group>
             </v-card-text>
-            <v-card-text>
-              {{
-                issue.descriptionText == null || issue.descriptionText == ""
-                  ? "(Description not specified)"
-                  : issue.descriptionText
-              }}</v-card-text
+            <v-card-text v-html="getDescription(issue.descriptionText == null || issue.descriptionText == ''
+                  ? '(Description not specified)'
+                  : issue.descriptionText)">
+            </v-card-text
             >
             <v-card-text>
               Status: {{ issue.status }}<br />
@@ -313,6 +311,11 @@ export default {
       this.tags = [];
       this.tags.push(tag);
     },
+    getDescription(str) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = str;
+      return tmp.textContent || tmp.innerText || "";
+    }
   },
   computed: {
     getIssues() {

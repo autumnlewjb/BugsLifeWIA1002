@@ -1,50 +1,58 @@
 <template>
   <v-container v-if="project">
-    <v-layout row>
-      <v-flex xs8 md8>
-        <v-container>
-          <h1>
-            {{ getProject.name }}
-            <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
-            <v-btn
-              class="mx-0"
-              plain
-              color="red"
-              @click="toggleDeleteDialog(false)"
-              >Delete</v-btn
-            >
-          </h1>
-        </v-container>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs8 md8>
-        <v-container>
-          <p>Description: {{ getProject.description }}</p>
-          <p>
-            Date created:
-            {{ getProject.date == null ? "Not specified" : getProject.date }}
-          </p>
-        </v-container>
-      </v-flex>
-    </v-layout>
-    <v-tabs>
-      <v-tab>Charts</v-tab>
-      <v-tab>Issues</v-tab>
-      <v-tab-item>
-        <v-container>
-          <v-container class="d-flex justify-end">
-           <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon><v-icon>mdi-open-in-new</v-icon></v-btn>
+    <v-container>
+
+      <v-layout row>
+        <v-flex xs8 md8>
+          <v-container>
+            <h1>
+              {{ getProject.name }}
+              <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
+              <v-btn
+                class="mx-0"
+                plain
+                color="red"
+                @click="toggleDeleteDialog(false)"
+                >Delete</v-btn
+              >
+            </h1>
           </v-container>
-          <Charts :projectId="projectId"/>
-        </v-container>
-      </v-tab-item>
-      <v-tab-item>
-        <v-container>
-          <Issues :data="data"></Issues>
-        </v-container>
-      </v-tab-item>
-    </v-tabs>
+        </v-flex>
+      </v-layout>
+      <v-layout row>
+        <v-flex x12 md12>
+          <v-container>
+            <p>
+              Date created:
+              {{ getProject.date == null ? "Not specified" : getProject.date }}
+            </p>
+            <p>Description:</p>
+            <v-card outlined class="pa-5">
+              <p v-html="getProjectDescription"></p>
+            </v-card>
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <v-container>
+      <v-tabs>
+        <v-tab>Charts</v-tab>
+        <v-tab>Issues</v-tab>
+        <v-tab-item>
+          <v-container>
+            <v-container class="d-flex justify-end">
+            <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon><v-icon>mdi-open-in-new</v-icon></v-btn>
+            </v-container>
+            <Charts :projectId="projectId"/>
+          </v-container>
+        </v-tab-item>
+        <v-tab-item>
+          <v-container>
+            <Issues :data="data"></Issues>
+          </v-container>
+        </v-tab-item>
+      </v-tabs>
+    </v-container>
 
     <v-dialog v-model="dialog" persistent max-width="600px">
       <ProjectForm
@@ -163,6 +171,9 @@ export default {
     getProject() {
       return this.project;
     },
+    getProjectDescription() {
+      return `<p>${this.project.description.replace(/\n/g, "<br/>")}</p>`;
+    }
   },
 };
 </script>

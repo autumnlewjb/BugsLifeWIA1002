@@ -12,15 +12,8 @@
           </h1>
         </v-container>
         <v-container>
-          <v-card outlined height="80%">
-            <v-card-text height="100%">
-              <span class="font-weight-bold">Description:</span> <br />
-              {{
-                getIssue.descriptionText == null
-                  ? "Not specified"
-                  : getIssue.descriptionText
-              }}
-            </v-card-text>
+          <v-card outlined class="pa-5">
+            <span class="font-weight-normal" v-html="getIssue.descriptionText == null ? 'Not specified' : getIssue.descriptionText">Description:</span> <br />
           </v-card>
         </v-container>
       </v-flex>
@@ -70,7 +63,8 @@
           @updateComment="updateComment"
         />
         <v-card class="pa-5 ma-5" outlined>
-          <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
+          <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
+          <TipTap v-model="text" />
           <v-btn text color="teal" class="" @click="postComment"
             >Post Comment</v-btn
           >
@@ -113,7 +107,8 @@
 import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
-import Forbidden from "../components/Forbidden"
+import Forbidden from "../components/Forbidden";
+import TipTap from '../components/TipTap.vue';
 
 export default {
   setup() {},
@@ -169,7 +164,8 @@ export default {
     Comment,
     IssueForm,
     ConfirmDelete,
-    Forbidden
+    Forbidden,
+    TipTap,
   },
   methods: {
     async postComment() {
@@ -329,6 +325,9 @@ export default {
     getIssue() {
       return this.issue;
     },
+    getIssueDescription() {
+      return this.getIssue.descriptionText == null ? "Not specified" : this.getIssue.descriptionText
+    }
   },
 };
 </script>

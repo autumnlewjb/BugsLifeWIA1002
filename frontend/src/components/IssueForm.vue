@@ -13,12 +13,15 @@
           ></v-text-field>
         </v-row>
         <v-row>
-          <v-textarea
+          <!-- <v-textarea
             solo
             label="Description"
             v-model="descriptionText"
             required
-          ></v-textarea>
+          ></v-textarea> -->
+          <div style="width: 100%" class="my-5">
+            <TipTap v-model="descriptionText" />
+          </div>
         </v-row>
         <v-row>
           <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips multiple></v-combobox>
@@ -48,9 +51,14 @@
 </template>
 
 <script>
+import TipTap from '../components/TipTap'
+
 export default {
   name: "ProjectForm",
   setup() {},
+  components: {
+    TipTap
+  },
   data() {
     return {
       title: "",

@@ -9,9 +9,7 @@
           }}</strong
         ></v-card-text
       >
-      <v-card-text class="text--body-1 black--text">{{
-        comment.text
-      }}</v-card-text>
+      <v-card-text class="text--body-1 black--text" v-html="comment.text"></v-card-text>
       <v-card-text>
         <v-layout row>
           <v-flex xs6 md8>
@@ -36,7 +34,8 @@
     </v-card>
     <v-dialog v-model="dialog" class="" persistent width="600">
       <v-card class="pa-2" outlined>
-        <v-textarea solo :no-resize="true" v-model="text"></v-textarea>
+        <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
+        <TipTap v-model="text"/>
         <v-card-actions>
           <v-btn text color="teal" class="" @click="editComment"
             >Edit Comment</v-btn
@@ -53,11 +52,13 @@
 <script>
 import ConfirmDelete from "../components/ConfirmDelete"
 import Forbidden from "../components/Forbidden"
+import TipTap from '../components/TipTap'
 export default {
   setup() {},
   components: {
     ConfirmDelete,
-    Forbidden
+    Forbidden,
+    TipTap
   },
   data() {
     return {
