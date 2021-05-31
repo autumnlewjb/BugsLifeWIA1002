@@ -1,18 +1,16 @@
 package com.example.demo.services;
 
-import java.util.List;
-
 import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.repository.ProjectRepository;
-import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Scope("singleton")
 @Service
@@ -40,11 +38,15 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public List<Project> getProjectByUser(User user) {
-        return projectRepository.findProjectsByUser(user); 
+    public List<String> getAllUsername() {
+        return userRepository.getAllUsername();
     }
-    
-    public void deleteUser(String username){
+
+    public List<Project> getProjectByUser(User user) {
+        return projectRepository.findProjectsByUser(user);
+    }
+
+    public void deleteUser(String username) {
         userRepository.deleteUserByUsername(username);
     }
 
@@ -52,13 +54,13 @@ public class UserService {
         return userRepository.findUserById(id);
     }
 
-    public void createListOfUsers(List<User> users){
+    public void createListOfUsers(List<User> users) {
         userRepository.saveAll(users);
     }
 
     public void updateUser(User user, User updatedUser) {
         List<Project> allProject = projectRepository.findProjectsByUser(user);
-        for (Project project: allProject ){
+        for (Project project : allProject) {
             project.setUser(updatedUser);
         }
         updatedUser.setProject(allProject);
