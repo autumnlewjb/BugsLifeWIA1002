@@ -89,6 +89,7 @@ export default {
       this.assignee = ""
     },
     async onSubmit(action) {
+      console.log(action);
       if (action == "add") {
         await fetch(`/api/${this.projectId}`, {
           method: "POST",
@@ -126,7 +127,7 @@ export default {
             title: this.title,
             descriptionText: this.descriptionText,
             priority: this.priority,
-            status: "In progress",
+            status: this.issue.status,
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
             assignee: "",
