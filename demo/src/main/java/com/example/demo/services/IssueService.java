@@ -115,6 +115,11 @@ public class IssueService {
         return issueHistory;
     }
     
+    public List<?> getOwnHistory(String username) {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.property("modifiedBy").eq(username)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+    
     public List<?> getAllHistory() {
         List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return issueHistory;

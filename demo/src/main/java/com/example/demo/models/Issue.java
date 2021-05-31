@@ -25,7 +25,7 @@ import org.hibernate.envers.NotAudited;
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Issue implements Serializable {
+public class Issue implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -199,5 +199,10 @@ public class Issue implements Serializable {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+    
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }

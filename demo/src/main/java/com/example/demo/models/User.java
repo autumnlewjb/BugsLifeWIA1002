@@ -55,9 +55,9 @@ public class User implements Serializable {
     @Transient
     private Stack<Comment> commentRedo = new Stack<>();
     @Transient
-    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueUndo = new HashMap<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Issue>>> issueUndo = new HashMap<>();
     @Transient
-    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueRedo = new HashMap<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Issue>>> issueRedo = new HashMap<>();
 
     public User() {
     }
@@ -146,11 +146,11 @@ public class User implements Serializable {
         return commentRedo;
     }
 
-    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueUndo() {
+    public HashMap<Integer, HashMap<Integer,Stack<Issue>>> getIssueUndo() {
         return issueUndo;
     }
 
-    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueRedo() {
+    public HashMap<Integer, HashMap<Integer,Stack<Issue>>> getIssueRedo() {
         return issueRedo;
     }
 
