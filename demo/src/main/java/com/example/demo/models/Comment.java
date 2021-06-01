@@ -32,10 +32,12 @@ public class Comment {
     @OneToMany(mappedBy = "comment",  cascade = CascadeType.ALL)
     private List<React> react;
 
+    @Column(updatable = false)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date timestamp;
 
+    @Column(updatable = false)
     @CreatedBy
     private String user;
 

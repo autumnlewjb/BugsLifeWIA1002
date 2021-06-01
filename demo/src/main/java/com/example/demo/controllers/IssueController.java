@@ -51,19 +51,6 @@ public class IssueController {
         this.reportService = reportService;
     }
 
-    private PdfPCell getCell(int cm) {
-        PdfPCell cell = new PdfPCell();
-        cell.setColspan(cm);
-        cell.setUseAscender(true);
-        cell.setUseDescender(true);
-        Paragraph p = new Paragraph(
-                String.format("%smm", 10 * cm),
-                new Font(Font.FontFamily.HELVETICA, 8));
-        p.setAlignment(Element.ALIGN_CENTER);
-        cell.addElement(p);
-        return cell;
-    }
-
     // FIXME this view is giving TransientObjectException probably due to the cascade type
     @GetMapping("/{project_id}")
     public ResponseEntity<List<Issue>> getAllIssues(@PathVariable Integer project_id,

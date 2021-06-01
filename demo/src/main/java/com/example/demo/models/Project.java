@@ -42,6 +42,7 @@ public class Project implements Serializable {
     @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
+    @Column(updatable = false)
     private Date date;
 
     @JsonBackReference

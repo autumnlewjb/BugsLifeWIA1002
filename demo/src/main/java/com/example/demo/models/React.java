@@ -24,6 +24,7 @@ public class React {
 
     private String reaction;
 
+    @Column(updatable = false)
     @CreatedBy
     private String reactionBy;
 

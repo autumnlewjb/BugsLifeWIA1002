@@ -53,6 +53,7 @@ public class Issue implements Serializable, Cloneable {
     private String descriptionText;
 
     @CreatedBy
+    @Column(updatable = false)
     private String createdBy;
 
     private String assignee;
@@ -63,6 +64,7 @@ public class Issue implements Serializable, Cloneable {
     @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
+    @Column(updatable = false)
     private Date timestamp;
 
     @LastModifiedDate
