@@ -79,7 +79,6 @@ public class Issue implements Serializable, Cloneable {
     @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
-    @NotAudited
     private List<Comment> comment;
 
     @GenericField(sortable = Sortable.YES)

@@ -9,10 +9,14 @@ import com.example.demo.models.Issue;
 import com.example.demo.services.CommentService;
 
 import com.example.demo.services.IssueService;
+import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.Stack;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,33 +48,55 @@ public class CommentController {
         if (issue == null) {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
-        referUser.getIssueIdUndo().push(issue_id);
         issue.getComment().add(comment);
         comment.setIssue(issue);
         commentService.createComments(comment);
-        referUser.getCommentUndo().push(comment.getComment_id());
-        referUser.getIssueIdRedo().clear();
-        referUser.getCommentRedo().clear();
+        Stack<Comment> commentStack=new Stack<>();
+        commentStack.push(comment);
+        HashMap<Integer,Stack<Comment>> commentMap=new HashMap<>();
+        commentMap.put(comment.getComment_id(), commentStack);
+        referUser.getCommentUndo().put(issue_id, commentMap);
         return ResponseEntity.ok(comment);
     }
-    
-    public void createComment(Integer issue_id, Comment comment) {
-        Issue issue = issueService.findIssuesById(issue_id);
-        referUser.getIssueIdUndo().push(issue_id);
-        issue.getComment().add(comment);
-        comment.setIssue(issue);
-        commentService.createComments(comment);
-        referUser.getCommentUndo().push(comment.getComment_id());
-    }
 
-    @PutMapping("{project_id}/{issue_id}/{comment_id}")
-    public ResponseEntity<?> updateComment( @PathVariable Integer issue_id, @PathVariable Integer comment_id, @RequestBody Comment updatedComment){
+    @PutMapping("/{project_id}/{issue_id}/{comment_id}")
+    public ResponseEntity<?> updateComment( @PathVariable Integer issue_id, @PathVariable Integer comment_id, @RequestBody Comment updatedComment) throws CloneNotSupportedException {
+        Comment comment = commentService.findCommentById(comment_id);
+        Comment referComment=(Comment)comment.clone();
+        if(referUser.getCommentUndo()==null || !referUser.getCommentUndo().containsKey(issue_id)) {
+            Stack<Comment> commentStack=new Stack<>();
+            commentStack.push(referComment);
+            HashMap<Integer,Stack<Comment>> commentMap=new HashMap<>();
+            commentMap.put(comment_id, commentStack);
+            referUser.getCommentUndo().put(issue_id, commentMap);
+        }
+        else if(!referUser.getCommentUndo().get(issue_id).containsKey(comment_id)) {
+            Stack<Comment> commentStack=new Stack<>();
+            commentStack.push(referComment);
+            referUser.getCommentUndo().get(issue_id).put(comment_id, commentStack);
+        }
+        else if(referUser.getCommentUndo().get(issue_id).get(comment_id).isEmpty()) {
+            referUser.getCommentUndo().get(issue_id).get(comment_id).push(referComment);
+        }
+        if (comment == null) {
+            throw new ResourceNotFoundException("comment", "id", comment_id);
+        }
+        commentService.updateComment(issue_id, comment, updatedComment);
+        referUser.getCommentUndo().get(issue_id).get(comment_id).push(updatedComment);
+        if(referUser.getCommentRedo()!=null && referUser.getCommentRedo().containsKey(issue_id)) {
+            if(referUser.getCommentRedo().get(issue_id).containsKey(comment_id)) {
+                referUser.getCommentRedo().get(issue_id).get(comment_id).clear();
+            }
+        }
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+    
+    public void updateTheComment( @PathVariable Integer issue_id, @PathVariable Integer comment_id, @RequestBody Comment updatedComment){
         Comment comment = commentService.findCommentById(comment_id);
         if (comment == null) {
             throw new ResourceNotFoundException("comment", "id", comment_id);
         }
         commentService.updateComment(issue_id, comment, updatedComment);
-        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("{project_id}/{issue_id}/{comment_id}")
@@ -84,51 +110,89 @@ public class CommentController {
             throw new ResourceNotFoundException("comment", "id", comment_id);
         }
         commentService.deleteComment(issue, comment);
-        if(referUser.getCommentUndo().contains(comment_id)) {
-            int index=referUser.getCommentUndo().indexOf(comment_id);
-            referUser.getCommentUndo().remove(index);
-            referUser.getIssueIdUndo().remove(index);
+        if(referUser.getCommentUndo().containsKey(issue_id) && referUser.getCommentUndo().get(issue_id).containsKey(comment_id)) {
+            referUser.getCommentUndo().get(issue_id).remove(comment_id);
+        }
+        if(referUser.getCommentRedo().containsKey(issue_id) && referUser.getCommentRedo().get(issue_id).containsKey(comment_id)) {
+            referUser.getCommentRedo().get(issue_id).remove(comment_id);
         }
         return ResponseEntity.ok(HttpStatus.OK);
     }
     
-    @GetMapping("/comment/undo")
-    public ResponseEntity<HashMap<?, ?>> undoComment() {
-        if(!referUser.getCommentUndo().isEmpty()) {
-            while(commentService.findCommentById(referUser.getCommentUndo().peek())==null) {
-                referUser.getCommentUndo().pop();
-                referUser.getIssueIdUndo().pop();
-            }
-            if(referUser.getCommentUndo().isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            HashMap<String,Object> map=new HashMap<>();
-            Integer reference=referUser.getCommentUndo().pop();
-            referUser.getIssueIdRedo().push(referUser.getIssueIdUndo().pop());
-            Comment comment=commentService.findCommentById(reference);
-            deleteComment(referUser.getIssueIdRedo().peek(), reference);
-            referUser.getCommentRedo().push(comment);
-            Integer issueID=referUser.getIssueIdRedo().peek();
-            map.put("issue_id", issueID);
-            map.put("comment", comment);
-            return ResponseEntity.ok(map);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @Transactional
+    @GetMapping("/{comment_id}/comment/history")
+    public ResponseEntity<?> getHistory(@PathVariable Integer comment_id) {
+        Comment comment=commentService.findCommentById(comment_id);
+        //if(referUser.getUsername().equals(comment.getUser())) {
+            return ResponseEntity.ok(commentService.getHistory(comment_id));
+        //}
+        //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
-    @GetMapping("/comment/redo")
-    public ResponseEntity<HashMap<?,?>> redoComment() {
-        if(!referUser.getCommentRedo().isEmpty()) {
+    @Transactional
+    @GetMapping("/{username}/comment/history")
+    public ResponseEntity<?> getOwnHistory(@PathVariable String username) {
+        return ResponseEntity.ok(commentService.getOwnHistory(username));
+    }
+    
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Transactional
+    @GetMapping("/comment/history")
+    public ResponseEntity<?> getAllHistory() {
+        return ResponseEntity.ok(commentService.getAllHistory());
+    }
+    
+    @GetMapping("/{issue_id}/{comment_id}/comment/undo")
+    public ResponseEntity<HashMap<?, ?>> undoComment(@PathVariable Integer issue_id, @PathVariable Integer comment_id) {
+        try{
+            if(referUser.getCommentUndo().get(issue_id).get(comment_id).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            if(referUser.getCommentUndo().containsKey(issue_id) && !referUser.getCommentUndo().get(issue_id).get(comment_id).isEmpty()) {
+                Comment undoComment=referUser.getCommentUndo().get(issue_id).get(comment_id).pop();
+                if(!referUser.getCommentRedo().containsKey(issue_id)) {
+                    Stack<Comment> commentStack=new Stack<>();
+                    commentStack.push(undoComment);
+                    HashMap<Integer,Stack<Comment>> commentMap=new HashMap<>();
+                    commentMap.put(comment_id, commentStack);
+                    referUser.getCommentRedo().put(issue_id, commentMap);
+                }
+                else if(!referUser.getCommentRedo().get(issue_id).containsKey(comment_id)) {
+                    Stack<Comment> commentStack=new Stack<>();
+                    commentStack.push(undoComment);
+                    referUser.getCommentRedo().get(issue_id).put(comment_id, commentStack);
+                }
+                else if(referUser.getCommentRedo().get(issue_id).containsKey(comment_id)) {
+                    referUser.getCommentRedo().get(issue_id).get(comment_id).push(undoComment);
+                }
+                updateTheComment(issue_id, comment_id, referUser.getCommentUndo().get(issue_id).get(comment_id).peek());
+                Comment comment=commentService.findCommentById(comment_id);
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("issue_id", issue_id);
+                map.put("comment_id", comment_id);
+                map.put("comment", comment);
+                return ResponseEntity.ok(map);
+            }
+        }
+        catch(EmptyStackException | NullPointerException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    @GetMapping("/{issue_id}/{comment_id}/comment/redo")
+    public ResponseEntity<HashMap<?,?>> redoComment(@PathVariable Integer issue_id, @PathVariable Integer comment_id) {
+        if(referUser.getCommentRedo().get(issue_id).get(comment_id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if(referUser.getCommentRedo().containsKey(issue_id) && referUser.getCommentRedo().get(issue_id).containsKey(comment_id) && !referUser.getCommentRedo().get(issue_id).get(comment_id).isEmpty()) {
+            Comment redoComment=referUser.getCommentRedo().get(issue_id).get(comment_id).pop();
+            referUser.getCommentUndo().get(issue_id).get(comment_id).push(redoComment);
+            updateTheComment(issue_id, comment_id, redoComment);
+            Comment comment=commentService.findCommentById(comment_id);
             HashMap<String,Object> map=new HashMap<>();
-            Integer issueID=referUser.getIssueIdRedo().peek();
-            Comment comment=referUser.getCommentRedo().pop();
-            comment.setComment_id(null);
-            comment.setReact(null);
-            createComment(referUser.getIssueIdRedo().pop(),comment);
-            comment=commentService.findAllComments().get(commentService.findAllComments().size()-1);
-            map.put("issue_id", issueID);
+            map.put("issue_id", issue_id);
+            map.put("comment_id", comment_id);
             map.put("comment", comment);
             return ResponseEntity.ok(map);
         }
