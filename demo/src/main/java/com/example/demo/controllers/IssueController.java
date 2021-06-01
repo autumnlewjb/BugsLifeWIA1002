@@ -160,11 +160,11 @@ public class IssueController {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         issueService.deleteIssue(project, issue);
-        if(referUser.getIssueUndo().containsKey(project_id)) {
-            referUser.getIssueUndo().remove(project_id);
+        if(referUser.getIssueUndo().containsKey(project_id) && referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
+            referUser.getIssueUndo().get(project_id).remove(issue_id);
         }
-        if(referUser.getIssueRedo().containsKey(project_id)) {
-            referUser.getIssueRedo().remove(project_id);
+        if(referUser.getIssueRedo().containsKey(project_id) && referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+            referUser.getIssueRedo().get(project_id).remove(issue_id);
         }
         return ResponseEntity.ok(HttpStatus.OK);
         /*User user=userService.getUserById(project.getUser().getUser_id());
@@ -180,7 +180,7 @@ public class IssueController {
     }
     
     @Transactional
-    @GetMapping("/{issue_id}/history")
+    @GetMapping("/{issue_id}/issue/history")
     public ResponseEntity<?> getHistory(@PathVariable Integer issue_id) {
         Issue issue=issueService.findIssuesById(issue_id);
         //if(referUser.getUsername().equals(issue.getCreatedBy()) || referUser.getUsername.equals(issue.getAssignee())) {
@@ -202,7 +202,7 @@ public class IssueController {
         return ResponseEntity.ok(issueService.getAllHistory());
     }
     
-    @GetMapping("/{project_id}/{issue_id}/undo")
+    @GetMapping("/{project_id}/{issue_id}/issue/undo")
     public ResponseEntity<HashMap<?, ?>> undoIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
         try{
             if(referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
@@ -240,7 +240,7 @@ public class IssueController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
-    @GetMapping("/{project_id}/{issue_id}/redo")
+    @GetMapping("/{project_id}/{issue_id}/issue/redo")
     public ResponseEntity<?> redoIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
         if(referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
