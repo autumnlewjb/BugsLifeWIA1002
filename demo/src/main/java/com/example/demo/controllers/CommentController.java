@@ -53,9 +53,14 @@ public class CommentController {
         commentService.createComments(comment);
         Stack<Comment> commentStack=new Stack<>();
         commentStack.push(comment);
-        HashMap<Integer,Stack<Comment>> commentMap=new HashMap<>();
-        commentMap.put(comment.getComment_id(), commentStack);
-        referUser.getCommentUndo().put(issue_id, commentMap);
+        if(!referUser.getCommentUndo().containsKey(issue_id)) {
+            HashMap<Integer,Stack<Comment>> commentMap=new HashMap<>();
+            commentMap.put(comment.getComment_id(), commentStack);
+            referUser.getCommentUndo().put(issue_id, commentMap);
+        }
+        else if(!referUser.getCommentUndo().get(issue_id).containsKey(comment.getComment_id())) {
+            referUser.getCommentUndo().get(issue_id).put(comment.getComment_id(), commentStack);
+        }
         return ResponseEntity.ok(comment);
     }
 
@@ -120,7 +125,7 @@ public class CommentController {
     }
     
     @Transactional
-    @GetMapping("/{comment_id}/comment/history")
+    @GetMapping("/comment/{comment_id}/history")
     public ResponseEntity<?> getHistory(@PathVariable Integer comment_id) {
         Comment comment=commentService.findCommentById(comment_id);
         //if(referUser.getUsername().equals(comment.getUser())) {
