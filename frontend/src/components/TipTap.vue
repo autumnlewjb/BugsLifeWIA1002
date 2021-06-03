@@ -50,7 +50,8 @@ export default {
         }
     },
     props: {
-        value: String
+        value: String,
+        placeholder: String
     },
     mounted() {
         this.editor = new Editor({
@@ -58,7 +59,7 @@ export default {
             extensions: [
                 StarterKit,
                 Placeholder.configure({
-                    placeholder: 'Write your project description...'
+                    placeholder: this.placeholder
                 }),
                 Underline,
                 Highlight.configure({
@@ -100,6 +101,11 @@ export default {
 }
 ::v-deep {
   /* Basic editor styles */
+
+  .ProseMirror:focus {
+      outline: none;
+  }
+
   .ProseMirror {
 
       padding: 1rem;

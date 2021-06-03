@@ -9,11 +9,34 @@
             <v-btn @click="toggleDeleteDialog(false)" plain color="red"
               >Delete</v-btn
             >
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-on="on" v-bind="attrs"
+                  ><v-icon>mdi-cog-outline</v-icon></v-btn
+                >
+              </template>
+              <v-list>
+                <v-list-item @click="handleUndoRedo('undo')">Undo</v-list-item>
+                <v-list-item @click="handleUndoRedo('redo')">Redo</v-list-item>
+                <v-list-item @click="showChangelog = true"
+                  >Changelog</v-list-item
+                >
+              </v-list>
+            </v-menu>
           </h1>
         </v-container>
         <v-container>
           <v-card outlined class="pa-5">
-            <span class="font-weight-normal" v-html="getIssue.descriptionText == null ? 'Not specified' : getIssue.descriptionText">Description:</span> <br />
+            <span
+              class="font-weight-normal"
+              v-html="
+                getIssue.descriptionText == null
+                  ? 'Not specified'
+                  : getIssue.descriptionText
+              "
+              >Description:</span
+            >
+            <br />
           </v-card>
         </v-container>
       </v-flex>
@@ -43,11 +66,15 @@
           </p>
           <p>
             Assignee: <br />
-            {{ getIssue.assignee == null ? "Nobody for now" : getIssue.assignee }}
+            {{
+              getIssue.assignee == null ? "Nobody for now" : getIssue.assignee
+            }}
           </p>
           <p>
             Last updated: <br />
-            {{ getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp }}
+            {{
+              getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp
+            }}
           </p>
         </v-container>
       </v-flex>
@@ -64,14 +91,20 @@
         />
         <v-card class="pa-5 ma-5" outlined>
           <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
-          <TipTap v-model="text" />
+          <TipTap v-model="text" placeholder="Write a comment..." />
           <v-btn text color="teal" class="" @click="postComment"
             >Post Comment</v-btn
           >
         </v-card>
         <p>
-            <a @click="handleUndoRedo('undo')" class="mx-5 text-decoration-underline">Undo last posted comment</a>
-            <a @click="handleUndoRedo('redo')" class="text-decoration-underline">Redo</a>
+          <a
+            @click="handleUndoRedo('undo')"
+            class="mx-5 text-decoration-underline"
+            >Undo last posted comment</a
+          >
+          <a @click="handleUndoRedo('redo')" class="text-decoration-underline"
+            >Redo</a
+          >
         </p>
       </v-flex>
     </v-layout>
@@ -88,17 +121,22 @@
       @toggleDeleteDialog="toggleDeleteDialog"
       :showDialog="confirmDeleteDialog"
     />
-    <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
+    <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog" />
     <v-dialog v-model="undoRedoFailed" width="500">
       <v-card>
-        <v-card-title class="headline grey lighten-2">Undo / Redo Failed</v-card-title>
-        <v-card-text class="my-2">Seems you reach the end of the undo redo stack!</v-card-text>
+        <v-card-title class="headline grey lighten-2"
+          >Undo / Redo Failed</v-card-title
+        >
+        <v-card-text class="my-2"
+          >Seems you reach the end of the undo redo stack!</v-card-text
+        >
         <v-card-actions class="d-flex justify-end">
-          <v-btn @click="undoRedoFailed = false" text>
-            Dismiss
-          </v-btn>
+          <v-btn @click="undoRedoFailed = false" text> Dismiss </v-btn>
         </v-card-actions>
       </v-card>
+    </v-dialog>
+    <v-dialog v-model="showChangelog" width="1000">
+      <Changelog :id="issueId" type="issue" :changes="getChanges"/>
     </v-dialog>
   </v-container>
 </template>
@@ -108,7 +146,8 @@ import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
-import TipTap from '../components/TipTap.vue';
+import TipTap from "../components/TipTap.vue";
+import Changelog from "../components/Changelog";
 
 export default {
   setup() {},
@@ -125,12 +164,14 @@ export default {
       items: [],
       select: "",
       issueLoaded: false,
-      undoRedoFailed: false
+      undoRedoFailed: false,
+      showChangelog: false,
+      history: [],
     };
   },
   created() {
     this.projectId = this.$route.query.projectId;
-    this.issueId = this.$route.query.issueId;
+    this.issueId = parseInt(this.$route.query.issueId);
     this.fetchIssue();
   },
   watch: {
@@ -141,20 +182,24 @@ export default {
       }
       this.issue.status = val;
       fetch(`/api/${this.projectId}/${this.issueId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(this.issue)
-      })
-      .then((res) => {
+        body: JSON.stringify(this.issue),
+      }).then((res) => {
         this.fetchIssue();
         if (res.status == 403) {
           this.forbiddenDialog = true;
         } else if (res.status != 200) {
-          alert('Issue not updated!');
+          alert("Issue not updated!");
         }
-      })
+      });
+    },
+    showChangelog(val) {
+      if (val) {
+        this.fetchChangelog();
+      }
     }
   },
   props: {
@@ -166,6 +211,7 @@ export default {
     ConfirmDelete,
     Forbidden,
     TipTap,
+    Changelog,
   },
   methods: {
     async postComment() {
@@ -217,7 +263,7 @@ export default {
             });
           } else if (res.status == 403) {
             this.forbiddenDialog = true;
-          }else {
+          } else {
             console.log("delete unsuccessful");
           }
         })
@@ -236,27 +282,42 @@ export default {
           this.issue = data;
           this.select = data.status;
           switch (data.status) {
-            case 'Open':
-              this.items = ['Resolved', 'Closed', 'In Progress'];
+            case "Open":
+              this.items = ["Resolved", "Closed", "In Progress"];
               break;
-            case 'Resolved':
-              this.items = ['Closed', 'Reopened'];
+            case "Resolved":
+              this.items = ["Closed", "Reopened"];
               break;
-            case 'Closed':
-              this.items = ['Reopened'];
+            case "Closed":
+              this.items = ["Reopened"];
               break;
-            case 'In Progress':
-              this.items = ['Closed', 'Resolved'];
+            case "In Progress":
+              this.items = ["Closed", "Resolved"];
               break;
-            case 'Reopened':
-              this.items = ['Resolved'];
+            case "Reopened":
+              this.items = ["Resolved"];
               break;
           }
         })
         .catch((e) => console.log(e));
     },
+    fetchChangelog() {
+      fetch(`/api/issue/${this.issueId}/history`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data) {
+            this.history = data;
+          }
+        });
+    },
     updateComment() {
-      console.log("comment updated")
+      console.log("comment updated");
       this.fetchIssue();
     },
     closeForbiddenDialog() {
@@ -266,57 +327,57 @@ export default {
       this.forbiddenDialog = true;
     },
     handleUndoRedo(action, check = true) {
-      if (action == 'undo') {
-        fetch(`/api/comment/undo`)
-        .then((res) => {
-          if (res.status != 200) {  
-            console.log(res.status);
-            return null;
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          if (data) {
-            if (check && data.issue_id != this.issueId) {
-              this.undoRedoFailed = true;
-              this.handleUndoRedo('redo', false);
+      if (action == "undo") {
+        fetch(`/api/${this.projectId}/${this.issueId}/issue/undo`)
+          .then((res) => {
+            if (res.status != 200) {
+              console.log(res.status);
+              return null;
             } else {
-              this.updateComment();
+              return res.json();
             }
-          } else {
-            this.undoRedoFailed = true;
-          }
-        })
-        .catch(e => console.log(e));
+          })
+          .then((data) => {
+            console.log(data);
+            if (data) {
+              if (check && data.issue_id != this.issueId) {
+                this.undoRedoFailed = true;
+                this.handleUndoRedo("redo", false);
+              } else {
+                this.fetchIssue();
+              }
+            } else {
+              this.undoRedoFailed = true;
+            }
+          })
+          .catch((e) => console.log(e));
       } else {
-        fetch(`/api/comment/redo`)
-        .then((res) => {
-          console.log(res.status);
-          if (res.status != 200) {
-            return null;
-          } else {
-            console.log(res);
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          if (data) {
-            if (check && data.issue_id != this.issueId) {
-              this.undoRedoFailed = true;
-              this.handleUndoRedo('undo', false);
+        fetch(`/api/${this.projectId}/${this.issueId}/issue/redo`)
+          .then((res) => {
+            console.log(res.status);
+            if (res.status != 200) {
+              return null;
             } else {
-              this.updateComment();
+              console.log(res);
+              return res.json();
             }
-          } else {
-            this.undoRedoFailed = true;
-          }
-        })
-        .catch(() => this.undoRedoFailed = true);
+          })
+          .then((data) => {
+            console.log(data);
+            if (data) {
+              if (check && data.issue_id != this.issueId) {
+                this.undoRedoFailed = true;
+                this.handleUndoRedo("undo", false);
+              } else {
+                this.fetchIssue();
+              }
+            } else {
+              this.undoRedoFailed = true;
+            }
+          })
+          .catch(() => (this.undoRedoFailed = true));
       }
-    }
+    },
   },
   computed: {
     getComments() {
@@ -326,8 +387,64 @@ export default {
       return this.issue;
     },
     getIssueDescription() {
-      return this.getIssue.descriptionText == null ? "Not specified" : this.getIssue.descriptionText
-    }
+      return this.getIssue.descriptionText == null
+        ? "Not specified"
+        : this.getIssue.descriptionText;
+    },
+    getChanges() {
+      if (this.history.length == 0) return [];
+      console.log(this.history);
+      const changes = [];
+      changes.push({
+        date: this.history[this.history.length - 1].timestamp,
+        modifier: this.history[this.history.length - 1].createdBy,
+        statements: [{description: "created this issue", html: false}],
+      });
+      var prev = this.history[this.history.length - 1];
+      const excluded = [
+        "comment",
+        "modifiedBy",
+        "createdBy",
+        "timestamp",
+        "modifiedDate",
+        "commentNum",
+      ];
+      for (var i = this.history.length - 2; i >= 0; i--) {
+        var curr = this.history[i];
+        const change = {
+          date: curr.modifiedDate,
+          modifier: curr.modifiedBy,
+          statements: [],
+        };
+        Object.keys(curr).forEach((key) => {
+          if (!excluded.includes(key)) {
+            if (key == "tag") {
+              console.log(curr[key]);
+              for (var index in curr[key]) {
+                if (!prev[key].find((element) => element == curr[key][index])) {
+                  change.statements.push({
+                    description: "changed the tags to " + curr[key].join(),
+                    html: false
+                  });
+                  break;
+                }
+              }
+            } else {
+              if (curr[key] != prev[key]) {
+                change.statements.push({
+                  description: `modified ${key} from ${prev[key]} to ${curr[key]}`,
+                  html: key == 'descriptionText'
+                });
+              }
+            }
+          }
+        });
+        if (change.statements.length > 0) changes.push(change);
+        prev = curr;
+      }
+      changes.reverse();
+      return changes;
+    },
   },
 };
 </script>

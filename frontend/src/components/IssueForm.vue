@@ -20,7 +20,7 @@
             required
           ></v-textarea> -->
           <div style="width: 100%" class="my-5">
-            <TipTap v-model="descriptionText" />
+            <TipTap v-model="descriptionText" placeholder="Write issue description..."/>
           </div>
         </v-row>
         <v-row>

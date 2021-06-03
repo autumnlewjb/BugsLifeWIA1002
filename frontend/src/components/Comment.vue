@@ -2,12 +2,26 @@
   <div class="comment">
     <v-card class="ma-2" outlined>
       <v-card-text class="text--body-1 black--text blue-grey lighten-4"
-        ><strong
+        >
+        <strong
           >Commented on
           {{
             comment.timestamp != null ? " " + comment.timestamp : "unknown time"
           }}</strong
-        ></v-card-text
+        >
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon dense v-on="on" v-bind="attrs">
+              <v-icon>mdi-dots-horizontal</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="handleUndoRedo('undo')">Undo</v-list-item>
+            <v-list-item @click="handleUndoRedo('redo')">Redo</v-list-item>
+            <v-list-item @click="showChangelog = true">Changelog</v-list-item>
+          </v-list>
+        </v-menu>
+        </v-card-text
       >
       <v-card-text class="text--body-1 black--text" v-html="comment.text"></v-card-text>
       <v-card-text>
@@ -35,7 +49,7 @@
     <v-dialog v-model="dialog" class="" persistent width="600">
       <v-card class="pa-2" outlined>
         <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
-        <TipTap v-model="text"/>
+        <TipTap v-model="text" placeholder="Write a comment..."/>
         <v-card-actions>
           <v-btn text color="teal" class="" @click="editComment"
             >Edit Comment</v-btn
@@ -46,6 +60,20 @@
     </v-dialog>
     <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
     <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
+    <v-dialog v-model="undoRedoFailed" width="500">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">Undo / Redo Failed</v-card-title>
+        <v-card-text class="my-2">Seems you reach the end of the undo redo stack!</v-card-text>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn @click="undoRedoFailed = false" text>
+            Dismiss
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showChangelog">
+      <Changelog :changes="getChanges"/>
+    </v-dialog>
   </div>
 </template>
 
@@ -53,12 +81,14 @@
 import ConfirmDelete from "../components/ConfirmDelete"
 import Forbidden from "../components/Forbidden"
 import TipTap from '../components/TipTap'
+import Changelog from './Changelog.vue';
 export default {
   setup() {},
   components: {
     ConfirmDelete,
     Forbidden,
-    TipTap
+    TipTap,
+    Changelog
   },
   data() {
     return {
@@ -81,7 +111,10 @@ export default {
       commentObj: null,
       enableHappy: false,
       enableAngry: false,
-      enableThumbsup: false
+      enableThumbsup: false,
+      undoRedoFailed: false,
+      showChangelog: false,
+      history: []
     };
   },
   created() {
@@ -119,6 +152,25 @@ export default {
         this.happyColor = undefined;
         this.thumbsupColor = undefined;
         this.angryColor = undefined;
+      }
+    },
+    showChangelog(val) {
+      if (val) {
+        fetch(`/api/comment/${this.commentId}/history`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data) {
+            console.log(data);
+            this.history = data;
+          }
+        })
+        .catch(e => console.log(e));
       }
     }
   },
@@ -214,12 +266,102 @@ export default {
     },
     closeForbiddenDialog() {
       this.forbiddenDialog = false;
-    }
+    },
+    handleUndoRedo(action, check = true) {
+      console.log(this.issueId);
+      console.log(this.commentId);
+      if (action == 'undo') {
+        fetch(`/api/${this.issueId}/${this.commentId}/comment/undo`)
+        .then((res) => {
+          if (res.status != 200) {
+            console.log(res.status);
+            return null;
+          } else {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          if (data) {
+            if (check && data.comment_id != this.commentId) {
+              this.undoRedoFailed = true;
+              this.handleUndoRedo('redo', false);
+            } else {
+              this.$emit('updateComment');
+            }
+          } else {
+            this.undoRedoFailed = true;
+          }
+        })
+        .catch(e => console.log(e));
+      } else {
+        fetch(`/api/${this.issueId}/${this.commentId}/comment/redo`)
+        .then((res) => {
+          console.log(res.status);
+          if (res.status != 200) {
+            return null;
+          } else {
+            console.log(res);
+            return res.json();
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          if (data) {
+            if (check && data.comment_id != this.commentId) {
+              this.undoRedoFailed = true;
+              this.handleUndoRedo('undo', false);
+            } else {
+              this.$emit('updateComment');
+            }
+          } else {
+            this.undoRedoFailed = true;
+          }
+        })
+        .catch(() => this.undoRedoFailed = true);
+      }
+    },
+    getText(str) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = str;
+      return tmp.textContent || tmp.innerText || "";
+    },
   },
   computed: {
     getHappy() {
       return this.happy.count;
     },
+    getChanges() {
+      if (this.history.length == 0) return;
+      const changes = [];
+      var prev = this.history[this.history.length-1];
+      changes.push({
+        date: this.history[this.history.length-1].timestamp,
+        modifier: this.history[this.history.length-1].user,
+        statements: [{description: "written the comment", html: false}]
+      });
+      const excluded = ['user', 'timestamp', 'comment_id', 'react'];
+      for (let i=this.history.length-2; i>=0; i--) {
+        var curr = this.history[i];
+        var change = {
+          date: curr.timestamp,
+          modifier: curr.user,
+          statements: []
+        }
+        Object.keys(curr).forEach((key) => {
+          if (!excluded.includes(key)) {
+            if (curr[key] != prev[key]) {
+              change.statements.push({description: `modified the ${key} from ${prev[key]} to ${curr[key]}`, html: key == "text"});
+            }
+          }
+        });
+        if (change.statements.length > 0) changes.push(change);
+      }
+
+      changes.reverse();
+
+      return changes;
+    }
   },
 };
 </script>

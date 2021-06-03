@@ -14,7 +14,7 @@
               v-model="description"
             ></v-textarea> -->
             <div style="width: 100%">
-              <TipTap v-model="description"/>
+              <TipTap v-model="description" placeholder="Write project description"/>
             </div>
         </v-row>
       </v-container>
