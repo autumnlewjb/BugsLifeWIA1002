@@ -167,7 +167,7 @@ public class IssueController {
     }
     
     @Transactional
-    @GetMapping("/{issue_id}/issue/history")
+    @GetMapping("/issue/{issue_id}/history")
     public ResponseEntity<?> getHistory(@PathVariable Integer issue_id) {
         Issue issue=issueService.findIssuesById(issue_id);
         //if(referUser.getUsername().equals(issue.getCreatedBy()) || referUser.getUsername.equals(issue.getAssignee())) {

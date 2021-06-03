@@ -79,6 +79,11 @@ public class CommentService {
         return commentHistory;
     }
     
+    public List<?> getIssueHistory(Integer issue_id, String username) {
+        List<?> commentHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Comment.class, true, true).add(AuditEntity.property("user").eq(username)).add(AuditEntity.property("issue").eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return commentHistory;
+    }
+    
     public List<?> getOwnHistory(String username) {
         List<?> commentHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Comment.class, true, true).add(AuditEntity.property("user").eq(username)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return commentHistory;

@@ -48,7 +48,7 @@ public class Comment implements Cloneable{
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
-    @NotAudited
+    @Audited
     private Issue issue;
 
     public int getReactionIndex(React react){
