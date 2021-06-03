@@ -12,13 +12,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
+@Audited
 @Entity
 @Indexed
 @Table(name = "comment")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Comment {
+public class Comment implements Cloneable{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +33,22 @@ public class Comment {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "comment",  cascade = CascadeType.ALL)
+    @NotAudited
     private List<React> react;
 
+    @Column(updatable = false)
     @Temporal(TemporalType.DATE)
     @CreatedDate
     private Date timestamp;
 
+    @Column(updatable = false)
     @CreatedBy
     private String user;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
+    @NotAudited
     private Issue issue;
 
     public int getReactionIndex(React react){
@@ -94,5 +101,10 @@ public class Comment {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }

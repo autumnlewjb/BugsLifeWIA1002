@@ -88,6 +88,7 @@ public class IssueService {
 
     public void updateIssue(Integer project_id, Issue issue, Issue updatedIssue) {
         updatedIssue.setIssueId(issue.getIssueId());
+        updatedIssue.setAssignee(issue.getAssignee());
         List<Comment> allComments = commentRepository.findByIssue(issue);
         Project project = projectRepository.findProjectById(project_id);
         project.getIssue().set(project.getIssueIndex(issue), updatedIssue);
@@ -112,6 +113,11 @@ public class IssueService {
     
     public List<?> getHistory(Integer issue_id) {
         List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+    
+    public List<?> getOwnHistory(String username) {
+        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.property("modifiedBy").eq(username)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return issueHistory;
     }
     

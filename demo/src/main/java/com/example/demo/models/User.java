@@ -45,19 +45,15 @@ public class User implements Serializable {
             @JoinColumn(name = "User_id")}, inverseJoinColumns = {
             @JoinColumn(name = "Role_id")})
     private List<Role> roles = new ArrayList<>();
-
+    
     @Transient
-    private Stack<Integer> issueIdUndo = new Stack<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Comment>>> commentUndo = new HashMap<>();
     @Transient
-    private Stack<Integer> commentUndo = new Stack<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Comment>>> commentRedo = new HashMap<>();
     @Transient
-    private Stack<Integer> issueIdRedo = new Stack<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Issue>>> issueUndo = new HashMap<>();
     @Transient
-    private Stack<Comment> commentRedo = new Stack<>();
-    @Transient
-    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueUndo = new HashMap<>();
-    @Transient
-    private HashMap<Integer,HashMap<Integer,Stack<String>>> issueRedo = new HashMap<>();
+    private HashMap<Integer,HashMap<Integer,Stack<Issue>>> issueRedo = new HashMap<>();
 
     public User() {
     }
@@ -130,27 +126,19 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-    public Stack<Integer> getIssueIdUndo() {
-        return issueIdUndo;
-    }
-
-    public Stack<Integer> getCommentUndo() {
+    public HashMap<Integer, HashMap<Integer, Stack<Comment>>> getCommentUndo() {
         return commentUndo;
     }
 
-    public Stack<Integer> getIssueIdRedo() {
-        return issueIdRedo;
-    }
-
-    public Stack<Comment> getCommentRedo() {
+    public HashMap<Integer, HashMap<Integer, Stack<Comment>>> getCommentRedo() {
         return commentRedo;
     }
 
-    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueUndo() {
+    public HashMap<Integer, HashMap<Integer,Stack<Issue>>> getIssueUndo() {
         return issueUndo;
     }
 
-    public HashMap<Integer, HashMap<Integer,Stack<String>>> getIssueRedo() {
+    public HashMap<Integer, HashMap<Integer,Stack<Issue>>> getIssueRedo() {
         return issueRedo;
     }
 

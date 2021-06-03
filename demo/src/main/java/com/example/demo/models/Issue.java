@@ -25,7 +25,7 @@ import org.hibernate.envers.NotAudited;
 @Table(name = "issue")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Issue implements Serializable {
+public class Issue implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,6 +53,7 @@ public class Issue implements Serializable {
     private String descriptionText;
 
     @CreatedBy
+    @Column(updatable = false)
     private String createdBy;
 
     private String assignee;
@@ -63,6 +64,7 @@ public class Issue implements Serializable {
     @GenericField(sortable = Sortable.YES)
     @Temporal(TemporalType.DATE)
     @CreatedDate
+    @Column(updatable = false)
     private Date timestamp;
 
     @LastModifiedDate
@@ -77,7 +79,6 @@ public class Issue implements Serializable {
     @IndexedEmbedded
     @JsonManagedReference
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
-    @NotAudited
     private List<Comment> comment;
 
     @GenericField(sortable = Sortable.YES)
@@ -199,5 +200,10 @@ public class Issue implements Serializable {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+    
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }
