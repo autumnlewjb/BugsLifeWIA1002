@@ -124,6 +124,7 @@ public class CommentController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
     
+    //Get comment history for specific Comment
     @Transactional
     @GetMapping("/comment/{comment_id}/history")
     public ResponseEntity<?> getHistory(@PathVariable Integer comment_id) {
@@ -134,12 +135,21 @@ public class CommentController {
         //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
+    //Get all comment history by the User in a specific Issue
+    @Transactional
+    @GetMapping("/issue/{issue_id}/comment/history")
+    public ResponseEntity<?> getIssueHistory(Integer issue_id, String username) {
+        return ResponseEntity.ok(commentService.getIssueHistory(issue_id,referUser.getUsername()));
+    }
+    
+    //Get all comment history by the User
     @Transactional
     @GetMapping("/{username}/comment/history")
     public ResponseEntity<?> getOwnHistory(@PathVariable String username) {
         return ResponseEntity.ok(commentService.getOwnHistory(username));
     }
     
+    //Get all comment history
     @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional
     @GetMapping("/comment/history")
