@@ -9,11 +9,21 @@ import com.example.demo.models.Issue;
 import com.example.demo.services.CommentService;
 
 import com.example.demo.services.IssueService;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
 import javax.transaction.Transactional;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +32,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class CommentController {
-
+    
+    @Value("${spring.datasource.url}")
+    private String database;
+    @Value("${spring.datasource.username}")
+    private String databaseUsername;
+    @Value("${spring.datasource.password}")
+    private String databasePassword;
     private final CommentService commentService;
     private final IssueService issueService;
 
@@ -135,11 +151,50 @@ public class CommentController {
         //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
+    /*
+    //Alternative querying if got problem later with hibernate enver foreign keys relation
     //Get all comment history by the User in a specific Issue
     @Transactional
     @GetMapping("/issue/{issue_id}/comment/history")
-    public ResponseEntity<?> getIssueHistory(Integer issue_id, String username) {
-        return ResponseEntity.ok(commentService.getIssueHistory(issue_id,referUser.getUsername()));
+    public ResponseEntity<?> getIssueHistory(@PathVariable Integer issue_id) {
+        try{
+            List list=new ArrayList<>();
+            Connection connection = DriverManager.getConnection(database, databaseUsername, databasePassword);
+            Statement statement = connection.createStatement();
+            String num=String.valueOf(issue_id);
+            String queryString="SELECT * FROM db.comment_aud WHERE issue_id="+num+";";
+            PreparedStatement preparedStatement=connection.prepareStatement(queryString);
+            ResultSet resultSet=preparedStatement.executeQuery();
+            
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int numOfColumns = metaData.getColumnCount();
+            List<String> columnNames = new ArrayList<>();
+            for (int i = 1; i <= numOfColumns; i++) {
+                columnNames.add(metaData.getColumnName(i));
+            }
+            
+            while(resultSet.next()) {
+                JSONObject obj = new JSONObject();
+                for (int i = 1; i <= numOfColumns; i++) {
+                    String key = columnNames.get(i - 1);
+                    String value = resultSet.getString(i);
+                    obj.put(key, value);
+                }
+                list.add(obj);
+            }
+            return ResponseEntity.ok(list);
+        }
+        catch(SQLException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    */
+    
+    //Get all comment history by the User in a specific Issue
+    @Transactional
+    @GetMapping("/issue/{issue_id}/comment/history")
+    public ResponseEntity<?> getIssueHistory(@PathVariable Integer issue_id) {
+        return ResponseEntity.ok(commentService.getIssueHistory(issue_id));
     }
     
     //Get all comment history by the User

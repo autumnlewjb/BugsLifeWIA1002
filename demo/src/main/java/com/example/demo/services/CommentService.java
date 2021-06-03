@@ -10,10 +10,19 @@ import javax.transaction.Transactional;
 
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ReactRepository;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.criteria.AuditCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -79,8 +88,8 @@ public class CommentService {
         return commentHistory;
     }
     
-    public List<?> getIssueHistory(Integer issue_id, String username) {
-        List<?> commentHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Comment.class, true, true).add(AuditEntity.property("user").eq(username)).add(AuditEntity.property("issue").eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+    public List<?> getIssueHistory(Integer issue_id) {
+        List<?> commentHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Comment.class, true, true).add(AuditEntity.relatedId("issue").eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return commentHistory;
     }
     
