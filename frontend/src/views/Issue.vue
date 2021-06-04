@@ -5,14 +5,15 @@
         <v-container>
           <h1>
             {{ getIssue.title }}
-            <v-btn @click="editIssue" plain>Edit</v-btn>
+          </h1>
+          <v-btn @click="editIssue" plain>Edit</v-btn>
             <v-btn @click="toggleDeleteDialog(false)" plain color="red"
               >Delete</v-btn
             >
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-on="on" v-bind="attrs"
-                  ><v-icon>mdi-cog-outline</v-icon></v-btn
+                  ><v-icon>mdi-history</v-icon></v-btn
                 >
               </template>
               <v-list>
@@ -23,7 +24,6 @@
                 >
               </v-list>
             </v-menu>
-          </h1>
         </v-container>
         <v-container>
           <v-card outlined class="pa-5">
@@ -34,7 +34,7 @@
                   ? 'Not specified'
                   : getIssue.descriptionText
               "
-              >Description:</span
+              >Description</span
             >
             <br />
           </v-card>
@@ -43,17 +43,17 @@
       <v-flex xs12 md3>
         <v-container class="text--body-2 font-weight-light">
           <p>
-            Priority: <br />
+            <span class="font-weight-bold">Priority</span> <br />
             <v-icon v-for="n in getIssue.priority" :key="n" color="red"
               >mdi-exclamation</v-icon
             >
           </p>
           <p>
-            Status: <br />
+            <span class="font-weight-bold">Status</span> <br />
             <v-combobox :items="items" v-model="select"></v-combobox>
           </p>
           <p>
-            Tag: <br />
+            <span class="font-weight-bold">Tag</span> <br />
             <!-- <v-chip-group> -->
             <v-chip v-for="tag in getIssue.tag" :key="tag" class="ma-1">{{
               tag
@@ -61,17 +61,17 @@
             <!-- </v-chip-group> -->
           </p>
           <p>
-            Created by: <br />
+            <span class="font-weight-bold">Created by</span> <br />
             {{ getIssue.createdBy == null ? "anonymous" : getIssue.createdBy }}
           </p>
           <p>
-            Assignee: <br />
+            <span class="font-weight-bold">Assignee</span> <br />
             {{
               getIssue.assignee == null ? "Nobody for now" : getIssue.assignee
             }}
           </p>
           <p>
-            Last updated: <br />
+            <span class="font-weight-bold">Last updated</span> <br />
             {{
               getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp
             }}
@@ -96,16 +96,6 @@
             >Post Comment</v-btn
           >
         </v-card>
-        <p>
-          <a
-            @click="handleUndoRedo('undo')"
-            class="mx-5 text-decoration-underline"
-            >Undo last posted comment</a
-          >
-          <a @click="handleUndoRedo('redo')" class="text-decoration-underline"
-            >Redo</a
-          >
-        </p>
       </v-flex>
     </v-layout>
     <v-dialog v-model="dialog" persistent max-width="600px">

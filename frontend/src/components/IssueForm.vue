@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="headline">Add New Issue</span>
+      <span class="headline">{{formTitle}}</span>
     </v-card-title>
     <v-card-text>
       <v-container>
@@ -22,6 +22,9 @@
           <div style="width: 100%" class="my-5">
             <TipTap v-model="descriptionText" placeholder="Write issue description..."/>
           </div>
+        </v-row>
+        <v-row>
+          <v-combobox :items="users" v-model="assignee" label="Assignee"></v-combobox>
         </v-row>
         <v-row>
           <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips multiple></v-combobox>
@@ -67,7 +70,9 @@ export default {
       descriptionText: "",
       assignee: "",
       action: 'add',
-      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement']
+      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
+      formTitle: "Add New Issue",
+      users: ["lewjb", "jkjsdklfd", "ufifj", "sdkfjksladf", "sadjflsd", "osdfiopsd"]
     };
   },
   created() {
@@ -78,7 +83,18 @@ export default {
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
       this.action = 'edit';
+      this.formTitle = "Edit Issue";
     }
+    fetch(`/api/user/allUsername`)
+    .then(res => {
+      if (res.status == 200) {
+        return res.json()
+      } else {
+        return [];
+      }
+    })
+    .then(data => this.users = data)
+    .catch(e => console.log(e));
   },
   methods: {
     clearForm() {
@@ -103,7 +119,7 @@ export default {
             status: "Open",
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
-            assignee: "",
+            assignee: this.assignee,
             timestamp: Date.now()
           }),
         })
@@ -130,7 +146,7 @@ export default {
             status: this.issue.status,
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
-            assignee: "",
+            assignee: this.assignee,
             timestamp: Date.now()
           }),
         })

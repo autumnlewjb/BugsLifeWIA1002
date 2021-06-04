@@ -4,7 +4,7 @@
       <v-card-text class="text--body-1 black--text blue-grey lighten-4"
         >
         <strong
-          >Commented on
+          >{{comment.user}} commented on
           {{
             comment.timestamp != null ? " " + comment.timestamp : "unknown time"
           }}</strong
@@ -12,7 +12,7 @@
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon dense v-on="on" v-bind="attrs">
-              <v-icon>mdi-dots-horizontal</v-icon>
+              <v-icon>mdi-history</v-icon>
             </v-btn>
           </template>
           <v-list>

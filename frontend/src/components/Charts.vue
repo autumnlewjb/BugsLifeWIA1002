@@ -1,49 +1,55 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-container>
-        <div class="container1">
-          <highcharts
-            id="container1"
-            style="width: 50%; height: 400px; margin-bottom: 25px; float: left"
-            :options="getChartOneOptions"
-          ></highcharts>
-        </div>
-        <div class="container2">
-          <highcharts
-            id="container2"
-            style="width: 50%; height: 400px; margin-bottom: 25px; float: right"
-            :options="getChartTwoOptions"
-          ></highcharts>
-        </div>
-        <div class="container3">
-          <highcharts
-            id="container3"
-            style="width: 100%; height: 400px; margin-bottom: 25px; float: right"
-            :options="getChartThreeOptions"
-          ></highcharts>
-        </div>
-      </v-container>
-    </v-row>
-    <v-row>
-      <v-container>
-        <v-data-table :headers="getTableHeaders" :items="getTableData" class="elevation-1"></v-data-table>
-      </v-container>
-    </v-row>
+  <v-container class="pa-2">
+    <v-layout row class="py-10" justify-space-around>
+      <v-flex md6 sm12>
+        <v-card class="mr-1">
+          <v-card-text>
+            <highcharts :options="getChartOneOptions" class="pa-2"></highcharts>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex md6 sm12>
+        <v-card class="ml-1">
+          <v-card-text>
+            <highcharts :options="getChartTwoOptions" class="pa-2"></highcharts>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex>
+        <v-card>
+          <v-card-text>
+            <highcharts :options="getChartThreeOptions"></highcharts>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout row class="py-10">
+      <v-flex>
+        <v-container>
+          <v-data-table
+            :headers="getTableHeaders"
+            :items="getTableData"
+            class="elevation-1"
+          ></v-data-table>
+        </v-container>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
-import {Chart} from 'highcharts-vue';
-import Highcharts from 'highcharts';
-import exportingInit from 'highcharts/modules/exporting'
+import { Chart } from "highcharts-vue";
+import Highcharts from "highcharts";
+import exportingInit from "highcharts/modules/exporting";
 
 exportingInit(Highcharts);
 
 export default {
   name: "Charts",
   components: {
-    highcharts: Chart
+    highcharts: Chart,
   },
   data() {
     return {
@@ -58,188 +64,202 @@ export default {
       chartOptions: {
         series: [
           {
-            data: [1, 2, 3]
-          }
-        ]
-      }
-    }
+            data: [1, 2, 3],
+          },
+        ],
+      },
+    };
   },
   created() {
     fetch(`/api/${this.projectId}/charts/data`)
-    .then((res) => res.json())
-    .then(data => {
-      this.tags = data.tags;
-      this.cummulativeCounter = data.cumulativeCounter;
-      this.issueCounter = data.issueCounter;
-      this.days = data.days;
-      this.tags = data.tags;
-      this.counter = data.counter;
-      this.data = data.data;
-      this.headers = data.headers;
-      this.rows = data.rows;
-    })
-    .catch(e => console.log(e));
+      .then((res) => res.json())
+      .then((data) => {
+        this.tags = data.tags;
+        this.cummulativeCounter = data.cumulativeCounter;
+        this.issueCounter = data.issueCounter;
+        this.days = data.days;
+        this.tags = data.tags;
+        this.counter = data.counter;
+        this.data = data.data;
+        this.headers = data.headers;
+        this.rows = data.rows;
+      })
+      .catch((e) => console.log(e));
   },
   props: {
-    projectId: String
+    projectId: String,
   },
   computed: {
     getChartOneOptions() {
       return {
         chart: {
-          type: 'column'
+          type: "column",
         },
         title: {
-          text: 'Tags Bar Chart'
+          text: "Tags Bar Chart",
         },
         xAxis: {
           categories: this.tags,
-          crosshair: true
+          crosshair: true,
         },
         yAxis: {
-            min: 0,
-            max: 20,
-            title: {
-                text: 'Counter'
-            }
+          min: 0,
+          max: 20,
+          title: {
+            text: "Counter",
+          },
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+          headerFormat:
+            '<span style="font-size:10px">{point.key}</span><table>',
+          pointFormat:
+            '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y}</b></td></tr>',
+          footerFormat: "</table>",
+          shared: true,
+          useHTML: true,
         },
         plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
+          column: {
+            pointPadding: 0.2,
+            borderWidth: 0,
+          },
         },
-        series: [{
-            name: 'Tags',
-            data: this.counter
-        }]
-      }
+        series: [
+          {
+            name: "Tags",
+            data: this.counter,
+          },
+        ],
+      };
     },
     getChartTwoOptions() {
       return {
-          chart: {
-              plotBackgroundColor: null,
-              plotBorderWidth: null,
-              plotShadow: false,
-              type: 'pie'
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: "pie",
+        },
+        title: {
+          text: "Status Pie Chart",
+        },
+        tooltip: {
+          pointFormat: "{series.name}: <b>{point.y}</b>",
+        },
+        accessibility: {
+          point: {
+            valueSuffix: "%",
           },
-          title: {
-              text: 'Status Pie Chart'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: "pointer",
+            dataLabels: {
+              enabled: true,
+              format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+            },
           },
-          tooltip: {
-              pointFormat: '{series.name}: <b>{point.y}</b>'
+        },
+        series: [
+          {
+            name: "Status counter",
+            colorByPoint: true,
+            data: this.data,
           },
-          accessibility: {
-              point: {
-                  valueSuffix: '%'
-              }
-          },
-          plotOptions: {
-              pie: {
-                  allowPointSelect: true,
-                  cursor: 'pointer',
-                  dataLabels: {
-                      enabled: true,
-                      format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                  }
-              }
-          },
-          series: [{
-              name: 'Status counter',
-              colorByPoint: true,
-              data: this.data
-          }]
-      }
+        ],
+      };
     },
     getChartThreeOptions() {
       return {
-            chart: {
-                zoomType: 'xy'
+        chart: {
+          zoomType: "xy",
+        },
+        title: {
+          text: "Number of issues created ",
+        },
+        xAxis: [
+          {
+            categories: this.days,
+            crosshair: true,
+          },
+        ],
+        yAxis: [
+          {
+            // Primary yAxis
+            labels: {
+              format: "{value} total issues",
+              style: {
+                color: Highcharts.getOptions().colors[1],
+              },
             },
             title: {
-                text: 'Number of issues created '
+              text: "Total issues",
+              style: {
+                color: Highcharts.getOptions().colors[1],
+              },
             },
-            xAxis: [{
-                categories: this.days,
-                crosshair: true
-            }],
-            yAxis: [{ // Primary yAxis
-                labels: {
-                    format: '{value} total issues',
-                    style: {
-                        color: Highcharts.getOptions().colors[1]
-                    }
-                },
-                title: {
-                    text: 'Total issues',
-                    style: {
-                        color: Highcharts.getOptions().colors[1]
-                    }
-                }
-            }, { // Secondary yAxis
-                title: {
-                    text: 'issues',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                labels: {
-                    format: '{value} issues',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                opposite: true
-            }],
+          },
+          {
+            // Secondary yAxis
+            title: {
+              text: "issues",
+              style: {
+                color: Highcharts.getOptions().colors[0],
+              },
+            },
+            labels: {
+              format: "{value} issues",
+              style: {
+                color: Highcharts.getOptions().colors[0],
+              },
+            },
+            opposite: true,
+          },
+        ],
+        tooltip: {
+          shared: true,
+        },
+        legend: {
+          layout: "vertical",
+          align: "left",
+          x: 120,
+          verticalAlign: "top",
+          y: 100,
+          floating: true,
+          backgroundColor:
+            Highcharts.defaultOptions.legend.backgroundColor || // theme
+            "rgba(255,255,255,0.25)",
+        },
+        series: [
+          {
+            name: "Issues",
+            type: "column",
+            yAxis: 1,
+            data: this.issueCounter,
             tooltip: {
-                shared: true
+              valueSuffix: " issues",
             },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                x: 120,
-                verticalAlign: 'top',
-                y: 100,
-                floating: true,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || // theme
-                    'rgba(255,255,255,0.25)'
+          },
+          {
+            name: "Total issues",
+            type: "spline",
+            data: this.cummulativeCounter,
+            tooltip: {
+              valueSuffix: " total issues",
             },
-            series: [{
-                name: 'Issues',
-                type: 'column',
-                yAxis: 1,
-                data: this.issueCounter,
-                tooltip: {
-                    valueSuffix: ' issues'
-                }
-
-            }, {
-                name: 'Total issues',
-                type: 'spline',
-                data: this.cummulativeCounter,
-                tooltip: {
-                    valueSuffix: ' total issues'
-                }
-            }]
-
-        }
+          },
+        ],
+      };
     },
     getTableHeaders() {
       const headers = [];
-      this.headers.forEach(element => {
+      this.headers.forEach((element) => {
         headers.push({
           text: element,
-          value: element
-        })
+          value: element,
+        });
       });
       console.log(headers);
       return headers;
@@ -248,10 +268,14 @@ export default {
       const rows = [];
       this.rows.forEach((element) => {
         rows.push(element);
-      })
+      });
       console.log(rows);
       return rows;
-    }
-  }
+    },
+  },
 };
 </script>
+
+<style scoped>
+
+</style>

@@ -85,10 +85,10 @@
       
       <p class="no-result">
         Found nothing...<br>
-        Start your search with <span>issue:</span> or 
-        <span>project:</span> or <span>user:</span>
+        Start your search with <code>issue:</code> or 
+        <code>project:</code> or <code>user:</code>
          for specific search...<br>
-         Sorting and filtering are only allowed for <span>issue:</span> and <span>project:</span> searches
+         Sorting and filtering are only allowed for <code>issue:</code> and <code>project:</code> searches
       </p>
     </v-container>
   </v-container>

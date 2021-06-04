@@ -1,7 +1,6 @@
 <template>
   <v-container v-if="project">
     <v-container>
-
       <v-layout row>
         <v-flex xs8 md8>
           <v-container>
@@ -22,12 +21,10 @@
       <v-layout row>
         <v-flex x12 md12>
           <v-container>
-            <p>
-              Date created:
-              {{ getProject.date == null ? "Not specified" : getProject.date }}
+            <p class="subtitle-2">
+              {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
             </p>
-            <p>Description:</p>
-            <v-card outlined class="pa-5">
+            <v-card outlined class="pa-5 my-10">
               <p v-html="getProjectDescription"></p>
             </v-card>
           </v-container>
@@ -37,7 +34,7 @@
     <v-container>
       <v-tabs>
         <v-tab>Issues</v-tab>
-        <v-tab>Charts</v-tab>
+        <v-tab>Monitoring</v-tab>
         <v-tab-item>
           <v-container>
             <Issues :data="data"></Issues>
@@ -71,7 +68,7 @@
 </template>
 
 <script>
-import Issues from "../views/Issues";
+import Issues from "../components/Issues";
 import ProjectForm from "../components/ProjectForm";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
@@ -97,16 +94,6 @@ export default {
     this.fetchProject();
   },
   methods: {
-    toggleIssues() {
-      if (this.$vuetify.breakpoint.mdAndUp) {
-        this.showIssues = !this.showIssues;
-      } else {
-        this.$router.push({
-          name: "Issues",
-          query: { projectId: this.projectId },
-        });
-      }
-    },
     editProject() {
       this.dialog = true;
     },

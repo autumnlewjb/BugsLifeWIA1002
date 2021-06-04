@@ -1,10 +1,9 @@
 <template>
   <div>
     <v-container>
-      <v-layout row>
-        <v-flex xs12 md8>
-          <h1 class="subheading">
-            Issue Dashboard
+      <v-layout row class="my-10">
+        <v-flex xs12 md10>
+          <h2 class="subheading">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -35,7 +34,7 @@
               </template>
               <span>Filter</span>
             </v-tooltip>
-          </h1>
+          </h2>
         </v-flex>
         <v-flex xs12 md2 class="d-flex justify-end">
           <v-btn
@@ -79,9 +78,10 @@
     </v-container>
     <v-container>
       <v-layout row justify-center>
-        <v-flex xs12 md12>
+        <v-flex xs12 md12 v-if="issues != null && issues.length > 0">
           <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
             <v-card-title>
+              <span class="mr-5 status" style="min-width: 1rem">{{issue.status}}</span>
               {{ issue.title }}
               <v-icon v-for="n in issue.priority" :key="n" color="red"
                 >mdi-exclamation</v-icon
@@ -109,8 +109,7 @@
             </v-card-text
             >
             <v-card-text>
-              Status: {{ issue.status }}<br />
-              Last updated on
+              Created on 
               {{
                 issue.timestamp == null ? "(Not Specified)" : issue.timestamp
               }}
@@ -128,6 +127,9 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+        </v-flex>
+        <v-flex md12 sm12 v-else justify-center class="ma-10">
+          <p style="text-align: center;" class="text--secondary">Hhhhmmmm... No issues now</p>
         </v-flex>
       </v-layout>
     </v-container>
@@ -344,4 +346,11 @@ export default {
 </script>
 
 <style scoped>
+.status {
+  display: block;
+  background-color: burlywood;
+  border-radius: 40px;
+  padding: 5px 20px;
+  min-width: 500px;
+}
 </style>

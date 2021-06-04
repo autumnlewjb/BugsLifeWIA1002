@@ -4,7 +4,6 @@ import Login from '../views/Login'
 import Register from '../views/Register'
 import Projects from '../views/Projects'
 import Project from '../views/Project'
-import Issues from '../views/Issues'
 import Issue from '../views/Issue'
 import Search from '../views/Search'
 
@@ -38,11 +37,6 @@ const routes = [
         path: '/project',
         name: 'Project',
         component: Project
-    },
-    {
-        path: '/issues',
-        name: 'Issues',
-        component: Issues
     },
     {
         path: '/issue',

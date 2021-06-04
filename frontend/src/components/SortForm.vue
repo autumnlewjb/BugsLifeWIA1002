@@ -2,12 +2,12 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-container>
-            <v-row v-for="(item, index) in sortData" :key="index" justify="center">
-              <v-col sm="6" md="6">
+          <v-container justify="center" align="center">
+            <v-row v-for="(item, index) in sortData" :key="index" justify="center" align="center">
+              <v-col sm="6" md="6" align="center">
                 <v-select :items="sortSubjects" solo label="sort by" v-model="item.subject" disabled></v-select>
               </v-col>
-              <v-col sm="4" md="4">
+              <v-col sm="4" md="4" justify="center">
                 <v-radio-group row v-model="item.order" disabled>
                   <v-radio label="Ascending" value="asc"></v-radio>
                   <v-radio label="Descending" value="desc"></v-radio>

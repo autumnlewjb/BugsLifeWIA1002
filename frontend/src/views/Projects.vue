@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-container style="min-height: 80vh">
-      <v-layout row justify-space-around>
+      <v-layout row justify-space-around class="my-10">
         <v-flex xs12 md8>
           <h1 class="subheading">Project Dashboard
             <v-tooltip bottom>
@@ -24,6 +24,7 @@
             color="teal"
             class="white--text"
             @click="dialog = true"
+            align="center" justify="center"
             >+ Add Project</v-btn
           >
         </v-flex>
@@ -38,7 +39,10 @@
         </v-flex>
       </v-layout>
       <v-layout row>
-        <v-flex xs12 md12>
+        <v-flex md12 sm12 v-if="getProjects.length == 0" justify-center class="ma-10">
+          <p style="text-align: center;" class="text--secondary">Hhhhmmmm... No projects now</p>
+        </v-flex>
+        <v-flex xs12 md12 v-else>
           <v-card
             v-for="project in getProjects"
             :key="project.id"
