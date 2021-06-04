@@ -1,16 +1,12 @@
 <template>
   <v-container>
-    <v-row justify="end" class="ma-4">
-      <v-btn class="ma-2" color="primary" dark @click="uploadDialog = true">
-        Add Attachment
-        <v-icon dark right>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn class="ma-2" color="primary" dark @click="editing = !editing" v-click-outside="{
-          handler: onClickOutside,
-          include: include,
-        }">
+    <v-row justify="end" class="mb-4">
+      <v-btn class="ma-2 white--text text-right" elevation="3" rounded color="teal" @click="editing = !editing">
+        <v-icon dark small left>mdi-pencil</v-icon>
         Edit
-        <v-icon dark right>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn class="ma-2 white--text" elevation="3" rounded color="teal" @click="uploadDialog = true">
+        + Add Attachment
       </v-btn>
     </v-row>
     <UploadForm :dialog.sync="uploadDialog"
@@ -21,12 +17,12 @@
       <v-row>
         <v-col v-for="(file, index) in attachments" :key="index" cols="3">
           <v-hover v-slot="{ hover }">
-            <v-card max-width="220px" :elevation="hover ? 12 : 2" class="included">
+            <v-card max-width="220px" :elevation="hover ? 12 : 2">
               <a :href="file.path" target="_blank" style="text-decoration:none;">
                 <v-img :src="file.path" :alt="file.fileName" class="fill-height align-end" height="150px">
                   <template v-slot:placeholder>
                     <v-row class="fill-height ma-0 grey" align="center" justify="center">
-                      <v-icon size="40" dark> mdi-file</v-icon>
+                      <v-icon size="40" dark>{{ getIcon(file.fileName) }}</v-icon>
                     </v-row>
                   </template>
                   <div class="row">
@@ -133,11 +129,14 @@ export default {
         }
       }).catch((e) => console.log(e))
     },
-    onClickOutside () {
-      this.editing= false
-    },
-    include () {
-      return [document.querySelector('.included')]
+    getIcon(filename) {
+      if (/\.(jpe?g|png|gif)$/i.test(filename)) {
+        return 'mdi-file-image'
+      } else if (/\.txt$/i.test(filename)) {
+        return 'mdi-file-document';
+      } else {
+        return 'mdi-file';
+      }
     },
   },
 }
