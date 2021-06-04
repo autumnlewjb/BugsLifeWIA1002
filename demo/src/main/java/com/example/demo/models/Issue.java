@@ -16,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -84,6 +85,11 @@ public class Issue implements Serializable {
     @Formula("(select count(*) from comment c where c.issue_id = issue_id)")
     @NotAudited
     private Integer commentNum;
+
+    @JsonManagedReference(value = "issue_attachment")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
+    @NotAudited
+    private List<Attachment> attachments;
 
     public int getCommentIndex(Comment comment) {
         return this.comment.indexOf(comment);
@@ -199,5 +205,13 @@ public class Issue implements Serializable {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachment) {
+        this.attachments = attachment;
     }
 }

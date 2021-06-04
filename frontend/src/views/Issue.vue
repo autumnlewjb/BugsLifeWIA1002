@@ -16,6 +16,9 @@
             <span class="font-weight-normal" v-html="getIssue.descriptionText == null ? 'Not specified' : getIssue.descriptionText">Description:</span> <br />
           </v-card>
         </v-container>
+        <v-container>
+          <Attachment :issueId="issueId"/>
+        </v-container>
       </v-flex>
       <v-flex xs12 md3>
         <v-container class="text--body-2 font-weight-light">
@@ -109,6 +112,7 @@ import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
 import TipTap from '../components/TipTap.vue';
+import Attachment from "../components/Attachment";
 
 export default {
   setup() {},
@@ -166,6 +170,7 @@ export default {
     ConfirmDelete,
     Forbidden,
     TipTap,
+    Attachment
   },
   methods: {
     async postComment() {
