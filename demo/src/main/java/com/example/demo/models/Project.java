@@ -58,6 +58,10 @@ public class Project implements Serializable {
     @Formula("(select count(*) from issue i where i.project_id = project_id)")
     private Integer issueNum;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "project_attachment")
+    private List<Attachment> attachments;
+
     public Project() {
     }
 
@@ -145,5 +149,13 @@ public class Project implements Serializable {
 
     public void setIssueNum(Integer issueNum) {
         this.issueNum = issueNum;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachment) {
+        this.attachments = attachment;
     }
 }

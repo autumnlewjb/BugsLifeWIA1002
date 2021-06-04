@@ -1,12 +1,14 @@
 package com.example.demo.models;
 
 public class FileResponse {
+    private Integer id;
     private String name;
     private String url;
     private String type;
     private long size;
 
-    public FileResponse(String name, String url, String type, long size) {
+    public FileResponse(Integer id, String name, String url, String type, long size) {
+        this.id = id;
         this.name = name;
         this.url = url;
         this.type = type;
@@ -43,5 +45,13 @@ public class FileResponse {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

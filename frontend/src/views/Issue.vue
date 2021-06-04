@@ -39,6 +39,9 @@
             <br />
           </v-card>
         </v-container>
+        <v-container>
+          <Attachment :issueId="issueId"/>
+        </v-container>
       </v-flex>
       <v-flex xs12 md3>
         <v-container class="text--body-2 font-weight-light">
@@ -136,8 +139,9 @@ import Comment from "../components/Comment";
 import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
-import TipTap from "../components/TipTap.vue";
 import Changelog from "../components/Changelog";
+import TipTap from '../components/TipTap.vue';
+import Attachment from "../components/Attachment";
 
 export default {
   setup() {},
@@ -202,6 +206,7 @@ export default {
     Forbidden,
     TipTap,
     Changelog,
+    Attachment
   },
   methods: {
     async postComment() {
