@@ -7,6 +7,8 @@ services:
         depends_on: 
             - sql-server
         restart: on-failure
+        volumes:
+            - /var/www/files:/var/www/html
     sql-server:
         image: mysql:latest
         environment:
@@ -21,5 +23,7 @@ services:
             - 80:80
         depends_on:
             - spring-app
+        volumes:
+            - /var/www/files:/var/www/static/image
         restart: on-failure
 
