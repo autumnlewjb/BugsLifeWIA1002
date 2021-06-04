@@ -5,18 +5,20 @@
             @dragenter.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
             :class="{ 'blue lighten-4': dragover }"
-            class="pa-16">
-      <v-card-text class="pt-16" v-if="files.length === 0">
-        <v-row justify="center">
-          <v-icon size="60">
-            mdi-cloud-upload
-          </v-icon>
-        </v-row>
-        <v-row justify="center">
-          Drag and drop your attachment(s) here.
+            class="pa-16" min-height="400px">
+      <v-card-text class="align-center pa-16" v-if="files.length === 0">
+        <v-row>
+          <v-col cols="12" class="d-flex justify-center align-center">
+            <v-icon size="60">
+              mdi-file-multiple
+            </v-icon>
+          </v-col>
+          <v-col cols="12" class="d-flex justify-center align-center">
+            Drag and drop your attachment(s) here.
+          </v-col>
         </v-row>
       </v-card-text>
-      <v-list class="pa-6" v-else-if="files.length > 0" flat>
+      <v-list class="align-center" v-else-if="files.length > 0" flat min-height="200px">
         <v-list-group v-for="(file, index) in files" :key="index">
           <template v-slot:activator>
             <v-list-item-action>
@@ -41,20 +43,17 @@
         </v-list-group>
       </v-list>
       <v-card-text class="justify-end">
-        <v-row class="pa-6" align="center">
+        <v-row>
           <v-col>
             <v-file-input
                 v-model="files"
                 multiple
                 show-size
                 label="Select Files"
-                @change="selectFiles"
             ></v-file-input>
           </v-col>
-          <v-btn :loading="loading"
-                 :disabled="loading"
-                 rounded
-                 color="primary"
+          <v-btn :loading="loading" :disabled="loading"
+                 class="ma-2 white--text text-right" elevation="3" rounded color="teal"
                  @click="upload">
             Upload
             <v-icon right dark>mdi-cloud-upload</v-icon>
@@ -88,9 +87,6 @@ export default {
     closeDialog() {
       this.files = [];
       this.$emit("update:dialog", false);
-    },
-    selectFiles(files) {
-      this.files = files;
     },
     onDrop(e) {
       this.dragover = false;
