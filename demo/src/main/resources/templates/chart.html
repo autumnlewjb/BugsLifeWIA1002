@@ -34,21 +34,6 @@
         </thead>
 
         <tbody>
-        <tr th:each="row: ${rows}" id="tablerow2">
-            <td th:each="header: ${headers}" th:text="${row.get(header)}"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div class="container" style="width: 90%; margin: 0 auto">
-    <table class="table table-bordered table-striped" style="width: 100%;">
-        <thead class="thead-dark">
-        <tr>
-            <th th:each="header: ${headers}" class="column-title" th:text="${header}"></th>
-        </tr>
-        </thead>
-
-        <tbody>
         <tr th:each="row: ${rows}" id="tablerow">
             <td th:each="header: ${headers}" th:text="${row.get(header)}"></td>
         </tr>
@@ -76,8 +61,6 @@
                 crosshair: true
             },
             yAxis: {
-                min: 0,
-                max: 20,
                 title: {
                     text: 'Counter'
                 }

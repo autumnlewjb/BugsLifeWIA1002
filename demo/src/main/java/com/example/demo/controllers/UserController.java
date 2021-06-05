@@ -184,6 +184,12 @@ public class UserController {
                     if (key.equals("created_by")) {
                         key = "createdBy";
                     }
+                    if (key.equals("modified_date")) {
+                        continue;
+                    }
+                    if (key.equals("modified_by")) {
+                        continue;
+                    }
                     String value = issueSelect.getString(i);
                     obj.put(key, value);
                 }
@@ -194,6 +200,9 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns5; i++) {
                     String key = columnNames5.get(i - 1);
+                    if (key.equals("modified_date")) {
+                        continue;
+                    }
                     String value = commentSelect.getString(i);
                     obj.put(key, value);
                 }

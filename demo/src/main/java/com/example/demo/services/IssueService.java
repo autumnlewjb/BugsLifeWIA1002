@@ -13,8 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.persistence.EntityManager;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
@@ -123,5 +122,18 @@ public class IssueService {
     public List<?> getAllHistory() {
         List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return issueHistory;
+    }
+
+    public HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm)
+    {
+        List<Map.Entry<String, Integer> > list = new LinkedList<>(hm.entrySet());
+
+        list.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
+
+        HashMap<String, Integer> temp = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 }
