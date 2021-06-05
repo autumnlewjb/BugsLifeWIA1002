@@ -38,13 +38,13 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-            try {
+            /*try {
                 SearchSession searchSession = Search.session(entityManager);
                 MassIndexer indexer = searchSession.massIndexer();
                 indexer.startAndWait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
     }
 
     public Page<?> searchAll(Pageable pageable, String query) {
