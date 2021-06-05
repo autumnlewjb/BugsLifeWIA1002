@@ -29,13 +29,13 @@ public class FileStorageService {
 
     public Attachment storeFile(MultipartFile file, String parent, String id) throws IOException {
         String fileName = file.getOriginalFilename();
-        String path = "/var/www/html/";
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath() + "static/";
         FileOutputStream out = new FileOutputStream(path + fileName);
         out.write(file.getBytes());
         out.flush();
         out.close();
 
-        Attachment newAttachment = new Attachment(fileName, file.getContentType(), "/image/" + fileName);
+        Attachment newAttachment = new Attachment(fileName, file.getContentType(), "http://localhost:8080/" + fileName);
         if (parent.equals("project")) {
             Project project = projectService.findProjectWithId(Integer.parseInt(id));
             newAttachment.setProject(project);
