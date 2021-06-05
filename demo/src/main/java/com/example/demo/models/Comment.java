@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Audited
 @Entity
@@ -44,7 +45,10 @@ public class Comment implements Cloneable{
     @Column(updatable = false)
     @CreatedBy
     private String user;
-
+    
+    @LastModifiedDate
+    private Date modifiedDate;
+    
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
@@ -101,6 +105,10 @@ public class Comment implements Cloneable{
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
     }
     
     public Object clone() throws CloneNotSupportedException
