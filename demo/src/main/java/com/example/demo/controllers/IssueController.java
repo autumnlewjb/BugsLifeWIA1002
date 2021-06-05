@@ -11,6 +11,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.sun.xml.bind.v2.TODO;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -247,168 +248,6 @@ public class IssueController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
-    /*@GetMapping("{project_id}/report/get")
-    public ResponseEntity<Resource> generateReport(@PathVariable Integer project_id) throws IOException, DocumentException {
-        Project project = projectService.findProjectWithId(project_id);
-        List<Issue> issues = issueService.findIssuesByProject(project);
-        BaseColor color = new BaseColor(135,206,250);
-        Font headFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
-        Document document = new Document(PageSize.A4, 25, 10, 10, 10);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        PdfWriter.getInstance(document, os);
-        document.open();
-        Paragraph title = new Paragraph("Report for " + project.getName() +"\nTotal issues: "+issues.size(), headFont);
-        document.add(title);
-        PdfPTable table = new PdfPTable(6);
-        PdfPTable resolved = new PdfPTable(7);
-        PdfPTable unResolved = new PdfPTable(7);
-        table.setSpacingBefore(10);
-        table.setSpacingAfter(10);
-        resolved.setSpacingBefore(10);
-        resolved.setSpacingAfter(10);
-        unResolved.setSpacingBefore(10);
-        unResolved.setSpacingAfter(10);
-
-
-        PdfPCell c1 = new PdfPCell(new Phrase("Resolved", headFont));
-        int resolvedCounter = 0;
-        c1.setBackgroundColor(color);
-        table.addCell(c1);
-        PdfPCell c2 = new PdfPCell(new Phrase("Unresolved", headFont));
-        int unResolvedCounter = 0;
-        c2.setBackgroundColor(color);
-        table.addCell(c2);
-        PdfPCell c3 = new PdfPCell(new Phrase("In progress", headFont));
-        int inProgressCounter = 0;
-        c3.setBackgroundColor(color);
-        table.addCell(c3);
-        PdfPCell c4 = new PdfPCell(new Phrase("Top performer", headFont));
-        c4.setBackgroundColor(color);
-        table.addCell(c4);
-        PdfPCell c5 = new PdfPCell(new Phrase("Frontend label", headFont));
-        c5.setBackgroundColor(color);
-        int frontEndCounter= 0;
-        table.addCell(c5);
-        PdfPCell c6 = new PdfPCell(new Phrase("Backend label", headFont));
-        c6.setBackgroundColor(color);
-        int backEndCounter = 0;
-        table.addCell(c6);
-
-        for (Issue issue : issues){
-            if (issue.getStatus().equals("Resolved")){
-                resolvedCounter++;
-            }
-            else if (issue.getStatus().equals("In Progress")){
-                inProgressCounter++;
-            }
-            else unResolvedCounter++;
-
-            for (String tag: issue.getTag()){
-                if (tag.equals("Frontend")){
-                    frontEndCounter++;
-                }
-                else backEndCounter++;
-            }
-        }
-            table.addCell(String.valueOf(resolvedCounter));
-            table.addCell(String.valueOf(unResolvedCounter));
-            table.addCell(String.valueOf(inProgressCounter));
-            table.addCell(String.valueOf(issues.get(0).getCreatedBy()));
-            table.addCell(String.valueOf(frontEndCounter));
-            table.addCell(String.valueOf(backEndCounter));
-
-
-        Paragraph resolvedTitle = new Paragraph("Issue resolved", headFont);
-        PdfPCell rC1 = new PdfPCell(new Phrase("Issue ID", headFont));
-        rC1.setBackgroundColor(color);
-        resolved.addCell(rC1);
-        PdfPCell rC2 = new PdfPCell(new Phrase("Title", headFont));
-        rC2.setBackgroundColor(color);
-        rC2.setColspan(2);
-        resolved.addCell(rC2);
-        PdfPCell rC3 = new PdfPCell(new Phrase("Priority", headFont));
-        rC3.setBackgroundColor(color);
-        resolved.addCell(rC3);
-        PdfPCell rC4 = new PdfPCell(new Phrase("Tag", headFont));
-        rC4.setBackgroundColor(color);
-        resolved.addCell(rC4);
-        PdfPCell rC5 = new PdfPCell(new Phrase("Created by", headFont));
-        rC5.setBackgroundColor(color);
-        resolved.addCell(rC5);
-        PdfPCell rC6 = new PdfPCell(new Phrase("Assignee", headFont));
-        rC6.setBackgroundColor(color);
-        resolved.addCell(rC6);
-
-
-        Paragraph unResolvedTitle = new Paragraph("Unresolved Issues", headFont);
-        PdfPCell uC1 = new PdfPCell(new Phrase("Issue ID", headFont));
-        uC1.setBackgroundColor(color);
-        unResolved.addCell(uC1);
-        PdfPCell uC2 = new PdfPCell(new Phrase("Title", headFont));
-        uC2.setBackgroundColor(color);
-        uC2.setColspan(2);
-        unResolved.addCell(uC2);
-        PdfPCell uC3 = new PdfPCell(new Phrase("Priority", headFont));
-        uC3.setBackgroundColor(color);
-        unResolved.addCell(uC3);
-        PdfPCell uC4 = new PdfPCell(new Phrase("Tag", headFont));
-        uC4.setBackgroundColor(color);
-        unResolved.addCell(uC4);
-        PdfPCell uc5 = new PdfPCell(new Phrase("Created by", headFont));
-        uc5.setBackgroundColor(color);
-        unResolved.addCell(uc5);
-        PdfPCell uC6 = new PdfPCell(new Phrase("Assignee", headFont));
-        uC6.setBackgroundColor(color);
-        unResolved.addCell(uC6);
-
-        int counter = 1;
-        PdfPCell tempCell = new PdfPCell();
-        tempCell.setColspan(2);
-        for (Issue issue : issues){
-            if (issue.getStatus().equalsIgnoreCase("Resolved")){
-                resolved.addCell(String.valueOf(counter++));
-                tempCell.setPhrase(new Phrase(String.valueOf(issue.getTitle())));
-                resolved.addCell(tempCell);
-                resolved.addCell(String.valueOf(issue.getPriority()));
-                resolved.addCell(String.valueOf(issue.getTag().toString()));
-                resolved.addCell(String.valueOf(issue.getCreatedBy()));
-                resolved.addCell(String.valueOf(issue.getAssignee()));
-            }
-            else {
-                unResolved.addCell(String.valueOf(counter++));
-                tempCell.setPhrase(new Phrase(String.valueOf(issue.getTitle())));
-                unResolved.addCell(tempCell);
-                unResolved.addCell(String.valueOf(issue.getPriority()));
-                unResolved.addCell(String.valueOf(issue.getTag().toString()));
-                unResolved.addCell(String.valueOf(issue.getCreatedBy()));
-                unResolved.addCell(String.valueOf(issue.getAssignee()));
-            }
-        }
-
-        document.add(table);
-        document.add(resolvedTitle);
-        document.add(resolved);
-        document.add(unResolvedTitle);
-        document.add(unResolved);
-        document.close();
-        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ProductPdfReport.pdf");
-
-        ResponseEntity<Resource> response = new ResponseEntity<>(new InputStreamResource(is), headers,
-                HttpStatus.OK);
-
-        return response;
-    }
-
-    @GetMapping("/{project_id}/generateReport")
-    public void exportReport(@PathVariable Integer project_id) throws JRException, FileNotFoundException {
-        reportService.exportReport(project_id);
-    }*/
 
     @GetMapping("/{project_id}/charts")
     public String getAllEmployee(@PathVariable Integer project_id, Model model) {
@@ -529,6 +368,33 @@ public class IssueController {
             cumulativeCounter += issueCounter.get(i);
             issueCumulativeCounter.add(cumulativeCounter);
         }
+
+        List<String> assignee = new ArrayList<>();
+        List<Integer> numberOfIssueSolved = new ArrayList<>();
+        for (Issue issue: issues){
+            if (!assignee.contains(issue.getAssignee())){
+                assignee.add(issue.getAssignee());
+            }
+        }
+
+        for (String name : assignee){
+            int count = 0;
+            for (Issue issue : issues){
+                if (issue.getAssignee().equals(name)){
+                    count++;
+                }
+            }
+            numberOfIssueSolved.add(count);
+        }
+
+        HashMap<String, Integer> performerList = new HashMap<>();
+        for (int i = 0; i < assignee.size(); i++) {
+            performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
+        }
+
+        //TODO ranking for top performer
+        Map<String, Integer> ranking = issueService.sortByValue(performerList);
+
 
         model.addAttribute("cumulativeCounter", issueCumulativeCounter);
         model.addAttribute("issueCounter", issueCounter);
