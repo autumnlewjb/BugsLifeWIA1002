@@ -147,4 +147,15 @@ public class IssueService {
         }
         return issuesCreatedBy;
     }
+
+    public List<Issue> findIssuesByStatus(Integer project_id, String status) {
+        List<Issue> allIssues = issueRepository.findByProject(projectRepository.findProjectById(project_id));
+        List<Issue> issueList = new ArrayList<>();
+        for (Issue issue : allIssues){
+            if (issue.getStatus().equalsIgnoreCase(status)){
+                issueList.add(issue);
+            }
+        }
+        return issueList;
+    }
 }
