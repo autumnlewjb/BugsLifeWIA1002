@@ -17,7 +17,7 @@
 
 <script>
 import Form from "../components/Form";
-import router from "../router/index"
+// import router from "../router/index"
 export default {
   components: {
     Form,
@@ -39,7 +39,7 @@ export default {
 
       if (res.status === 200) {
         console.log("registered");
-        router.push({"name": "Login"});
+        // router.push({"name": "Login"});
       } else {
         alert("Registration failed! ");
       }

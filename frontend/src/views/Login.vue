@@ -44,7 +44,7 @@ export default {
   },
   created() {
     if (this.$store.getters.getCurrentUser) {
-      this.$router.push({name: 'Projects'})
+      this.$router.push({name: 'Profile'})
     }
   },
   methods: {
@@ -70,7 +70,7 @@ export default {
           console.log(data)
           localStorage.setItem('data', JSON.stringify(data))
           this.$store.dispatch('fetchCurrentUser')
-          this.$router.push({name: 'Projects'})
+          this.$router.push({name: 'Profile'})
         }
       })
       .catch((e) => console.log(e))

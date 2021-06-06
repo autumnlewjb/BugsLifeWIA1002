@@ -2,11 +2,12 @@
   <v-container v-if="project">
     <v-container>
       <v-layout row>
-        <v-flex xs8 md8>
+        <v-flex xs12 md8>
           <v-container>
             <h1>
               {{ getProject.name }}
-              <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
+            </h1>
+            <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
               <v-btn
                   class="mx-0"
                   plain
@@ -15,20 +16,26 @@
               >Delete
               </v-btn
               >
-            </h1>
+            <v-container>
+              <p class="subtitle-2">
+                {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
+              </p>
+              <v-card outlined class="pa-5 my-10">
+                <p v-html="getProjectDescription"></p>
+              </v-card>
+            </v-container>
           </v-container>
         </v-flex>
-      </v-layout>
-      <v-layout row>
-        <v-flex x12 md12>
-          <v-container>
-            <p class="subtitle-2">
-              {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
-            </p>
-            <v-card outlined class="pa-5 my-10">
-              <p v-html="getProjectDescription"></p>
-            </v-card>
-          </v-container>
+        <v-flex xs12 md4 justify="center">
+          <v-card outlined height=100%>
+            <v-img src="../assets/medal.webp" height="200"></v-img>
+            <v-card-title>Top Performer Board</v-card-title>
+            <v-card-text>
+              <p v-for="(username, index) in rank" :key="index" :class="{'yellow--text text--darken-4': index < 3}">
+                {{index + 1}}. {{username}}
+              </p>
+            </v-card-text>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -92,7 +99,8 @@ export default {
       showIssues: false,
       dialog: false,
       confirmDeleteDialog: false,
-      forbiddenDialog: false
+      forbiddenDialog: false,
+      rank: []
     };
   },
   setup() {
@@ -103,6 +111,19 @@ export default {
   created() {
     this.projectId = this.$route.query.projectId;
     this.fetchProject();
+    fetch(`/api/${this.projectId}/rank/data`)
+    .then(res => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return null;
+      }
+    })
+    .then(data => {
+      Object.keys(data).forEach(key => {
+        if (this.rank.length < 5) this.rank.push(key);
+      })
+    })
   },
   methods: {
     editProject() {

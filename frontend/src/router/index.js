@@ -6,6 +6,8 @@ import Projects from '../views/Projects'
 import Project from '../views/Project'
 import Issue from '../views/Issue'
 import Search from '../views/Search'
+import Home from '../views/Home'
+import Profile from '../views/Profile'
 
 import Vue from 'vue'
 
@@ -17,6 +19,7 @@ const routes = [
     {
         path: '/',
         name: 'Home',
+        component: Home
     },
     {
         path: '/login',
@@ -27,6 +30,11 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: Register
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile
     },
     {
         path: '/projects',
@@ -53,20 +61,24 @@ const routes = [
 const router = new VueRouter({routes: routes, mode: 'history'})
 
 router.beforeEach((to, from, next) => {
-    if (to.name == 'Register') {
-        if (!store.getters.getCurrentUser) {
+    if (store.getters.getCurrentUser) {
+        if (to.name == 'Login' || to.name == 'Home') {
+            next({name: 'Profile'});
+        } else if (to.name == 'Register' && store.getters.getCurrentUser.roles.find((role) => role.name == 'ADMIN') == null) {
+            next({name: 'Profile'});
+        } else {
+            next();
+        }
+    } else {
+        if (to.name == 'Register') {
+            next({name: 'Login'});
+        } else if (to.name == 'Login') {
+            next();
+        } else if (to.name == 'Home') {
             next();
         } else {
-            next({name: "Projects"});
+            next({name: 'Login'});
         }
-    } else if (to.name == 'Home' && store.getters.getCurrentUser) {
-        next({name: 'Projects'})
-    } else if (to.name != 'Login' && !store.getters.getCurrentUser) {
-        next({name: "Login"});
-    } else if (to.name == 'Login' && store.getters.getCurrentUser) {
-        next({name: 'Projects'});
-    } else {
-        next();
     }
 })
 

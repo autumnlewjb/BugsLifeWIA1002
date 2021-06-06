@@ -81,7 +81,7 @@
         <v-flex xs12 md12 v-if="issues != null && issues.length > 0">
           <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
             <v-card-title>
-              <span class="mr-5 status" style="min-width: 1rem">{{issue.status}}</span>
+              <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{issue.status}}</span>
               {{ issue.title }}
               <v-icon v-for="n in issue.priority" :key="n" color="red"
                 >mdi-exclamation</v-icon
@@ -197,6 +197,13 @@ export default {
         },
       },
       multipleFilterAndSort: true,
+      statusColor: {
+        'Open': '#7eb67e',
+        'Closed': '#afabab',
+        'Resolved': '#f8f899',
+        'In Progress': '#93dcdf',
+        'Reopened': '#dfa44d'
+      }
     };
   },
   props: {

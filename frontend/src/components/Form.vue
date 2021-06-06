@@ -31,6 +31,10 @@ export default {
         email: this.email
       }
 
+      this.username = '';
+      this.password = '';
+      this.email = '';
+
       this.$emit('form-submit', user)
     }
   },

@@ -24,13 +24,22 @@
         <v-divider></v-divider>
 
         <v-list dense>
-          <v-list-item v-for="item in items" :key="item.title" @click="item.click" link>
+          <v-list-item v-for="(item, index) in items" :key="index" link :to="{name: item.route}">
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
               <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="logOut">
+            <v-list-item-icon>
+              <v-icon>mdi-logout</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Logout</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -54,10 +63,8 @@
         </v-layout>
         
       </v-container>
-      <v-container :class="{'pa-10': $vuetify.breakpoint.mdAndUp, 'pa-3': $vuetify.breakpoint.smAndDown}">
-        <router-view
+        <router-view :class="{'pa-10': $vuetify.breakpoint.mdAndUp, 'pa-3': $vuetify.breakpoint.smAndDown}"
         ></router-view>
-      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -70,11 +77,12 @@ export default {
       data: null,
       drawer: true,
       items: [
-        { title: "Projects", icon: "mdi-book", route:"Projects", click: this.goToProject },
-        { title: "Search", icon: "mdi-magnify", route: "Search", click: this.goToSearch },
-        { title: "Logout", icon: "mdi-logout", route:"Login", click: this.logOut },
+        { title: "Profile", icon: "mdi-human-greeting", route:"Profile" },
+        { title: "Projects", icon: "mdi-book", route:"Projects" },
+        { title: "Search", icon: "mdi-magnify", route: "Search" },
       ],
       mini: true,
+      showProfile: false
     };
   },
   components: {},
