@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Formula;
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -63,10 +65,9 @@ public class Issue implements Serializable, Cloneable {
     private String modifiedBy;
 
     @GenericField(sortable = Sortable.YES)
-    @Temporal(TemporalType.DATE)
     @CreatedDate
     @Column(updatable = false)
-    private Date timestamp;
+    private Timestamp timestamp;
 
     @LastModifiedDate
     private Date modifiedDate;
@@ -176,14 +177,6 @@ public class Issue implements Serializable, Cloneable {
         this.assignee = assignee;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public Integer getCommentNum() {
         return commentNum;
     }
@@ -206,6 +199,14 @@ public class Issue implements Serializable, Cloneable {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public List<Attachment> getAttachments() {

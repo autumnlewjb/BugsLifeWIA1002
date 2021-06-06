@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.envers.Audited;
@@ -36,10 +38,9 @@ public class Comment implements Cloneable{
     @NotAudited
     private List<React> react;
 
-    @Column(updatable = false)
-    @Temporal(TemporalType.DATE)
     @CreatedDate
-    private Date timestamp;
+    @Column(updatable = false)
+    private Timestamp timestamp;
 
     @Column(updatable = false)
     @CreatedBy
@@ -95,16 +96,16 @@ public class Comment implements Cloneable{
         this.react = react;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-    
     public Object clone() throws CloneNotSupportedException
     {
         return super.clone();
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

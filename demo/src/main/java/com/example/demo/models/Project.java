@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Formula;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,10 +42,9 @@ public class Project implements Serializable {
     private String description;
 
     @GenericField(sortable = Sortable.YES)
-    @Temporal(TemporalType.DATE)
     @CreatedDate
     @Column(updatable = false)
-    private Date date;
+    private Timestamp date;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
@@ -66,14 +67,14 @@ public class Project implements Serializable {
     }
 
     public Project(
-            String name, String description, Date date
+            String name, String description, Timestamp date
     ) {
         this.name = name;
         this.description = description;
         this.date = date;
     }
 
-    public static Project fromMap(Map<String, String> map) {
+    /*public static Project fromMap(Map<String, String> map) {
         String name = map.get("name");
         String description = map.get("description");
         try {
@@ -85,7 +86,7 @@ public class Project implements Serializable {
             System.out.println("exception");
             return null;
         }
-    }
+    }*/
 
     public int getIssueIndex(Issue issue) {
         return this.issue.indexOf(issue);
@@ -113,14 +114,6 @@ public class Project implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getDescription() {
@@ -157,5 +150,13 @@ public class Project implements Serializable {
 
     public void setAttachments(List<Attachment> attachment) {
         this.attachments = attachment;
+    }
+
+    public Timestamp getDate() {
+        return date;
+    }
+
+    public void setDate(Timestamp date) {
+        this.date = date;
     }
 }
