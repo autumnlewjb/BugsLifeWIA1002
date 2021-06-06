@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-container style="min-height: 80vh">
-      <v-layout row justify-space-around>
+      <v-layout row justify-space-around class="my-10">
         <v-flex xs12 md8>
           <h1 class="subheading">Project Dashboard
             <v-tooltip bottom>
@@ -24,6 +24,7 @@
             color="teal"
             class="white--text"
             @click="dialog = true"
+            align="center" justify="center"
             >+ Add Project</v-btn
           >
         </v-flex>
@@ -33,11 +34,15 @@
           <SingleFilter/>
         </v-flex>
         <v-flex xs12 md12 v-if="showSortForm">
-          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData"/>
+          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="!multipleSort"/>
+          <SortForm :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="multipleSort"/>
         </v-flex>
       </v-layout>
       <v-layout row>
-        <v-flex xs12 md12>
+        <v-flex md12 sm12 v-if="getProjects.length == 0" justify-center class="ma-10">
+          <p style="text-align: center;" class="text--secondary">Hhhhmmmm... No projects now</p>
+        </v-flex>
+        <v-flex xs12 md12 v-else>
           <v-card
             v-for="project in getProjects"
             :key="project.id"
@@ -45,7 +50,7 @@
           >
             <v-layout row align-center>
               <v-card-title>{{ project.name }}</v-card-title>
-              <v-card-text>{{ project.description }}</v-card-text>
+              <v-card-text v-html="getDescription(project.description)"></v-card-text>
               <v-card-text
                 >Created on
                 {{
@@ -57,7 +62,7 @@
                   color="primary"
                   :to="{
                     path: 'project',
-                    query: { projectId: project.project_id },
+                    query: { projectId: project.projectId },
                   }"
                   text
                   >View Project</v-btn
@@ -80,6 +85,7 @@
 import ProjectForm from "../components/ProjectForm";
 import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
+import SortForm from "../components/SortForm";
 
 export default {
   data() {
@@ -92,9 +98,27 @@ export default {
       filterActive: false,
       sortActive: false,
       sortData: [],
-      sortSubjects: ['date'],
+      sortSubjects: [
+        {
+          text: 'Name',
+          value: 'name'
+        },
+        {
+          text: 'Date',
+          value: 'date'
+        },
+        {
+          text: 'Number Of Issues',
+          value: 'issueNum'
+        },
+        {
+          text: 'Project ID',
+          value: 'projectId'
+        }
+      ],
       tags: [],
-      status: []
+      status: [],
+      multipleSort: true
     };
   },
   created() {
@@ -103,14 +127,15 @@ export default {
   components: {
     ProjectForm,
     SingleFilter,
-    SingleSort
+    SingleSort,
+    SortForm
   },
   watch: {
     sortData(val) {
-      const focus = val[0];
       var url;
-      if (focus) {
-        url = `/api/?sort=${focus.subject},${focus.order}`;
+      if (val.length > 0) {
+        url = `/api/?`;
+        val.forEach((element) => url += `&sort=${element.subject},${element.order}`)
         this.sortActive = true;
       } else {
         url = `/api/`;
@@ -146,6 +171,11 @@ export default {
         this.showFilterForm = !this.showFilterForm;
         this.showSortForm = false;
       }
+    },
+    getDescription(str) {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = str;
+      return tmp.textContent || tmp.innerText || "";
     }
   },
   computed: {
@@ -163,7 +193,7 @@ export default {
     },
     getFilterButtonColor() {
       return this.showFilterForm && this.filterActive;
-    }
+    },
   }
 };
 </script>

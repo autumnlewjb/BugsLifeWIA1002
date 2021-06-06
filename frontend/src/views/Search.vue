@@ -14,7 +14,7 @@
           autofocus
         ></v-combobox>
       </v-col>
-      <v-col cols="2" md="2">
+      <v-col cols="12" md="2">
         <v-btn
           icon
           plain
@@ -85,10 +85,10 @@
       
       <p class="no-result">
         Found nothing...<br>
-        Start your search with <span>issue:</span> or 
-        <span>project:</span> or <span>user:</span>
+        Start your search with <code>issue:</code> or 
+        <code>project:</code> or <code>user:</code>
          for specific search...<br>
-         Sorting and filtering are only allowed for <span>issue:</span> and <span>project:</span> searches
+         Sorting and filtering are only allowed for <code>issue:</code> and <code>project:</code> searches
       </p>
     </v-container>
   </v-container>
@@ -125,7 +125,7 @@ export default {
       filterTags: [],
       filterStatus: [],
       filterColor: '',
-      multipleFilterAndSort: false,
+      multipleFilterAndSort: true,
     };
   },
   watch: {
@@ -216,7 +216,7 @@ export default {
         url = `/api?`;
       }
 
-      url = `${url}&query=${this.query}&size=5&page=${val - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(val - 1, 0)}`;
       if (this.sortData.length > 0 && (this.searchType == "project" || this.searchType == "issue")) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -251,7 +251,7 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });
@@ -272,7 +272,7 @@ export default {
         url = `/api?scope=issue`;
       }
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (val.length > 0) {
         val.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -322,7 +322,7 @@ export default {
       }
       var url = `/api?scope=issue`;
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (this.sortData.length > 0) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -355,13 +355,13 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });
     },
     filterTags(val) {
-      console.log(val);
+      console.log("filterTags changed");
       if (this.searchType != 'issue') return;
       if (val.length > 0 || this.filterStatus.length > 0) {
         this.filterColor = "amber darken-4";
@@ -372,7 +372,7 @@ export default {
       }
       var url = `/api?scope=issue`;
 
-      url = `${url}&query=${this.query}&size=5&page=${this.page - 1}`;
+      url = `${url}&query=${this.query}&size=5&page=${Math.max(this.page - 1, 0)}`;
       if (this.sortData.length > 0) {
         this.sortData.forEach((element) => {
           url += `&sort=${element.subject},${element.order}`;
@@ -402,17 +402,31 @@ export default {
         .then((data) => {
           const { content, totalPages, number } = data;
           console.log(content);
-          this.page = number + 1;
+          this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;
         });
     },
     searchType(val) {
       if (val == 'issue') {
-        this.availableSort = ["priority", "timestamp"];
+        this.availableSort = [
+          {
+            text: 'Priority',
+            value: 'priority'
+          },
+          {
+            text: 'Timestamp',
+            value: 'timestamp'
+          }
+        ];
         this.availableFilter = ['tag', 'status'];
       } else if (val == 'project') {
-        this.availableSort = ["timestamp"];
+        this.availableSort = [
+          {
+            text: 'Timestamp',
+            value: 'timestamp'
+          }
+        ];
         this.availableFilter = []
       } else {
         this.availableSort = [];
@@ -430,12 +444,12 @@ export default {
   computed: {
     getItems() {
       this.items.map((item) => {
-        if (item.project_id) {
-          item.id = item.project_id;
+        if (item.projectId) {
+          item.id = item.projectId;
           item.route = "Project";
           item.type = "project";
-        } else if (item.issue_id) {
-          item.id = item.issue_id;
+        } else if (item.issueId) {
+          item.id = item.issueId;
           item.route = "Issue";
           item.type = "issue"
           item.name = item.title;

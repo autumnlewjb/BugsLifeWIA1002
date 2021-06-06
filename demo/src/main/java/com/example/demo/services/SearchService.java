@@ -38,16 +38,13 @@ public class SearchService implements ApplicationListener<ApplicationReadyEvent>
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        File folder = new File("demo/index");
-        if(!folder.exists()) {
-            try {
+            /*try {
                 SearchSession searchSession = Search.session(entityManager);
                 MassIndexer indexer = searchSession.massIndexer();
                 indexer.startAndWait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-        }
+            }*/
     }
 
     public Page<?> searchAll(Pageable pageable, String query) {

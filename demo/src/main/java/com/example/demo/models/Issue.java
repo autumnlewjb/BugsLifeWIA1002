@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Formula;
@@ -14,8 +15,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -62,13 +65,12 @@ public class Issue implements Serializable, Cloneable {
     private String modifiedBy;
 
     @GenericField(sortable = Sortable.YES)
-    @Temporal(TemporalType.DATE)
     @CreatedDate
     @Column(updatable = false)
-    private Date timestamp;
+    private Timestamp timestamp;
 
     @LastModifiedDate
-    private Date modifiedDate;
+    private Timestamp modifiedDate;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -85,6 +87,11 @@ public class Issue implements Serializable, Cloneable {
     @Formula("(select count(*) from comment c where c.issue_id = issue_id)")
     @NotAudited
     private Integer commentNum;
+
+    @JsonManagedReference(value = "issue_attachment")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
+    @NotAudited
+    private List<Attachment> attachments;
 
     public int getCommentIndex(Comment comment) {
         return this.comment.indexOf(comment);
@@ -170,14 +177,6 @@ public class Issue implements Serializable, Cloneable {
         this.assignee = assignee;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public Integer getCommentNum() {
         return commentNum;
     }
@@ -194,16 +193,32 @@ public class Issue implements Serializable, Cloneable {
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedDate() {
-        return modifiedDate;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
+    public void setAttachments(List<Attachment> attachment) {
+        this.attachments = attachment;
     }
-    
+
     public Object clone() throws CloneNotSupportedException
     {
         return super.clone();
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

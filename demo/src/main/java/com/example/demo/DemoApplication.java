@@ -40,9 +40,12 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
+        //Spring will automagically initialize the database with data.sql in resources folder
+        //The data imported would not be affected by jpa auditing
+
         /*ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
-        InputStream inputStream = TypeReference.class.getResourceAsStream("/json/BugsLife.json");
+        InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
         try {
             Role admin = new Role("ADMIN");
             Role ordinaryUser = new Role("USER");

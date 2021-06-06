@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.envers.Audited;
@@ -37,18 +38,17 @@ public class Comment implements Cloneable{
     @NotAudited
     private List<React> react;
 
-    @Column(updatable = false)
-    @Temporal(TemporalType.DATE)
     @CreatedDate
-    private Date timestamp;
+    @Column(updatable = false)
+    private Timestamp timestamp;
 
     @Column(updatable = false)
     @CreatedBy
     private String user;
-    
+
     @LastModifiedDate
-    private Date modifiedDate;
-    
+    private Timestamp modifiedDate;
+
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
@@ -99,20 +99,24 @@ public class Comment implements Cloneable{
         this.react = react;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-    
     public Object clone() throws CloneNotSupportedException
     {
         return super.clone();
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

@@ -9,10 +9,13 @@
             <v-text-field label="Project Name" v-model="name" required></v-text-field>
         </v-row>
         <v-row>
-            <v-textarea solo
+            <!-- <v-textarea solo
               label="Project Description"
               v-model="description"
-            ></v-textarea>
+            ></v-textarea> -->
+            <div style="width: 100%">
+              <TipTap v-model="description" placeholder="Write project description"/>
+            </div>
         </v-row>
       </v-container>
     </v-card-text>
@@ -25,6 +28,8 @@
 </template>
 
 <script>
+import TipTap from '../components/TipTap';
+
 export default {
   name: "ProjectForm",
   setup() {},
@@ -37,13 +42,16 @@ export default {
         projectId: 0
     };
   },
+  components: {
+    TipTap
+  },
   created() {
     if (this.project) {
       this.action = 'edit';
       this.name = this.project.name;
       this.description = this.project.description;
       this.title = 'Edit Project';
-      this.projectId = this.project.project_id;
+      this.projectId = this.project.projectId;
     }
   },
   methods: {

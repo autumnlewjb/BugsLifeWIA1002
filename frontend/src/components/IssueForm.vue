@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="headline">Add New Issue</span>
+      <span class="headline">{{formTitle}}</span>
     </v-card-title>
     <v-card-text>
       <v-container>
@@ -13,12 +13,18 @@
           ></v-text-field>
         </v-row>
         <v-row>
-          <v-textarea
+          <!-- <v-textarea
             solo
             label="Description"
             v-model="descriptionText"
             required
-          ></v-textarea>
+          ></v-textarea> -->
+          <div style="width: 100%" class="my-5">
+            <TipTap v-model="descriptionText" placeholder="Write issue description..."/>
+          </div>
+        </v-row>
+        <v-row>
+          <v-combobox :items="users" v-model="assignee" label="Assignee"></v-combobox>
         </v-row>
         <v-row>
           <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips multiple></v-combobox>
@@ -48,9 +54,14 @@
 </template>
 
 <script>
+import TipTap from '../components/TipTap'
+
 export default {
   name: "ProjectForm",
   setup() {},
+  components: {
+    TipTap
+  },
   data() {
     return {
       title: "",
@@ -59,7 +70,9 @@ export default {
       descriptionText: "",
       assignee: "",
       action: 'add',
-      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement']
+      tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
+      formTitle: "Add New Issue",
+      users: ["lewjb", "jkjsdklfd", "ufifj", "sdkfjksladf", "sadjflsd", "osdfiopsd"]
     };
   },
   created() {
@@ -70,7 +83,18 @@ export default {
       this.descriptionText = this.issue.descriptionText;
       this.assignee = this.issue.assignee;
       this.action = 'edit';
+      this.formTitle = "Edit Issue";
     }
+    fetch(`/api/user/allUsername`)
+    .then(res => {
+      if (res.status == 200) {
+        return res.json()
+      } else {
+        return [];
+      }
+    })
+    .then(data => this.users = data)
+    .catch(e => console.log(e));
   },
   methods: {
     clearForm() {
@@ -81,6 +105,7 @@ export default {
       this.assignee = ""
     },
     async onSubmit(action) {
+      console.log(action);
       if (action == "add") {
         await fetch(`/api/${this.projectId}`, {
           method: "POST",
@@ -91,10 +116,10 @@ export default {
             title: this.title,
             descriptionText: this.descriptionText,
             priority: this.priority,
-            status: "In progress",
+            status: "Open",
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
-            assignee: "",
+            assignee: this.assignee,
             timestamp: Date.now()
           }),
         })
@@ -109,7 +134,7 @@ export default {
           .catch((e) => console.log(e));
       } else if (action == "edit") {
         console.log(this.title)
-        await fetch(`/api/${this.projectId}/${this.issue.issue_id}`, {
+        await fetch(`/api/${this.projectId}/${this.issue.issueId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -118,10 +143,10 @@ export default {
             title: this.title,
             descriptionText: this.descriptionText,
             priority: this.priority,
-            status: "In progress",
+            status: this.issue.status,
             tag: this.tag,
             createdBy: this.$store.getters.getCurrentUser.username,
-            assignee: "",
+            assignee: this.assignee,
             timestamp: Date.now()
           }),
         })
