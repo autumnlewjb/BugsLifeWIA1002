@@ -70,7 +70,7 @@ public class Issue implements Serializable, Cloneable {
     private Timestamp timestamp;
 
     @LastModifiedDate
-    private Date modifiedDate;
+    private Timestamp modifiedDate;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -193,22 +193,6 @@ public class Issue implements Serializable, Cloneable {
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public List<Attachment> getAttachments() {
         return attachments;
     }
@@ -220,5 +204,21 @@ public class Issue implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException
     {
         return super.clone();
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

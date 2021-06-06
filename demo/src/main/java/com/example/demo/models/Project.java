@@ -10,6 +10,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -45,6 +47,12 @@ public class Project implements Serializable {
     @CreatedDate
     @Column(updatable = false)
     private Timestamp date;
+
+    @LastModifiedDate
+    private Timestamp modifiedDate;
+
+    @LastModifiedBy
+    private String modifiedBy;
 
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
@@ -158,5 +166,21 @@ public class Project implements Serializable {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 }

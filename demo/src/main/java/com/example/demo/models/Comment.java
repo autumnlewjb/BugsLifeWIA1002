@@ -46,10 +46,10 @@ public class Comment implements Cloneable{
     @Column(updatable = false)
     @CreatedBy
     private String user;
-    
+
     @LastModifiedDate
-    private Date modifiedDate;
-    
+    private Timestamp modifiedDate;
+
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "issue_id")
@@ -111,5 +111,13 @@ public class Comment implements Cloneable{
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }
