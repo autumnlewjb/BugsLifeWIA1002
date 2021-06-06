@@ -103,8 +103,6 @@ export default {
           crosshair: true,
         },
         yAxis: {
-          min: 0,
-          max: 20,
           title: {
             text: "Counter",
           },
@@ -188,6 +186,7 @@ export default {
         yAxis: [
           {
             // Primary yAxis
+            allowDecimals: false,
             labels: {
               format: "{value} total issues",
               style: {
@@ -203,6 +202,7 @@ export default {
           },
           {
             // Secondary yAxis
+            allowDecimals: false,
             title: {
               text: "issues",
               style: {

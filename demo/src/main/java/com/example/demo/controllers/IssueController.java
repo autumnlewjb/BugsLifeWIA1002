@@ -380,7 +380,7 @@ public class IssueController {
             issueCumulativeCounter.add(cumulativeCounter);
         }
 
-        List<String> assignee = new ArrayList<>();
+        /*List<String> assignee = new ArrayList<>();
         List<Integer> numberOfIssueSolved = new ArrayList<>();
         for (Issue issue : issues) {
             if (!assignee.contains(issue.getAssignee())) {
@@ -403,8 +403,7 @@ public class IssueController {
             performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
         }
 
-        //TODO ranking for top performer
-        Map<String, Integer> ranking = issueService.sortByValue(performerList);
+        Map<String, Integer> ranking = issueService.sortByValue(performerList);*/
 
 
         model.addAttribute("cumulativeCounter", issueCumulativeCounter);
@@ -421,10 +420,10 @@ public class IssueController {
 
     @GetMapping("/{project_id}/rank/data")
     public ResponseEntity<?> getRankData(@PathVariable Integer project_id) {
-        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
+        List<Issue> resolvedIssues = issueService.findIssuesByStatus(project_id, "Resolved");
         List<String> assignee = new ArrayList<>();
         List<Integer> numberOfIssueSolved = new ArrayList<>();
-        for (Issue issue : issues) {
+        for (Issue issue : resolvedIssues) {
             if (!assignee.contains(issue.getAssignee())) {
                 assignee.add(issue.getAssignee());
             }
@@ -432,7 +431,7 @@ public class IssueController {
 
         for (String name : assignee) {
             int count = 0;
-            for (Issue issue : issues) {
+            for (Issue issue : resolvedIssues) {
                 if (issue.getAssignee().equals(name)) {
                     count++;
                 }
@@ -445,8 +444,8 @@ public class IssueController {
             performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
         }
 
-        //TODO ranking for top performer
         Map<String, Integer> ranking = issueService.sortByValue(performerList);
+        System.out.println(ranking);
 
         return ResponseEntity.ok(ranking);
     }
