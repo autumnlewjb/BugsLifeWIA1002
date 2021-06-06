@@ -14,6 +14,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.sun.xml.bind.v2.TODO;
 import net.sf.jasperreports.engine.JRException;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -415,6 +417,38 @@ public class IssueController {
         model.addAttribute("rows", rows);
         return "chart";
 
+    }
+
+    @GetMapping("/{project_id}/rank/data")
+    public ResponseEntity<?> getRankData(@PathVariable Integer project_id) {
+        List<Issue> issues = issueService.findIssuesByProject(projectService.findProjectWithId(project_id));
+        List<String> assignee = new ArrayList<>();
+        List<Integer> numberOfIssueSolved = new ArrayList<>();
+        for (Issue issue : issues) {
+            if (!assignee.contains(issue.getAssignee())) {
+                assignee.add(issue.getAssignee());
+            }
+        }
+
+        for (String name : assignee) {
+            int count = 0;
+            for (Issue issue : issues) {
+                if (issue.getAssignee().equals(name)) {
+                    count++;
+                }
+            }
+            numberOfIssueSolved.add(count);
+        }
+
+        HashMap<String, Integer> performerList = new HashMap<>();
+        for (int i = 0; i < assignee.size(); i++) {
+            performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
+        }
+
+        //TODO ranking for top performer
+        Map<String, Integer> ranking = issueService.sortByValue(performerList);
+
+        return ResponseEntity.ok(ranking);
     }
 
     @GetMapping("/{project_id}/charts/data")

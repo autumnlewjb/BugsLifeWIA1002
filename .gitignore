@@ -50,3 +50,6 @@ get-docker.sh
 
 User
 demo/demo
+
+# output files
+log_file*
