@@ -16,11 +16,12 @@
           <v-container>
             <v-slide-x-reverse-transition>
               <div v-if="buttonTransition">
-                <v-btn text x-large @click="clickHandler">Start another boring day</v-btn>
+                <v-btn text x-large @click="clickHandler" :to="{name: 'Login'}" plain>Start another boring day</v-btn>
               </div>
-              <div v-if="loginRegisterTransition">
+              <!-- <div v-if="loginRegisterTransition">
                 <v-btn text x-large :to="{name: 'Login'}" >Login</v-btn>
-              </div>
+                <v-btn text x-large :to="{name: 'Register'}">Register</v-btn>
+              </div> -->
             </v-slide-x-reverse-transition>
           </v-container>
         </v-col>
@@ -47,8 +48,8 @@
     },
     methods: {
       clickHandler() {
-        this.buttonTransition = !this.buttonTransition;
-        this.loginRegisterTransition = !this.loginRegisterTransition;
+        // this.buttonTransition = !this.buttonTransition;
+        // this.loginRegisterTransition = !this.loginRegisterTransition;
       }
     }
   }
