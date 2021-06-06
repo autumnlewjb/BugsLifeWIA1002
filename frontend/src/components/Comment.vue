@@ -340,7 +340,7 @@ export default {
         modifier: this.history[this.history.length-1].user,
         statements: [{description: "written the comment", html: false}]
       });
-      const excluded = ['user', 'timestamp', 'comment_id', 'react'];
+      const excluded = ['user', 'timestamp', 'comment_id', 'react', 'modifiedDate', 'modifiedBy'];
       for (let i=this.history.length-2; i>=0; i--) {
         var curr = this.history[i];
         var change = {
@@ -356,6 +356,7 @@ export default {
           }
         });
         if (change.statements.length > 0) changes.push(change);
+        prev = curr;
       }
 
       changes.reverse();
