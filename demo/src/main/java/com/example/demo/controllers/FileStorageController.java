@@ -1,14 +1,9 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.Attachment;
-import com.example.demo.models.FileResponse;
 import com.example.demo.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,15 +43,13 @@ public class FileStorageController {
         );
     }
 
-    private FileResponse uploadFile(MultipartFile file, String parent, String id) {
+    private String uploadFile(MultipartFile file, String parent, String id) {
         try {
             Attachment attachment = fileStorageService.storeFile(file, parent, id);
-            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+            return ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/api/download/")
                     .path(attachment.getId().toString())
                     .toUriString();
-            return new FileResponse(attachment.getId(), attachment.getFileName(), fileDownloadUri,
-                    file.getContentType(), file.getSize());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -64,8 +57,10 @@ public class FileStorageController {
 
     @DeleteMapping("/file/del")
     public ResponseEntity<?> deleteFile(@RequestParam("parent") String parent,
-                                        @RequestParam("id") String id) {
-        fileStorageService.deleteFile(parent, Integer.parseInt(id));
+                                        @RequestParam("id") String[] id) {
+        for (String s : id) {
+            fileStorageService.deleteFile(parent, Integer.parseInt(s));
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }
