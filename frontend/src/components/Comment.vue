@@ -344,7 +344,7 @@ export default {
       for (let i=this.history.length-2; i>=0; i--) {
         var curr = this.history[i];
         var change = {
-          date: curr.timestamp,
+          date: curr.modifiedDate,
           modifier: curr.user,
           statements: []
         }
