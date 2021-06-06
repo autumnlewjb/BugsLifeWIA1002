@@ -76,7 +76,8 @@
           <p>
             <span class="font-weight-bold">Last updated</span> <br />
             {{
-              getIssue.timestamp == null ? "Not Specified" : getIssue.timestamp
+              getIssue.modifiedDate != null ? new Date(getIssue.modifiedDate) :
+                  getIssue.timestamp == null ? "Not Specified" : new Date(getIssue.timestamp)
             }}
           </p>
         </v-container>
