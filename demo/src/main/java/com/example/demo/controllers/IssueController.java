@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import static com.example.demo.controllers.AuthController.referUser;
+
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.models.Issue;
 import com.example.demo.models.Project;
@@ -35,6 +36,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 import javax.transaction.Transactional;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
@@ -75,9 +77,9 @@ public class IssueController {
         project.getIssue().add(issue);
         issue.setProject(project);
         issueService.createIssue(issue);
-        Stack<Issue> issueStack=new Stack<>();
+        Stack<Issue> issueStack = new Stack<>();
         issueStack.push(issue);
-        HashMap<Integer,Stack<Issue>> issueMap=new HashMap<>();
+        HashMap<Integer, Stack<Issue>> issueMap = new HashMap<>();
         issueMap.put(issue.getIssueId(), issueStack);
         referUser.getIssueUndo().put(project_id, issueMap);
         return ResponseEntity.ok(issue);
@@ -89,23 +91,34 @@ public class IssueController {
         return ResponseEntity.ok(issue);
     }
 
+    @GetMapping("/allIssues")
+    public ResponseEntity<List<Issue>> getAllIssues() {
+        List<Issue> allIssues = issueService.findAll();
+        return ResponseEntity.ok(allIssues);
+    }
+
+    @GetMapping("/issues/{createdBy}")
+    public ResponseEntity<List<Issue>> getIssuesCreatedBy(@PathVariable String createdBy){
+        List<Issue> issueList = issueService.findIssuesByCreatedBy(createdBy);
+        return ResponseEntity.ok(issueList);
+    }
+
+
     @PutMapping("{project_id}/{issue_id}")
     public ResponseEntity<?> updateIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id, @RequestBody Issue updatedIssue) throws CloneNotSupportedException {
         Issue issue = issueService.findIssuesById(issue_id);
-        Issue referIssue=(Issue)issue.clone();
-        if(referUser.getIssueUndo()==null || !referUser.getIssueUndo().containsKey(project_id)) {
-            Stack<Issue> issueStack=new Stack<>();
+        Issue referIssue = (Issue) issue.clone();
+        if (referUser.getIssueUndo() == null || !referUser.getIssueUndo().containsKey(project_id)) {
+            Stack<Issue> issueStack = new Stack<>();
             issueStack.push(referIssue);
-            HashMap<Integer,Stack<Issue>> issueMap=new HashMap<>();
+            HashMap<Integer, Stack<Issue>> issueMap = new HashMap<>();
             issueMap.put(issue_id, issueStack);
             referUser.getIssueUndo().put(project_id, issueMap);
-        }
-        else if(!referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
-            Stack<Issue> issueStack=new Stack<>();
+        } else if (!referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
+            Stack<Issue> issueStack = new Stack<>();
             issueStack.push(referIssue);
             referUser.getIssueUndo().get(project_id).put(issue_id, issueStack);
-        }
-        else if(referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
+        } else if (referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
             referUser.getIssueUndo().get(project_id).get(issue_id).push(referIssue);
         }
         if (issue == null) {
@@ -113,14 +126,14 @@ public class IssueController {
         }
         issueService.updateIssue(project_id, issue, updatedIssue);
         referUser.getIssueUndo().get(project_id).get(issue_id).push(updatedIssue);
-        if(referUser.getIssueRedo()!=null && referUser.getIssueRedo().containsKey(project_id)) {
-            if(referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+        if (referUser.getIssueRedo() != null && referUser.getIssueRedo().containsKey(project_id)) {
+            if (referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
                 referUser.getIssueRedo().get(project_id).get(issue_id).clear();
             }
         }
         return ResponseEntity.ok(HttpStatus.OK);
     }
-    
+
     public void updateTheIssue(Integer project_id, Integer issue_id, Issue updatedIssue) {
 //        if(referUser.getIssueUndo()==null || !referUser.getIssueUndo().containsKey(project_id)) {
 //            Stack<Issue> issueStack=new Stack<>();
@@ -148,10 +161,10 @@ public class IssueController {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         issueService.deleteIssue(project, issue);
-        if(referUser.getIssueUndo().containsKey(project_id) && referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
+        if (referUser.getIssueUndo().containsKey(project_id) && referUser.getIssueUndo().get(project_id).containsKey(issue_id)) {
             referUser.getIssueUndo().get(project_id).remove(issue_id);
         }
-        if(referUser.getIssueRedo().containsKey(project_id) && referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+        if (referUser.getIssueRedo().containsKey(project_id) && referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
             referUser.getIssueRedo().get(project_id).remove(issue_id);
         }
         return ResponseEntity.ok(HttpStatus.OK);
@@ -166,85 +179,81 @@ public class IssueController {
         }
         return null;*/
     }
-    
+
     @Transactional
     @GetMapping("/issue/{issue_id}/history")
     public ResponseEntity<?> getHistory(@PathVariable Integer issue_id) {
-        Issue issue=issueService.findIssuesById(issue_id);
+        Issue issue = issueService.findIssuesById(issue_id);
         //if(referUser.getUsername().equals(issue.getCreatedBy()) || referUser.getUsername.equals(issue.getAssignee())) {
-            return ResponseEntity.ok(issueService.getHistory(issue_id));
+        return ResponseEntity.ok(issueService.getHistory(issue_id));
         //}
         //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
+
     @Transactional
     @GetMapping("/{username}/issue/history")
     public ResponseEntity<?> getOwnHistory(@PathVariable String username) {
         return ResponseEntity.ok(issueService.getOwnHistory(username));
     }
-    
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional
     @GetMapping("/issue/history")
     public ResponseEntity<?> getAllHistory() {
         return ResponseEntity.ok(issueService.getAllHistory());
     }
-    
+
     @GetMapping("/{project_id}/{issue_id}/issue/undo")
     public ResponseEntity<HashMap<?, ?>> undoIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
-        try{
-            if(referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
+        try {
+            if (referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            if(referUser.getIssueUndo().containsKey(project_id) && !referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
-                Issue undoIssue=referUser.getIssueUndo().get(project_id).get(issue_id).pop();
-                if(!referUser.getIssueRedo().containsKey(project_id)) {
-                    Stack<Issue> issueStack=new Stack<>();
+            if (referUser.getIssueUndo().containsKey(project_id) && !referUser.getIssueUndo().get(project_id).get(issue_id).isEmpty()) {
+                Issue undoIssue = referUser.getIssueUndo().get(project_id).get(issue_id).pop();
+                if (!referUser.getIssueRedo().containsKey(project_id)) {
+                    Stack<Issue> issueStack = new Stack<>();
                     issueStack.push(undoIssue);
-                    HashMap<Integer,Stack<Issue>> issueMap=new HashMap<>();
+                    HashMap<Integer, Stack<Issue>> issueMap = new HashMap<>();
                     issueMap.put(issue_id, issueStack);
                     referUser.getIssueRedo().put(project_id, issueMap);
-                }
-                else if(!referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
-                    Stack<Issue> issueStack=new Stack<>();
+                } else if (!referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+                    Stack<Issue> issueStack = new Stack<>();
                     issueStack.push(undoIssue);
                     referUser.getIssueRedo().get(project_id).put(issue_id, issueStack);
-                }
-                else if(referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
+                } else if (referUser.getIssueRedo().get(project_id).containsKey(issue_id)) {
                     referUser.getIssueRedo().get(project_id).get(issue_id).push(undoIssue);
                 }
                 updateTheIssue(project_id, issue_id, referUser.getIssueUndo().get(project_id).get(issue_id).peek());
-                Issue issue=issueService.findIssuesById(issue_id);
-                HashMap<String,Object> map=new HashMap<>();
+                Issue issue = issueService.findIssuesById(issue_id);
+                HashMap<String, Object> map = new HashMap<>();
                 map.put("project_id", project_id);
                 map.put("issue_id", issue_id);
                 map.put("issue", issue);
                 return ResponseEntity.ok(map);
             }
-        }
-        catch(EmptyStackException | NullPointerException e) {
+        } catch (EmptyStackException | NullPointerException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
+
     @GetMapping("/{project_id}/{issue_id}/issue/redo")
     public ResponseEntity<?> redoIssue(@PathVariable Integer project_id, @PathVariable Integer issue_id) {
-        if(referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
+        if (referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(referUser.getIssueRedo().containsKey(project_id) && referUser.getIssueRedo().get(project_id).containsKey(issue_id) && !referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
-            Issue redoIssue=referUser.getIssueRedo().get(project_id).get(issue_id).pop();
+        if (referUser.getIssueRedo().containsKey(project_id) && referUser.getIssueRedo().get(project_id).containsKey(issue_id) && !referUser.getIssueRedo().get(project_id).get(issue_id).isEmpty()) {
+            Issue redoIssue = referUser.getIssueRedo().get(project_id).get(issue_id).pop();
             referUser.getIssueUndo().get(project_id).get(issue_id).push(redoIssue);
             updateTheIssue(project_id, issue_id, redoIssue);
-            Issue issue=issueService.findIssuesById(issue_id);
-            HashMap<String,Object> map=new HashMap<>();
+            Issue issue = issueService.findIssuesById(issue_id);
+            HashMap<String, Object> map = new HashMap<>();
             map.put("project_id", project_id);
             map.put("issue_id", issue_id);
             map.put("issue", issue);
             return ResponseEntity.ok(map);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -331,34 +340,34 @@ public class IssueController {
             rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Status", issue.getStatus(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
         }
 
-        int days = LocalDate.now().lengthOfMonth();
-        List<Integer> totalDays = new ArrayList<>();
-        for (int i = 1; i <= days; i++) {
-            totalDays.add(i);
-        }
-
         List<LocalDate> allDates = new ArrayList<>();
-        Month currentMonth = LocalDate.now().getMonth();
+        Month currentMonth = Month.APRIL;
         int currentYear = LocalDate.now().getYear();
         YearMonth ym = YearMonth.of(currentYear, currentMonth);
         LocalDate firstOfMonth = ym.atDay(1);
         LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
         firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
 
+        int days = ym.lengthOfMonth();
+        List<Integer> totalDays = new ArrayList<>();
+        for (int i = 1; i <= days; i++) {
+            totalDays.add(i);
+        }
+
         List<Integer> issueCounter = new ArrayList<>();
         for (int i = 0; i < allDates.size(); i++) {
             int isCounter = 0;
             boolean found = false;
             for (Issue issue : issues) {
-                if (issue.getTimestamp().equals(Date.from(allDates.get(i).atStartOfDay(ZoneId.systemDefault()).toInstant()))){
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(allDates.get(i).toString())) {
                     found = true;
                     isCounter++;
                 }
             }
-            if (found){
+            if (found) {
                 issueCounter.add(isCounter);
-            }
-            else issueCounter.add(0);
+            } else issueCounter.add(0);
         }
 
         List<Integer> issueCumulativeCounter = new ArrayList<>();
@@ -371,16 +380,16 @@ public class IssueController {
 
         List<String> assignee = new ArrayList<>();
         List<Integer> numberOfIssueSolved = new ArrayList<>();
-        for (Issue issue: issues){
-            if (!assignee.contains(issue.getAssignee())){
+        for (Issue issue : issues) {
+            if (!assignee.contains(issue.getAssignee())) {
                 assignee.add(issue.getAssignee());
             }
         }
 
-        for (String name : assignee){
+        for (String name : assignee) {
             int count = 0;
-            for (Issue issue : issues){
-                if (issue.getAssignee().equals(name)){
+            for (Issue issue : issues) {
+                if (issue.getAssignee().equals(name)) {
                     count++;
                 }
             }
@@ -490,12 +499,6 @@ public class IssueController {
             rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Status", issue.getStatus(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
         }
 
-        int days = LocalDate.now().lengthOfMonth();
-        List<Integer> totalDays = new ArrayList<>();
-        for (int i = 1; i <= days; i++) {
-            totalDays.add(i);
-        }
-
         List<LocalDate> allDates = new ArrayList<>();
         Month currentMonth = LocalDate.now().getMonth();
         int currentYear = LocalDate.now().getYear();
@@ -504,20 +507,26 @@ public class IssueController {
         LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
         firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
 
+        int days = ym.lengthOfMonth();
+        List<Integer> totalDays = new ArrayList<>();
+        for (int i = 1; i <= days; i++) {
+            totalDays.add(i);
+        }
+
         List<Integer> issueCounter = new ArrayList<>();
         for (int i = 0; i < allDates.size(); i++) {
             int isCounter = 0;
             boolean found = false;
             for (Issue issue : issues) {
-                if (issue.getTimestamp().equals(Date.from(allDates.get(i).atStartOfDay(ZoneId.systemDefault()).toInstant()))){
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(allDates.get(i).toString())) {
                     found = true;
                     isCounter++;
                 }
             }
-            if (found){
+            if (found) {
                 issueCounter.add(isCounter);
-            }
-            else issueCounter.add(0);
+            } else issueCounter.add(0);
         }
 
         List<Integer> issueCumulativeCounter = new ArrayList<>();

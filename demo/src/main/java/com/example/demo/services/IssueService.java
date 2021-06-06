@@ -136,4 +136,15 @@ public class IssueService {
         }
         return temp;
     }
+
+    public List<Issue> findIssuesByCreatedBy(String createdBy) {
+        List<Issue> allIssues = issueRepository.findAll();
+        List<Issue> issuesCreatedBy = new ArrayList<>();
+        for (Issue issue : allIssues){
+            if (issue.getCreatedBy().equals(createdBy)){
+                issuesCreatedBy.add(issue);
+            }
+        }
+        return issuesCreatedBy;
+    }
 }
