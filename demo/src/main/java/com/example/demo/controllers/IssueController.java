@@ -69,7 +69,6 @@ public class IssueController {
         return ResponseEntity.ok(issueList);
     }
 
-    // FIXME this endpoints create new user in the author field although the user exist
     @PostMapping("/{project_id}")
     public ResponseEntity<Issue> createIssue(@PathVariable Integer project_id, @RequestBody Issue issue) {
         Project project = projectService.findProjectWithId(project_id);
@@ -379,31 +378,6 @@ public class IssueController {
             cumulativeCounter += issueCounter.get(i);
             issueCumulativeCounter.add(cumulativeCounter);
         }
-
-        /*List<String> assignee = new ArrayList<>();
-        List<Integer> numberOfIssueSolved = new ArrayList<>();
-        for (Issue issue : issues) {
-            if (!assignee.contains(issue.getAssignee())) {
-                assignee.add(issue.getAssignee());
-            }
-        }
-
-        for (String name : assignee) {
-            int count = 0;
-            for (Issue issue : issues) {
-                if (issue.getAssignee().equals(name)) {
-                    count++;
-                }
-            }
-            numberOfIssueSolved.add(count);
-        }
-
-        HashMap<String, Integer> performerList = new HashMap<>();
-        for (int i = 0; i < assignee.size(); i++) {
-            performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
-        }
-
-        Map<String, Integer> ranking = issueService.sortByValue(performerList);*/
 
 
         model.addAttribute("cumulativeCounter", issueCumulativeCounter);

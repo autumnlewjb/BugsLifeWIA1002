@@ -33,9 +33,9 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        projectService.createProject(project);
+    @PostMapping("/{user_id}/createProject")
+    public ResponseEntity<Project> createProject(@PathVariable Integer user_id, @RequestBody Project project) {
+        projectService.createProject(user_id,project);
         return ResponseEntity.ok(project);
     }
 
