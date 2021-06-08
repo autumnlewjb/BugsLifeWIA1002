@@ -1,15 +1,15 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="headline">{{formTitle}}</span>
+      <span class="headline">{{ formTitle }}</span>
     </v-card-title>
     <v-card-text>
       <v-container>
         <v-row>
           <v-text-field
-            label="Issue Title"
-            v-model="title"
-            required
+              label="Issue Title"
+              v-model="title"
+              required
           ></v-text-field>
         </v-row>
         <v-row>
@@ -27,17 +27,18 @@
           <v-combobox :items="users" v-model="assignee" label="Assignee"></v-combobox>
         </v-row>
         <v-row>
-          <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips multiple></v-combobox>
+          <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips
+                      multiple></v-combobox>
         </v-row>
-        <br />
-        <p class="body-1">Priority: <br /></p>
+        <br/>
+        <p class="body-1">Priority: <br/></p>
         <v-row>
           <v-rating
-            v-model="priority"
-            full-icon="mdi-exclamation"
-            empty-icon="mdi-exclamation"
-            color="red"
-            length="10"
+              v-model="priority"
+              full-icon="mdi-exclamation"
+              empty-icon="mdi-exclamation"
+              color="red"
+              length="10"
           >
           </v-rating>
         </v-row>
@@ -45,10 +46,10 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="onSubmit('close')">
+      <v-btn color="blue darken-1" text @click="onSubmit('close')" :disabled="loading">
         Close
       </v-btn>
-      <v-btn color="blue darken-1" text @click="onSubmit(action)"> Save </v-btn>
+      <v-btn color="blue darken-1" text @click="onSubmit(action)" :disabled="loading" :loading="loading"> Save</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -58,7 +59,8 @@ import TipTap from '../components/TipTap'
 
 export default {
   name: "ProjectForm",
-  setup() {},
+  setup() {
+  },
   components: {
     TipTap
   },
@@ -72,7 +74,8 @@ export default {
       action: 'add',
       tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
       formTitle: "Add New Issue",
-      users: ["lewjb", "jkjsdklfd", "ufifj", "sdkfjksladf", "sadjflsd", "osdfiopsd"]
+      users: ["lewjb", "jkjsdklfd", "ufifj", "sdkfjksladf", "sadjflsd", "osdfiopsd"],
+      loading: false
     };
   },
   created() {
@@ -86,15 +89,15 @@ export default {
       this.formTitle = "Edit Issue";
     }
     fetch(`/api/user/allUsername`)
-    .then(res => {
-      if (res.status == 200) {
-        return res.json()
-      } else {
-        return [];
-      }
-    })
-    .then(data => this.users = data)
-    .catch(e => console.log(e));
+        .then(res => {
+          if (res.status == 200) {
+            return res.json()
+          } else {
+            return [];
+          }
+        })
+        .then(data => this.users = data)
+        .catch(e => console.log(e));
   },
   methods: {
     clearForm() {
@@ -105,6 +108,7 @@ export default {
       this.assignee = ""
     },
     async onSubmit(action) {
+      this.loading = true;
       console.log(action);
       if (action == "add") {
         await fetch(`/api/${this.projectId}`, {
@@ -123,15 +127,17 @@ export default {
             timestamp: Date.now()
           }),
         })
-          .then((res) => {
-            if (res.status == 200) {
-              console.log("added new issue");
-              this.$store.dispatch('fetchCurrentUser')
-            } else {
-              alert("Issue Not Added !!");
-            }
-          })
-          .catch((e) => console.log(e));
+            .then((res) => {
+              if (res.status == 200) {
+                console.log("added new issue");
+                this.$emit("show-snackbar", "Added new issue")
+                this.$store.dispatch('fetchCurrentUser')
+              } else {
+                this.$emit("show-snackbar", "Issue Not Added !!")
+              }
+            })
+            .catch((e) => console.log(e))
+            .finally(() => this.loading = false);
       } else if (action == "edit") {
         console.log(this.title)
         await fetch(`/api/${this.projectId}/${this.issue.issueId}`, {
@@ -150,16 +156,20 @@ export default {
             timestamp: Date.now()
           }),
         })
-        .then((res) => {
-          if (res.status == 200) {
-            this.$store.dispatch('fetchCurrentUser');
-            console.log("update successful");
-          } else if (res.status == 403) {
-            this.$emit('toggleForbiddenDialog');
-          }else {
-            console.log("update unsuccessful");
-          }
-        })
+            .then((res) => {
+              if (res.status == 200) {
+                this.$store.dispatch('fetchCurrentUser');
+                this.$emit("show-snackbar", "Update successful")
+                console.log("update successful");
+              } else if (res.status == 403) {
+                this.$emit('toggleForbiddenDialog');
+              } else {
+                console.log("update unsuccessful");
+                this.$emit("show-snackbar", "Update unsuccessful")
+              }
+            })
+            .catch((e) => console.log(e))
+            .finally(() => this.loading = false)
       }
       this.$emit("toggleDialog");
     },

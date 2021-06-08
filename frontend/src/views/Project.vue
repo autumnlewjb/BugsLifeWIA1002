@@ -8,14 +8,14 @@
               {{ getProject.name }}
             </h1>
             <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
-              <v-btn
-                  class="mx-0"
-                  plain
-                  color="red"
-                  @click="toggleDeleteDialog(false)"
-              >Delete
-              </v-btn
-              >
+            <v-btn
+                class="mx-0"
+                plain
+                color="red"
+                @click="toggleDeleteDialog(false)"
+            >Delete
+            </v-btn
+            >
             <v-container>
               <p class="subtitle-2">
                 {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
@@ -32,7 +32,7 @@
             <v-card-title>Top Performer Board</v-card-title>
             <v-card-text>
               <p v-for="(username, index) in rank" :key="index" :class="{'yellow--text text--darken-4': index < 3}">
-                {{index + 1}}. {{username}}
+                {{ index + 1 }}. {{ username }}
               </p>
             </v-card-text>
           </v-card>
@@ -72,6 +72,7 @@
           :project="getProject"
           @toggleDialog="toggleDialog"
           @toggleForbiddenDialog="toggleForbiddenDialog"
+          @show-snackbar="toggleSnackbar"
           :data="data"
       />
     </v-dialog>
@@ -80,6 +81,7 @@
         :showDialog="confirmDeleteDialog"
     />
     <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
+    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
   </v-container>
 </template>
 
@@ -90,6 +92,7 @@ import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
 import Charts from "../components/Charts";
 import Attachment from "../components/Attachment";
+import Snackbar from "../components/Snackbar";
 
 export default {
   data() {
@@ -100,6 +103,8 @@ export default {
       dialog: false,
       confirmDeleteDialog: false,
       forbiddenDialog: false,
+      snackbar: false,
+      message: null,
       rank: []
     };
   },
@@ -112,18 +117,18 @@ export default {
     this.projectId = this.$route.query.projectId;
     this.fetchProject();
     fetch(`/api/${this.projectId}/rank/data`)
-    .then(res => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return null;
-      }
-    })
-    .then(data => {
-      Object.keys(data).forEach(key => {
-        if (this.rank.length < 5) this.rank.push(key);
-      })
-    })
+        .then(res => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then(data => {
+          Object.keys(data).forEach(key => {
+            if (this.rank.length < 5) this.rank.push(key);
+          })
+        })
   },
   methods: {
     editProject() {
@@ -137,11 +142,13 @@ export default {
             if (res.status == 200) {
               console.log("delete successful");
               this.$store.dispatch("fetchCurrentUser");
-              this.$router.push({name: "Projects"});
+              this.toggleSnackbar("Delete successful")
+              setTimeout(() => this.$router.push({name: "Projects"}), 1500);
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
               console.log("delete unsuccessful");
+              this.toggleSnackbar("Delete unsuccessful")
             }
           })
           .catch((e) => console.log(e));
@@ -167,7 +174,9 @@ export default {
             }
           })
           .then((data) => {
-            this.project = data;
+            if (data) {
+              this.project = data;
+            }
           })
           .catch((e) => console.log(e));
     },
@@ -177,9 +186,18 @@ export default {
     toggleForbiddenDialog() {
       console.log("toggle")
       this.forbiddenDialog = true;
-    }
+    },
+    toggleSnackbar(text) {
+      this.snackbar = true;
+      this.message = text;
+    },
+    closeSnackbar() {
+      this.snackbar = false;
+      this.message = null;
+    },
   },
   components: {
+    Snackbar,
     Issues,
     ProjectForm,
     ConfirmDelete,

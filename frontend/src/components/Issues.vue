@@ -111,7 +111,7 @@
             <v-card-text>
               Created on 
               {{
-                issue.timestamp == null ? "(Not Specified)" : issue.timestamp
+                issue.timestamp == null ? "(Not Specified)" : new Date(issue.timestamp).toLocaleString()
               }}
             </v-card-text>
             <v-card-actions>
@@ -136,10 +136,12 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <IssueForm
         @toggleDialog="toggleDialog"
+        @show-snackbar="toggleSnackbar"
         :data="data"
         :projectId="projectId"
       />
     </v-dialog>
+    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
   </div>
 </template>
 
@@ -149,6 +151,7 @@ import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
 import SortForm from "../components/SortForm";
 import FilterForm from "../components/FilterForm";
+import Snackbar from "./Snackbar";
 
 export default {
   setup() {},
@@ -203,7 +206,9 @@ export default {
         'Resolved': '#f8f899',
         'In Progress': '#93dcdf',
         'Reopened': '#dfa44d'
-      }
+      },
+      snackbar: false,
+      message: null
     };
   },
   props: {
@@ -219,6 +224,7 @@ export default {
     SingleSort,
     SortForm,
     FilterForm,
+    Snackbar
   },
   watch: {
     sortData(val) {
@@ -324,7 +330,15 @@ export default {
       var tmp = document.createElement("DIV");
       tmp.innerHTML = str;
       return tmp.textContent || tmp.innerText || "";
-    }
+    },
+    toggleSnackbar(text) {
+      this.snackbar = true;
+      this.message = text;
+    },
+    closeSnackbar() {
+      this.snackbar = false;
+      this.message = null;
+    },
   },
   computed: {
     getIssues() {

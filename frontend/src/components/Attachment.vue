@@ -62,7 +62,7 @@
                     </template>
                     <div class="row">
                       <div class="col-10 text-truncate white--text ma-2"
-                           :class="{'text--disabled': (!hover & !editing) }">
+                           :class="{'text--disabled': (!hover && !editing) }">
                         {{ file.fileName }}
                       </div>
                     </div>
@@ -75,9 +75,9 @@
       </v-item-group>
     </v-container>
     <v-container v-else-if="this.issueId!==undefined">
-      <v-row justify="end" class="mb-4">
-        <v-btn text v-ripple="false" class="ma-2 no-background-hover">
-          <v-icon class="ma-2">mdi-attachment</v-icon>
+      <v-row class="mb-4 align-center">
+        <v-btn text v-ripple="false" class="no-background-hover">
+          <v-icon class="mr-1">mdi-attachment</v-icon>
           Attachment
         </v-btn>
         <v-spacer></v-spacer>
