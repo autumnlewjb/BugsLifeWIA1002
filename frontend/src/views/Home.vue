@@ -1,5 +1,5 @@
 <template>
-  <v-container class="title" fill-height align-center v-if="!loginPage" :key="loginPage">
+  <v-container class="title" fill-height align-center>
     <v-container>
       <v-row class="ma-0">
         <v-col cols="12">
@@ -8,7 +8,7 @@
               <p class="main-title">Bugs Life</p>
             </v-container>
           </v-slide-x-transition>
-          <transition name="fade" appear>
+          <transition name="fade">
             <v-container v-if="slideTransition">
               <p class="subtitle">Just another tracker.</p>
             </v-container>
@@ -16,7 +16,7 @@
           <v-container>
             <v-slide-x-reverse-transition>
               <div v-if="buttonTransition">
-                <v-btn text x-large @click="clickHandler" plain>Start another boring day</v-btn>
+                <v-btn text x-large @click="clickHandler" plain :to="{name: 'Login'}" >Start another boring day</v-btn>
               </div>
               <!-- <div v-if="loginRegisterTransition">
                 <v-btn text x-large :to="{name: 'Login'}" >Login</v-btn>
@@ -28,49 +28,18 @@
       </v-row>
     </v-container>
   </v-container>
-  <v-row v-else-if="loginPage" class="title justify-space-around align-center fill-height">
-    <transition name="slide" appear>
-      <v-col cols="6">
-        <v-row>
-          <v-col cols="12" class="d-flex justify-center mb-5 mt-1">
-            <p class="main-title">Bugs Life</p>
-          </v-col>
-          <v-col class="d-flex justify-center">
-            <p class="subtitle">Just another tracker.</p>
-          </v-col>
-          <v-container>
-            <div>
-              <v-btn text x-large @click="clickHandler" plain>Back to homepage</v-btn>
-            </div>
-          </v-container>
-        </v-row>
-      </v-col>
-    </transition>
-    <transition name="fade" appear>
-      <v-divider class="ma-2" vertical></v-divider>
-    </transition>
-    <transition name="fade" appear>
-      <v-col cols="4">
-        <Login/>
-      </v-col>
-    </transition>
-  </v-row>
 </template>
 
 <script>
 
-import Login from "./Login";
-
 export default {
   name: 'Home',
-  components: {Login},
   data() {
     return {
       fadeTransition: false,
       slideTransition: false,
       buttonTransition: false,
       loginRegisterTransition: false,
-      loginPage: false
     }
   },
   mounted() {
@@ -80,7 +49,6 @@ export default {
   },
   methods: {
     clickHandler() {
-      this.loginPage = !this.loginPage
       //this.loginRegisterTransition = !this.loginRegisterTransition;
       // this.buttonTransition = !this.buttonTransition;
     }
@@ -118,14 +86,6 @@ export default {
 {
   opacity: 0;
   transition-delay: 5s;
-}
-
-.slide-enter-active {
-  transition: all 0.5s ease-out;
-}
-
-.slide-enter {
-  transform: translateX(40%);
 }
 
 </style>
