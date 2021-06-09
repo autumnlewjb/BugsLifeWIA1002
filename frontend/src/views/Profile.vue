@@ -31,7 +31,7 @@
             <v-card-title> Administrative Control </v-card-title>
             <v-list dense>
               <v-list-item-group>
-                <v-list-item href="/api/JSON" target="blank">
+                <v-list-item @click="handleExportJson" target="blank">
                   <v-list-item-icon>
                     <v-icon>mdi-export</v-icon>
                   </v-list-item-icon>
@@ -288,7 +288,7 @@ export default {
       showEditProfile: false,
       email: '',
       password: '',
-      hide: false
+      hide: false,
     };
   },
   watch: {
@@ -381,6 +381,27 @@ export default {
         })
         .catch((e) => console.log(e));
     },
+    handleExportJson() {
+      fetch(`/api/JSON`) 
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return null;
+        }
+      })
+      .then(data => {
+        if (data) {
+          var dataStr = "data:text/json; charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+          var downloadElement = document.createElement('a');
+          downloadElement.setAttribute('href', dataStr);
+          downloadElement.setAttribute('download', 'data.json');
+          document.body.appendChild(downloadElement);
+          downloadElement.click();
+          downloadElement.remove();
+        }
+      })
+    }
   },
   computed: {
     getUser() {
