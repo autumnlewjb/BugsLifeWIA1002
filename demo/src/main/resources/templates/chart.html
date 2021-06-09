@@ -54,13 +54,17 @@
                 type: 'column'
             },
             title: {
-                text: 'Tags Bar Chart'
+                text: 'Tags Bar Chart',
+            },
+            subtitle: {
+                text: [[${dateText}]]
             },
             xAxis: {
                 categories: [[${tags}]],
                 crosshair: true
             },
             yAxis: {
+                allowDecimals : false,
                 title: {
                     text: 'Counter'
                 }
@@ -94,6 +98,9 @@
             title: {
                 text: 'Status Pie Chart'
             },
+            subtitle: {
+                text: [[${dateText}]]
+            },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
             },
@@ -123,10 +130,13 @@
                 zoomType: 'xy'
             },
             title: {
-                text: 'Number of issues created '
+                text: 'Number of issues created'
+            },
+            subtitle: {
+                text: [[${monthDateText}]]
             },
             xAxis: [{
-                categories: [[${days}]],
+                categories: [[${dates}]],
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis

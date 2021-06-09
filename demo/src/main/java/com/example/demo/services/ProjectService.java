@@ -5,6 +5,7 @@ import com.example.demo.models.Project;
 import com.example.demo.models.User;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -21,12 +22,14 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final IssueRepository issueRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserService userService, IssueRepository issueRepository) {
+    public ProjectService(ProjectRepository projectRepository, UserService userService, UserRepository userRepository, IssueRepository issueRepository) {
         this.projectRepository = projectRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
         this.issueRepository = issueRepository;
     }
 
@@ -67,7 +70,10 @@ public class ProjectService {
         return userService.getProjectByUser(queryUser);
     }
 
-    public Project createProject(Project project) {
+    public Project createProject(Integer user_id, Project project) {
+        User user = userRepository.findUserById(user_id);
+        project.setUser(user);
+        user.getProject().add(project);
         return projectRepository.save(project);
     }
 

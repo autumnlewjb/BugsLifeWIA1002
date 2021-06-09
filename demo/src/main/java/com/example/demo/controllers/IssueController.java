@@ -31,10 +31,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.YearMonth;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -69,7 +68,6 @@ public class IssueController {
         return ResponseEntity.ok(issueList);
     }
 
-    // FIXME this endpoints create new user in the author field although the user exist
     @PostMapping("/{project_id}")
     public ResponseEntity<Issue> createIssue(@PathVariable Integer project_id, @RequestBody Issue issue) {
         Project project = projectService.findProjectWithId(project_id);
@@ -100,7 +98,7 @@ public class IssueController {
     }
 
     @GetMapping("/issues/{createdBy}")
-    public ResponseEntity<List<Issue>> getIssuesCreatedBy(@PathVariable String createdBy){
+    public ResponseEntity<List<Issue>> getIssuesCreatedBy(@PathVariable String createdBy) {
         List<Issue> issueList = issueService.findIssuesByCreatedBy(createdBy);
         return ResponseEntity.ok(issueList);
     }
@@ -270,6 +268,15 @@ public class IssueController {
         Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
         Integer resolved = 0, open = 0, closed = 0, reopened = 0, inProgress = 0;
 
+        //get week dates
+        List<LocalDate> datesOfWeek = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        TemporalField myWeek = WeekFields.of(DayOfWeek.SUNDAY, 1).dayOfWeek();
+        LocalDate weekStart = now.with(myWeek, 1);
+        LocalDate weekEnd = now.with(myWeek, 7);
+        LocalDate startOfFollowingWeek = weekStart.plusWeeks(1).with(myWeek, 1);
+        weekStart.datesUntil(startOfFollowingWeek).forEach(datesOfWeek::add);
+
         tagList.add("Frontend");
         tagList.add("Backend");
         tagList.add("First bug");
@@ -282,23 +289,28 @@ public class IssueController {
         statusList.add("Closed");
         statusList.add("In progress");
 
-        for (Issue issue : issues) {
-            int counter = issue.getTag().size();
-            for (int i = 0; i < counter; i++) {
-                if (issue.getTag().get(i).equalsIgnoreCase("Frontend")) {
-                    frontend++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Backend")) {
-                    backend++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("First Bug")) {
-                    firstBug++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")) {
-                    enhancement++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")) {
-                    suggestion++;
+        for (LocalDate dayOfWeek : datesOfWeek) {
+            for (Issue issue : issues) {
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(dayOfWeek.toString())) {
+                    int counter = issue.getTag().size();
+                    for (int i = 0; i < counter; i++) {
+                        if (issue.getTag().get(i).equalsIgnoreCase("Frontend")) {
+                            frontend++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Backend")) {
+                            backend++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("First Bug")) {
+                            firstBug++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")) {
+                            enhancement++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")) {
+                            suggestion++;
+                        }
+                    }
                 }
             }
         }
@@ -309,17 +321,22 @@ public class IssueController {
         tagCounterList.add(enhancement);
         tagCounterList.add(suggestion);
 
-        for (Issue issue : issues) {
-            if (issue.getStatus().equalsIgnoreCase("Resolved")) {
-                resolved++;
-            } else if (issue.getStatus().equalsIgnoreCase("Reopened")) {
-                reopened++;
-            } else if (issue.getStatus().equalsIgnoreCase("Open")) {
-                open++;
-            } else if (issue.getStatus().equalsIgnoreCase("closed")) {
-                closed++;
-            } else {
-                inProgress++;
+        for (LocalDate dayOfWeek : datesOfWeek) {
+            for (Issue issue : issues) {
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(dayOfWeek.toString())) {
+                    if (issue.getStatus().equalsIgnoreCase("Resolved")) {
+                        resolved++;
+                    } else if (issue.getStatus().equalsIgnoreCase("Reopened")) {
+                        reopened++;
+                    } else if (issue.getStatus().equalsIgnoreCase("Open")) {
+                        open++;
+                    } else if (issue.getStatus().equalsIgnoreCase("closed")) {
+                        closed++;
+                    } else {
+                        inProgress++;
+                    }
+                }
             }
         }
 
@@ -342,27 +359,25 @@ public class IssueController {
             rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Status", issue.getStatus(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
         }
 
+        //get months dates
         List<LocalDate> allDates = new ArrayList<>();
-        Month currentMonth = Month.APRIL;
+        Month currentMonth = LocalDate.now().getMonth();
         int currentYear = LocalDate.now().getYear();
         YearMonth ym = YearMonth.of(currentYear, currentMonth);
+        int lengthOfMonth = ym.lengthOfMonth();
         LocalDate firstOfMonth = ym.atDay(1);
+        LocalDate endOfMonth = ym.atDay(lengthOfMonth);
         LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
         firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
 
-        int days = ym.lengthOfMonth();
-        List<Integer> totalDays = new ArrayList<>();
-        for (int i = 1; i <= days; i++) {
-            totalDays.add(i);
-        }
 
         List<Integer> issueCounter = new ArrayList<>();
-        for (int i = 0; i < allDates.size(); i++) {
+        for (LocalDate localDate : allDates) {
             int isCounter = 0;
             boolean found = false;
             for (Issue issue : issues) {
                 String issueDate = issue.getTimestamp().toString().split(" ")[0];
-                if (issueDate.equals(allDates.get(i).toString())) {
+                if (issueDate.equals(localDate.toString())) {
                     found = true;
                     isCounter++;
                 }
@@ -374,41 +389,20 @@ public class IssueController {
 
         List<Integer> issueCumulativeCounter = new ArrayList<>();
 
+
         int cumulativeCounter = 0;
-        for (int i = 0; i < days; i++) {
+        for (int i = 0; i < lengthOfMonth; i++) {
             cumulativeCounter += issueCounter.get(i);
             issueCumulativeCounter.add(cumulativeCounter);
         }
 
-        /*List<String> assignee = new ArrayList<>();
-        List<Integer> numberOfIssueSolved = new ArrayList<>();
-        for (Issue issue : issues) {
-            if (!assignee.contains(issue.getAssignee())) {
-                assignee.add(issue.getAssignee());
-            }
-        }
-
-        for (String name : assignee) {
-            int count = 0;
-            for (Issue issue : issues) {
-                if (issue.getAssignee().equals(name)) {
-                    count++;
-                }
-            }
-            numberOfIssueSolved.add(count);
-        }
-
-        HashMap<String, Integer> performerList = new HashMap<>();
-        for (int i = 0; i < assignee.size(); i++) {
-            performerList.put(assignee.get(i), numberOfIssueSolved.get(i));
-        }
-
-        Map<String, Integer> ranking = issueService.sortByValue(performerList);*/
-
-
+        String dateText = "From " + weekStart + " to " + weekEnd;
+        String monthDateText = "From " + firstOfMonth + " to " + endOfMonth;
+        model.addAttribute("dateText", dateText);
+        model.addAttribute("monthDateText", monthDateText);
         model.addAttribute("cumulativeCounter", issueCumulativeCounter);
         model.addAttribute("issueCounter", issueCounter);
-        model.addAttribute("days", totalDays);
+        model.addAttribute("dates", allDates);
         model.addAttribute("tags", tagList);
         model.addAttribute("counter", tagCounterList);
         model.addAttribute("data", pieCharts);
@@ -460,6 +454,14 @@ public class IssueController {
         Integer frontend = 0, backend = 0, firstBug = 0, enhancement = 0, suggestion = 0;
         Integer resolved = 0, open = 0, closed = 0, reopened = 0, inProgress = 0;
 
+        //get week dates
+        List<LocalDate> datesOfWeek = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        TemporalField myWeek = WeekFields.of(DayOfWeek.SUNDAY, 1).dayOfWeek();
+        LocalDate weekStart = now.with(myWeek, 1);
+        LocalDate startOfFollowingWeek = weekStart.plusWeeks(1).with(myWeek, 1);
+        weekStart.datesUntil(startOfFollowingWeek).forEach(datesOfWeek::add);
+
         tagList.add("Frontend");
         tagList.add("Backend");
         tagList.add("First bug");
@@ -472,23 +474,28 @@ public class IssueController {
         statusList.add("Closed");
         statusList.add("In progress");
 
-        for (Issue issue : issues) {
-            int counter = issue.getTag().size();
-            for (int i = 0; i < counter; i++) {
-                if (issue.getTag().get(i).equalsIgnoreCase("Frontend")) {
-                    frontend++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Backend")) {
-                    backend++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("First Bug")) {
-                    firstBug++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")) {
-                    enhancement++;
-                }
-                if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")) {
-                    suggestion++;
+        for (LocalDate dayOfWeek : datesOfWeek) {
+            for (Issue issue : issues) {
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(dayOfWeek.toString())) {
+                    int counter = issue.getTag().size();
+                    for (int i = 0; i < counter; i++) {
+                        if (issue.getTag().get(i).equalsIgnoreCase("Frontend")) {
+                            frontend++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Backend")) {
+                            backend++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("First Bug")) {
+                            firstBug++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Enhancement")) {
+                            enhancement++;
+                        }
+                        if (issue.getTag().get(i).equalsIgnoreCase("Suggestion")) {
+                            suggestion++;
+                        }
+                    }
                 }
             }
         }
@@ -499,17 +506,22 @@ public class IssueController {
         tagCounterList.add(enhancement);
         tagCounterList.add(suggestion);
 
-        for (Issue issue : issues) {
-            if (issue.getStatus().equalsIgnoreCase("Resolved")) {
-                resolved++;
-            } else if (issue.getStatus().equalsIgnoreCase("Reopened")) {
-                reopened++;
-            } else if (issue.getStatus().equalsIgnoreCase("Open")) {
-                open++;
-            } else if (issue.getStatus().equalsIgnoreCase("closed")) {
-                closed++;
-            } else {
-                inProgress++;
+        for (LocalDate dayOfWeek : datesOfWeek) {
+            for (Issue issue : issues) {
+                String issueDate = issue.getTimestamp().toString().split(" ")[0];
+                if (issueDate.equals(dayOfWeek.toString())) {
+                    if (issue.getStatus().equalsIgnoreCase("Resolved")) {
+                        resolved++;
+                    } else if (issue.getStatus().equalsIgnoreCase("Reopened")) {
+                        reopened++;
+                    } else if (issue.getStatus().equalsIgnoreCase("Open")) {
+                        open++;
+                    } else if (issue.getStatus().equalsIgnoreCase("closed")) {
+                        closed++;
+                    } else {
+                        inProgress++;
+                    }
+                }
             }
         }
 
@@ -532,27 +544,24 @@ public class IssueController {
             rows.add(Map.of("ID", String.valueOf(counter++), "Title", issue.getTitle(), "Status", issue.getStatus(), "Priority", String.valueOf(issue.getPriority()), "Tag", issue.getTag().toString().replace("[", "").replace("]", ""), "Created by", issue.getCreatedBy(), "Assignee", issue.getAssignee()));
         }
 
+        //get months dates
         List<LocalDate> allDates = new ArrayList<>();
         Month currentMonth = LocalDate.now().getMonth();
         int currentYear = LocalDate.now().getYear();
         YearMonth ym = YearMonth.of(currentYear, currentMonth);
+        int lengthOfMonth = ym.lengthOfMonth();
         LocalDate firstOfMonth = ym.atDay(1);
         LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
         firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
 
-        int days = ym.lengthOfMonth();
-        List<Integer> totalDays = new ArrayList<>();
-        for (int i = 1; i <= days; i++) {
-            totalDays.add(i);
-        }
 
         List<Integer> issueCounter = new ArrayList<>();
-        for (int i = 0; i < allDates.size(); i++) {
+        for (LocalDate localDate : allDates) {
             int isCounter = 0;
             boolean found = false;
             for (Issue issue : issues) {
                 String issueDate = issue.getTimestamp().toString().split(" ")[0];
-                if (issueDate.equals(allDates.get(i).toString())) {
+                if (issueDate.equals(localDate.toString())) {
                     found = true;
                     isCounter++;
                 }
@@ -564,8 +573,9 @@ public class IssueController {
 
         List<Integer> issueCumulativeCounter = new ArrayList<>();
 
+
         int cumulativeCounter = 0;
-        for (int i = 0; i < days; i++) {
+        for (int i = 0; i < lengthOfMonth; i++) {
             cumulativeCounter += issueCounter.get(i);
             issueCumulativeCounter.add(cumulativeCounter);
         }
@@ -574,7 +584,7 @@ public class IssueController {
 
         response.put("cumulativeCounter", issueCumulativeCounter);
         response.put("issueCounter", issueCounter);
-        response.put("days", totalDays);
+        response.put("days", allDates);
         response.put("tags", tagList);
         response.put("counter", tagCounterList);
         response.put("data", pieCharts);

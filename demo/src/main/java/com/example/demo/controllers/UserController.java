@@ -40,6 +40,8 @@ public class UserController {
     private ResultSet commentSelect = null;
     private ResultSet reactSelect = null;
     private ResultSet tagSelect = null;
+    private ResultSet issue_audSelect = null;
+    private ResultSet comment_audSelect = null;
 
     private final UserService userService;
 
@@ -97,6 +99,8 @@ public class UserController {
     public ResponseEntity<?> getJson() {
         ArrayList<JSONObject> JSONListWithRole = new ArrayList<>();
         ArrayList<JSONObject> JSONListWithoutRole = new ArrayList<>();
+        ArrayList<JSONObject> JSONIssueLog=new ArrayList<>();
+        ArrayList<JSONObject> JSONCommentLog=new ArrayList<>();
         List<JSONObject> projectList = new ArrayList<>();
         List<JSONObject> issueList = new ArrayList<>();
         List<JSONObject> commentList = new ArrayList<>();
@@ -119,6 +123,10 @@ public class UserController {
             reactSelect = preparedStatement.executeQuery();
             preparedStatement = connection.prepareStatement("SELECT * FROM tag;");
             tagSelect = preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement("SELECT * FROM issue_aud;");
+            issue_audSelect = preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement("SELECT * FROM comment_aud;");
+            comment_audSelect = preparedStatement.executeQuery();
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -162,6 +170,20 @@ public class UserController {
             List<String> columnNames7 = new ArrayList<>();
             for (int i = 1; i <= numOfColumns7; i++) {
                 columnNames7.add(metaData.getColumnName(i));
+            }
+            
+            metaData = issue_audSelect.getMetaData();
+            int numOfColumns8 = metaData.getColumnCount();
+            List<String> columnNames8 = new ArrayList<>();
+            for (int i = 1; i <= numOfColumns8; i++) {
+                columnNames8.add(metaData.getColumnName(i));
+            }
+            
+            metaData = comment_audSelect.getMetaData();
+            int numOfColumns9 = metaData.getColumnCount();
+            List<String> columnNames9 = new ArrayList<>();
+            for (int i = 1; i <= numOfColumns9; i++) {
+                columnNames9.add(metaData.getColumnName(i));
             }
 
             while (projectSelect.next()) {
@@ -222,6 +244,26 @@ public class UserController {
                 reactList.add(obj);
             }
 
+            while (issue_audSelect.next()) {
+                JSONObject obj = new JSONObject();
+                for (int i = 1; i <= numOfColumns8; i++) {
+                    String key = columnNames8.get(i - 1);
+                    String value = issue_audSelect.getString(i);
+                    obj.put(key, value);
+                }
+                JSONIssueLog.add(obj);
+            }
+            
+            while (comment_audSelect.next()) {
+                JSONObject obj = new JSONObject();
+                for (int i = 1; i <= numOfColumns9; i++) {
+                    String key = columnNames9.get(i - 1);
+                    String value = comment_audSelect.getString(i);
+                    obj.put(key, value);
+                }
+                JSONCommentLog.add(obj);
+            }
+            
             while (tagSelect.next()) {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns7; i++) {
@@ -325,7 +367,7 @@ public class UserController {
                 JSONListWithoutRole.add(temp);
                 j++;
             }
-
+            connection.close();
 
             try {
                 //Two text files and json files for roles and without roles each
@@ -341,6 +383,12 @@ public class UserController {
                 file.close();
                 file = new FileWriter("log_file_role.txt");
                 mapper.writeValue(file, JSONListWithRole);
+                file.close();
+                file = new FileWriter("issue_log.json");
+                mapper.writeValue(file, JSONIssueLog);
+                file.close();
+                file = new FileWriter("comment_log.json");
+                mapper.writeValue(file, JSONCommentLog);
                 file.close();
                 return ResponseEntity.ok(JSONListWithRole);
             } catch (IOException e) {
