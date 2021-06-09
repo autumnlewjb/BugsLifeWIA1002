@@ -100,7 +100,7 @@ export default {
         if (res.status == 200) {
           localStorage.clear()
           this.$store.dispatch('fetchCurrentUser')
-          this.$router.push({name: 'Login'})
+          this.$router.push({name: 'Home'})
         } else {
           console.log("logout failed")
         }

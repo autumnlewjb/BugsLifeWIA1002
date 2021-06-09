@@ -1,10 +1,19 @@
 <template>
-  <v-form @submit="onSubmit" class="">
-    <v-text-field type="text" name="username" placeholder="Username" v-model="username"/>
-    <v-text-field type="email" name="email" placeholder="Email" v-model="email" v-if="collectEmail" />
-    <v-text-field type="password" name="password" placeholder="Password" v-model="password"/>
-    <v-btn type="submit">{{formPurpose}}</v-btn>
-  </v-form>
+  <v-row class="justify-center align-center">
+    <v-col cols="12">
+      <v-form @submit="onSubmit">
+        <v-text-field type="text" name="username" v-model="username" outlined color="teal" label="Username"/>
+        <v-text-field type="email" name="email" v-model="email" v-if="collectEmail" outlined color="teal"
+                      label="Email"/>
+        <v-text-field :type="hide ? 'text' : 'password'" name="password" v-model="password" outlined
+                      color="teal" :append-icon="hide ? 'mdi-eye' : 'mdi-eye-off'" @click:append="hide = !hide"
+                      label="Password"/>
+      </v-form>
+    </v-col>
+    <v-col cols="8" class="d-flex child-flex justify-center">
+      <v-btn type="submit" color="teal" dark @click="onSubmit">{{ formPurpose }}</v-btn>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -14,14 +23,16 @@ export default {
     return {
       username: '',
       password: '',
-      email: ''
+      email: '',
+      hide: false
     }
   },
   props: {
     collectEmail: Boolean,
     formPurpose: String
   },
-  setup() {},
+  setup() {
+  },
   methods: {
     onSubmit(e) {
       e.preventDefault()
