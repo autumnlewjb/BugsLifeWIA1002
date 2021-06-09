@@ -3,46 +3,53 @@
     <v-layout row>
       <v-flex md4>
         <v-container justify="center">
-            <v-row>
-                <v-avatar size="200" color="primary" rounded>
-                    <span class="white--text text-h1">{{
-                    user.username[0].toUpperCase()
-                    }}</span>
-                </v-avatar>
-            </v-row>
-            <v-row class="mt-16">
-                <h3>{{ user.username }}</h3>
-            </v-row>
-            <v-row>
-                <p>{{ user.email }}</p>
-            </v-row>
+          <v-row>
+            <v-avatar size="200" color="primary" rounded>
+              <span class="white--text text-h1">{{
+                user.username[0].toUpperCase()
+              }}</span>
+            </v-avatar>
+          </v-row>
+          <v-row class="mt-16">
+            <v-col cols="12" md="10" sm="10">
+              <h3>{{ getUser.username }}</h3>
+            </v-col>
+            <v-col cols="12" md="2" sm="2">
+              <v-btn icon @click="showEditProfile = true">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row class="mt-0">
+            <v-col>
+              <p>{{ getUser.email }}</p>
+            </v-col>
+          </v-row>
         </v-container>
         <v-container v-if="isAdmin">
-            <v-card outlined>
-                <v-card-title>
-                    Administrative Control
-                </v-card-title>
-                <v-list dense>
-                    <v-list-item-group>
-                        <v-list-item href="/api/JSON" target="blank">
-                            <v-list-item-icon>
-                                <v-icon>mdi-export</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title>Export Database</v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item :to="{name: 'Register'}">
-                            <v-list-item-icon>
-                                <v-icon>mdi-account-plus</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title>Register New User</v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-list>
-            </v-card>
+          <v-card outlined>
+            <v-card-title> Administrative Control </v-card-title>
+            <v-list dense>
+              <v-list-item-group>
+                <v-list-item href="/api/JSON" target="blank">
+                  <v-list-item-icon>
+                    <v-icon>mdi-export</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Export Database</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item :to="{ name: 'Register' }">
+                  <v-list-item-icon>
+                    <v-icon>mdi-account-plus</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Register New User</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
         </v-container>
       </v-flex>
       <v-flex md8>
@@ -82,135 +89,217 @@
                 </v-layout>
               </v-card>
             </v-container>
-            <p style="text-align: center;" class="text--secondary pa-5" v-else>Hhhhmmmm... You did not create a project... </p>
+            <p style="text-align: center" class="text--secondary pa-5" v-else>
+              Hhhhmmmm... You did not create a project...
+            </p>
           </v-tab-item>
           <v-tab-item>
             <v-container v-if="issues.length > 0">
-                <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
-                    <v-card-title>
-                        <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{
-                        issue.status
-                        }}</span>
-                        {{ issue.title }}
-                        <v-icon v-for="n in issue.priority" :key="n" color="red"
-                        >mdi-exclamation</v-icon
-                        >
-                    </v-card-title>
-                    <v-card-text>
-                            <v-chip v-for="(tag, index) in issue.tag" :key="index"
-                            class="mx-1"
-                            >{{ tag }}</v-chip
-                            >
-                    </v-card-text>
-                    <v-card-text
-                        v-html="
-                        getDescription(
-                            issue.descriptionText == null || issue.descriptionText == ''
-                            ? '(Description not specified)'
-                            : issue.descriptionText
-                        )
-                        "
-                    >
-                    </v-card-text>
-                    <v-card-text>
-                        Created on
-                        {{
-                        issue.timestamp == null ? "(Not Specified)" : issue.timestamp
-                        }}
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                        text
-                        color="primary"
-                        :to="{
-                            name: 'Issue',
-                            query: { projectId: issue.projectId, issueId: issue.issueId },
-                        }"
-                        >
-                        View Issue
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+              <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
+                <v-card-title>
+                  <span
+                    class="mr-5 status"
+                    :style="`min-width: 1rem; background-color: ${
+                      statusColor[issue.status]
+                    }`"
+                    >{{ issue.status }}</span
+                  >
+                  {{ issue.title }}
+                  <v-icon v-for="n in issue.priority" :key="n" color="red"
+                    >mdi-exclamation</v-icon
+                  >
+                </v-card-title>
+                <v-card-text>
+                  <v-chip
+                    v-for="(tag, index) in issue.tag"
+                    :key="index"
+                    class="mx-1"
+                    >{{ tag }}</v-chip
+                  >
+                </v-card-text>
+                <v-card-text
+                  v-html="
+                    getDescription(
+                      issue.descriptionText == null ||
+                        issue.descriptionText == ''
+                        ? '(Description not specified)'
+                        : issue.descriptionText
+                    )
+                  "
+                >
+                </v-card-text>
+                <v-card-text>
+                  Created on
+                  {{
+                    issue.timestamp == null
+                      ? "(Not Specified)"
+                      : issue.timestamp
+                  }}
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn
+                    text
+                    color="primary"
+                    :to="{
+                      name: 'Issue',
+                      query: {
+                        projectId: issue.projectId,
+                        issueId: issue.issueId,
+                      },
+                    }"
+                  >
+                    View Issue
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
             </v-container>
-            <p style="text-align: center;" class="text--secondary pa-5" v-else>Yessshhh!!! All clear... </p>
+            <p style="text-align: center" class="text--secondary pa-5" v-else>
+              Yessshhh!!! All clear...
+            </p>
           </v-tab-item>
           <v-tab-item>
-              <v-container v-if="assigned.length > 0">
-                <v-card v-for="issue in assigned" :key="issue.id" class="ma-5">
-                    <v-card-title>
-                        <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{
-                        issue.status
-                        }}</span>
-                        {{ issue.title }}
-                        <v-icon v-for="n in issue.priority" :key="n" color="red"
-                        >mdi-exclamation</v-icon
-                        >
-                    </v-card-title>
-                    <v-card-text>
-                            <v-chip v-for="(tag, index) in issue.tag" :key="index"
-                            class="mx-1"
-                            >{{ tag }}</v-chip
-                            >
-                    </v-card-text>
-                    <v-card-text
-                        v-html="
-                        getDescription(
-                            issue.descriptionText == null || issue.descriptionText == ''
-                            ? '(Description not specified)'
-                            : issue.descriptionText
-                        )
-                        "
-                    >
-                    </v-card-text>
-                    <v-card-text>
-                        Created on
-                        {{
-                        issue.timestamp == null ? "(Not Specified)" : issue.timestamp
-                        }}
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                        text
-                        color="primary"
-                        :to="{
-                            name: 'Issue',
-                            query: { projectId: issue.projectId, issueId: issue.issueId },
-                        }"
-                        >
-                        View Issue
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-              </v-container>
-              <p style="text-align: center;" class="text--secondary pa-5" v-else>No assigned issue... yet.</p>
+            <v-container v-if="assigned.length > 0">
+              <v-card v-for="issue in assigned" :key="issue.id" class="ma-5">
+                <v-card-title>
+                  <span
+                    class="mr-5 status"
+                    :style="`min-width: 1rem; background-color: ${
+                      statusColor[issue.status]
+                    }`"
+                    >{{ issue.status }}</span
+                  >
+                  {{ issue.title }}
+                  <v-icon v-for="n in issue.priority" :key="n" color="red"
+                    >mdi-exclamation</v-icon
+                  >
+                </v-card-title>
+                <v-card-text>
+                  <v-chip
+                    v-for="(tag, index) in issue.tag"
+                    :key="index"
+                    class="mx-1"
+                    >{{ tag }}</v-chip
+                  >
+                </v-card-text>
+                <v-card-text
+                  v-html="
+                    getDescription(
+                      issue.descriptionText == null ||
+                        issue.descriptionText == ''
+                        ? '(Description not specified)'
+                        : issue.descriptionText
+                    )
+                  "
+                >
+                </v-card-text>
+                <v-card-text>
+                  Created on
+                  {{
+                    issue.timestamp == null
+                      ? "(Not Specified)"
+                      : issue.timestamp
+                  }}
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn
+                    text
+                    color="primary"
+                    :to="{
+                      name: 'Issue',
+                      query: {
+                        projectId: issue.projectId,
+                        issueId: issue.issueId,
+                      },
+                    }"
+                  >
+                    View Issue
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-container>
+            <p style="text-align: center" class="text--secondary pa-5" v-else>
+              No assigned issue... yet.
+            </p>
           </v-tab-item>
         </v-tabs>
       </v-flex>
     </v-layout>
+    <v-dialog v-model="showEditProfile">
+      <v-card>
+        <v-container>
+          <v-row>
+            <h1 class="">Edit Profile</h1>
+          </v-row>
+          <v-row class="justify-center align-center">
+            <v-col cols="12">
+              <v-form @submit="handleEdit">
+                <v-text-field
+                  type="email"
+                  name="email"
+                  v-model="email"
+                  outlined
+                  color="teal"
+                  label="Email"
+                />
+                <v-text-field
+                  :type="hide ? 'text' : 'password'"
+                  name="password"
+                  v-model="password"
+                  outlined
+                  color="teal"
+                  :append-icon="hide ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="hide = !hide"
+                  label="Password"
+                />
+              </v-form>
+            </v-col>
+            <v-col cols="8" class="d-flex child-flex justify-center">
+              <v-btn type="submit" color="teal" dark @click="handleEdit">Save Edits</v-btn>
+            </v-col>
+          </v-row>
+          <!-- <Form :collectEmail="true" :collectUsername="false" formPurpose="Edit Profile" @form-submit="handleEdit" :user="getUser"/> -->
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+
 export default {
   name: "Profile",
   setup() {},
+  components: {
+  },
   data() {
     return {
-      user: this.$store.getters.getCurrentUser,
+      user: null,
       isAdmin: false,
-      projects: this.user?.project,
+      projects: [],
       issues: [],
       assigned: [],
       statusColor: {
-        'Open': '#7eb67e',
-        'Closed': '#afabab',
-        'Resolved': '#f8f899',
-        'In Progress': '#93dcdf',
-        'Reopened': '#dfa44d'
-      }
+        Open: "#7eb67e",
+        Closed: "#afabab",
+        Resolved: "#f8f899",
+        "In Progress": "#93dcdf",
+        Reopened: "#dfa44d",
+      },
+      showEditProfile: false,
+      email: '',
+      password: '',
+      hide: false
     };
   },
+  watch: {
+    user(val) {
+      this.email = val.email;
+      this.password = val.password;
+    }
+  },
   created() {
+    this.user = this.$store.getters.getCurrentUser;
+    this.projects = this.user.project;
     fetch(`/api/user`)
       .then((res) => {
         if (res.status == 200) {
@@ -240,28 +329,62 @@ export default {
         this.issues = [];
         this.assigned = [];
         data.forEach((project) => {
-            const projectIssues = project.issue.filter(
-              (issue) => issue.createdBy == this.user.username
-            );
-            const assignedIssues = project.issue.filter(
-                (issue) => issue.assignee == this.user.username
-            )
-            projectIssues.forEach((issue) => issue.projectId = project.projectId);
-            assignedIssues.forEach((issue) => issue.projectId = project.projectId);
-          this.issues = [
-            ... this.issues,
-            ... projectIssues
-          ];
-          this.assigned = [... this.assigned, ... assignedIssues];
+          const projectIssues = project.issue.filter(
+            (issue) => issue.createdBy == this.user.username
+          );
+          const assignedIssues = project.issue.filter(
+            (issue) => issue.assignee == this.user.username
+          );
+          projectIssues.forEach(
+            (issue) => (issue.projectId = project.projectId)
+          );
+          assignedIssues.forEach(
+            (issue) => (issue.projectId = project.projectId)
+          );
+          this.issues = [...this.issues, ...projectIssues];
+          this.assigned = [...this.assigned, ...assignedIssues];
         });
       });
-      this.isAdmin = this.user?.roles.find((role) => role.name == 'ADMIN') != null;
+    this.isAdmin =
+      this.user?.roles.find((role) => role.name == "ADMIN") != null;
   },
   methods: {
     getDescription(str) {
       var tmp = document.createElement("DIV");
       tmp.innerHTML = str;
       return tmp.textContent || tmp.innerText || "";
+    },
+    handleEdit() {
+      fetch(`/api/user`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: this.user.username,
+          email: this.email,
+          password: this.password
+        }),
+      })
+        .then((res) => {
+          if (res.status == 200) {
+            this.showEditProfile = false;
+            return res.json();
+          }
+        })
+        .then((data) => {
+          if (data) {
+            localStorage.setItem("data", JSON.stringify(data));
+            this.$store.dispatch("fetchCurrentUser");
+            this.user = data;
+          }
+        })
+        .catch((e) => console.log(e));
+    },
+  },
+  computed: {
+    getUser() {
+      return this.$store.getters.getCurrentUser;
     },
   },
 };
