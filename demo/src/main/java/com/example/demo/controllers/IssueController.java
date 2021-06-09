@@ -459,6 +459,7 @@ public class IssueController {
         LocalDate now = LocalDate.now();
         TemporalField myWeek = WeekFields.of(DayOfWeek.SUNDAY, 1).dayOfWeek();
         LocalDate weekStart = now.with(myWeek, 1);
+        LocalDate weekEnd = now.with(myWeek, 7);
         LocalDate startOfFollowingWeek = weekStart.plusWeeks(1).with(myWeek, 1);
         weekStart.datesUntil(startOfFollowingWeek).forEach(datesOfWeek::add);
 
@@ -551,6 +552,7 @@ public class IssueController {
         YearMonth ym = YearMonth.of(currentYear, currentMonth);
         int lengthOfMonth = ym.lengthOfMonth();
         LocalDate firstOfMonth = ym.atDay(1);
+        LocalDate endOfMonth = ym.atDay(lengthOfMonth);
         LocalDate firstOfFollowingMonth = ym.plusMonths(1).atDay(1);
         firstOfMonth.datesUntil(firstOfFollowingMonth).forEach(allDates::add);
 
@@ -580,11 +582,14 @@ public class IssueController {
             issueCumulativeCounter.add(cumulativeCounter);
         }
 
+        String dateText = "From " + weekStart + " to " + weekEnd;
+        String monthDateText = "From " + firstOfMonth + " to " + endOfMonth;
         HashMap<String, Object> response = new HashMap<>();
-
+        response.put("dateText", dateText);
+        response.put("monthDateText", monthDateText);
         response.put("cumulativeCounter", issueCumulativeCounter);
         response.put("issueCounter", issueCounter);
-        response.put("days", allDates);
+        response.put("dates", allDates);
         response.put("tags", tagList);
         response.put("counter", tagCounterList);
         response.put("data", pieCharts);
