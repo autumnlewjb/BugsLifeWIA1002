@@ -58,7 +58,7 @@
           </p>
           <p>
             <span class="font-weight-bold">Status</span> <br/>
-            <v-combobox s :items="items" v-model="select" ref="combobox"></v-combobox>
+            <v-combobox s :items="items" v-model="select" ref="combobox" :loading="statusLoading"></v-combobox>
           </p>
           <p>
             <span class="font-weight-bold">Tag</span> <br/>
@@ -178,7 +178,8 @@ export default {
       history: [],
       snackbar: false,
       message: null,
-      loading: false
+      loading: false,
+      statusLoading: false
     };
   },
   created() {
@@ -192,6 +193,7 @@ export default {
         this.issueLoaded = true;
         return;
       }
+      this.statusLoading = true;
       this.issue.status = val;
       fetch(`/api/${this.projectId}/${this.issueId}`, {
         method: "PUT",
@@ -202,6 +204,7 @@ export default {
       }).then((res) => {
         this.fetchIssue();
         this.$refs.combobox.blur();
+        this.statusLoading=false;
         this.toggleSnackbar("Update successful")
         if (res.status == 403) {
           this.forbiddenDialog = true;
