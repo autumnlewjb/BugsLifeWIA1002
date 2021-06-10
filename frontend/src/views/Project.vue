@@ -30,10 +30,13 @@
           <v-card outlined height=100%>
             <v-img src="../assets/medal.webp" height="200"></v-img>
             <v-card-title>Top Performer Board</v-card-title>
-            <v-card-text>
+            <v-card-text v-if="rank.length > 0">
               <p v-for="(username, index) in rank" :key="index" :class="{'yellow--text text--darken-4': index < 3}">
                 {{ index + 1 }}. {{ username }}
               </p>
+            </v-card-text>
+            <v-card-text v-else>
+              <p>Maybe you will be the first?</p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -53,7 +56,7 @@
           <v-container>
             <v-container class="d-flex justify-end">
               <v-btn @click="refreshKey += 1" plain>
-                <v-icon>mdi-reload</v-icon>
+                <v-icon class="mx-2">mdi-reload</v-icon>
                  Refresh Chart
               </v-btn>
               <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon>

@@ -64,7 +64,6 @@
                 :key="project.id"
                 class="pa-5 ma-5"
               >
-                <v-layout row align-center>
                   <v-card-title>{{ project.name }}</v-card-title>
                   <v-card-text
                     v-html="getDescription(project.description)"
@@ -86,7 +85,6 @@
                       >View Project</v-btn
                     >
                   </v-card-actions>
-                </v-layout>
               </v-card>
             </v-container>
             <p style="text-align: center" class="text--secondary pa-5" v-else>
@@ -348,6 +346,8 @@ export default {
       });
     this.isAdmin =
       this.user?.roles.find((role) => role.name == "ADMIN") != null;
+    this.issues.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
+    this.assigned.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
   },
   methods: {
     getDescription(str) {
