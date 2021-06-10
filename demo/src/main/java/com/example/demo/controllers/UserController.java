@@ -408,7 +408,7 @@ public class UserController {
                 file = new FileWriter("comment_log.json");
                 mapper.writeValue(file, JSONCommentLog);
                 file.close();
-                return ResponseEntity.ok(JSONListWithRole);
+                return ResponseEntity.ok(JSONListWithoutRole);
             } catch (IOException e) {
                 System.out.println("Error with output file");
             }
