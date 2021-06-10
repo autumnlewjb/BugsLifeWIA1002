@@ -80,22 +80,22 @@ export default {
             } else if (res.status == 401) {
               this.loginFailed = true;
             } else {
-              return null
+              return null;
             }
           })
           .then((data) => {
             if (data) {
-              console.log(data)
-              localStorage.setItem('data', JSON.stringify(data))
-              this.$store.dispatch('fetchCurrentUser')
+              console.log(data);
+              localStorage.setItem('data', JSON.stringify(data));
+              this.$store.commit('setCurrentUser', data);
               this.$router.push({name: 'Profile'})
             }
           })
-          .catch((e) => console.log(e))
+          .catch((e) => console.log(e));
     },
   },
   mounted() {
-    this.fadeTransition = true
+    this.fadeTransition = true;
   }
 };
 </script>

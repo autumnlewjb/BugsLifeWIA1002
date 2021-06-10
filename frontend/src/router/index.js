@@ -29,57 +29,103 @@ const routes = [
     {
         path: '/register',
         name: 'Register',
-        component: Register
+        component: Register,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/profile',
         name: 'Profile',
-        component: Profile
+        component: Profile,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/projects',
         name: 'Projects',
-        component: Projects
+        component: Projects,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/project',
         name: 'Project',
-        component: Project
+        component: Project,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/issue',
         name: 'Issue',
-        component: Issue
+        component: Issue,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/search',
         name: 'Search',
-        component: Search
+        component: Search,
+        meta: {
+            requiresAuth: true
+        }
     }
 ]
 
 const router = new VueRouter({routes: routes, mode: 'history'})
 
 router.beforeEach((to, from, next) => {
-    if (store.getters.getCurrentUser) {
-        if (to.name == 'Login' || to.name == 'Home') {
-            next({name: 'Profile'});
-        } else if (to.name == 'Register' && store.getters.getCurrentUser.roles.find((role) => role.name == 'ADMIN') == null) {
-            next({name: 'Profile'});
+    console.log(store.getters.getCurrentUser);
+    if (to.matched.some(route => route.meta.requiresAuth)) {
+            store.dispatch('fetchCurrentUser').then(() => {
+                if (store.getters.getCurrentUser) {
+                    if (to.matched.some(route => route.meta.requiresAdmin)) {
+                        console.log("requires admin");
+                        console.log(store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN'));
+                        if (store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN')) {
+                            next();
+                        } else {
+                            next({name: 'Profile'});
+                        }
+                    } else {
+                        next();
+                    }
+                } else {
+                    next({name: 'Login'});
+                }
+            });
         } else {
-            next();
+            if (store.getters.getCurrentUser) {
+                next({name: from.name});
+            } else {
+                next();
+            }
         }
-    } else {
-        if (to.name == 'Register') {
-            next({name: 'Login'});
-        } else if (to.name == 'Login') {
-            next();
-        } else if (to.name == 'Home') {
-            next();
-        } else {
-            next({name: 'Login'});
-        }
-    }
+        // if (store.getters.getCurrentUser) {
+        //     if (to.name == 'Login' || to.name == 'Home') {
+        //         next({name: 'Profile'});
+        //     } else if (to.name == 'Register' && store.getters.getCurrentUser.roles.find((role) => role.name == 'ADMIN') == null) {
+        //         next({name: 'Profile'});
+        //     } else {
+        //         next();
+        //     }
+        // } else {
+        //     if (to.name == 'Register') {
+        //         next({name: 'Login'});
+        //     } else if (to.name == 'Login') {
+        //         next();
+        //     } else if (to.name == 'Home') {
+        //         next();
+        //     } else {
+        //         next({name: 'Login'});
+        //     }
+        // }  
+    // });
 })
 
 export default router;

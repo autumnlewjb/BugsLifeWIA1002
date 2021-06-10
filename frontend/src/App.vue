@@ -65,11 +65,24 @@
       </v-container>
         <router-view :class="{'pa-10': $vuetify.breakpoint.mdAndUp, 'pa-3': $vuetify.breakpoint.smAndDown}"
         ></router-view>
+      <Snackbar :snackbar="showSnackbar" :text="getMessage" @close-snackbar="handleCloseSnackbar"/>
+      <v-dialog v-model="getSessionExpired" persistent width="300">
+          <v-card>
+              <v-card-title>Session Expired</v-card-title>
+              <v-card-text>Your session was ended. Please log in again. </v-card-text>
+              <v-card-actions>
+                  <v-btn plain @click="$store.commit('setSessionExpired', false)">
+                      Dismiss
+                  </v-btn>
+              </v-card-actions>
+          </v-card>
+      </v-dialog>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Snackbar from './components/Snackbar';
 export default {
   name: "App",
   data() {
@@ -85,29 +98,35 @@ export default {
       showProfile: false
     };
   },
-  components: {},
-  created() {
-    this.$store.dispatch('fetchCurrentUser');
+  components: {
+    Snackbar
   },
-  destroyed() {
+  created() {
+    console.log("created");
+    // this.$store.dispatch('fetchCurrentUser');
+  },
+  watch: {
+    showSnackbar(val) {
+      if (!val) {
+        this.$store.commit('resetSuccessEdit');
+      }
+    }
   },
   methods: {
     goToProject() {
       this.$router.push({name: 'Projects'}).catch(() => {})
     },
     logOut() {
-      fetch(`/api/logout`).then((res) => {
-        if (res.status == 200) {
-          localStorage.clear()
-          this.$store.dispatch('fetchCurrentUser')
-          this.$router.push({name: 'Home'})
-        } else {
-          console.log("logout failed")
-        }
-      })
+      this.$store.dispatch('logout').then((res) => {
+        console.log(res);
+        this.$router.push({name: 'Home'});
+      });
     },
     goToSearch() {
       this.$router.push({name: 'Search'}).catch(() => {})
+    },
+    handleCloseSnackbar() {
+      this.$store.commit('resetSuccessEdit');
     }
   },
   computed: {
@@ -116,6 +135,15 @@ export default {
     },
     getData() {
       return this.$store.getters.getCurrentUser;
+    },
+    getMessage() {
+      return this.$store.getters.getEditSubject + " edited";
+    },
+    showSnackbar() {
+      return this.$store.getters.getSuccessEdit;
+    },
+    getSessionExpired() {
+      return this.$store.getters.getSessionExpired;
     }
   },
 };

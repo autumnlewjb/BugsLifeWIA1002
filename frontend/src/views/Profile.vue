@@ -298,6 +298,7 @@ export default {
     }
   },
   created() {
+    console.log("created profile");
     this.user = this.$store.getters.getCurrentUser;
     this.projects = this.user.project;
     fetch(`/api/user`)
@@ -369,14 +370,13 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             this.showEditProfile = false;
+            this.$store.commit('setSuccessEdit', 'Profile');
             return res.json();
           }
         })
         .then((data) => {
           if (data) {
-            localStorage.setItem("data", JSON.stringify(data));
             this.$store.dispatch("fetchCurrentUser");
-            this.user = data;
           }
         })
         .catch((e) => console.log(e));
@@ -405,7 +405,7 @@ export default {
   },
   computed: {
     getUser() {
-      return this.$store.getters.getCurrentUser;
+      return this.$store.getters.getCurrentUser ? this.$store.getters.getCurrentUser : {};
     },
   },
 };
