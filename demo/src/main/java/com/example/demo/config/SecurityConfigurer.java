@@ -62,7 +62,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/register").permitAll()
                 //todo change back for production
-                .anyRequest().permitAll().and()
+                .anyRequest().authenticated().and()
                 .logout().logoutUrl("/api/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
