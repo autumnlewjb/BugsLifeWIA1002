@@ -119,11 +119,25 @@ public class DemoApplication implements CommandLineRunner {
                      String description_text = (String) record.get("description_text");
                      String modified_by = (String) record.get("modified_by");
                      String date = (String) record.get("modified_date");
-                     //Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
+                     Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
+                     if (!date.equals(null)) {
+                        Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
+                        pstmt.setTimeStamp(8, modified_date);
+                     }
+                     else {
+                        pstmt.setTimestamp(8, null);
+                     }
                      int priority = Integer.parseInt((String) record.get("priority"));
                      String status = (String) record.get("status");
                      date = (String) record.get("timestamp");
-                     //Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
+                     Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
+                     if (!date.equals(null)) {
+                        Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
+                        pstmt.setTimeStamp(11, timestamp);
+                     }
+                     else {
+                        pstmt.setTimestamp(11, null);
+                     }
                      String title = (String) record.get("title");
                      pstmt.setInt(1, issue_id);
                      pstmt.setInt(2, rev);
@@ -132,10 +146,8 @@ public class DemoApplication implements CommandLineRunner {
                      pstmt.setString(5, created_by);
                      pstmt.setString(6, description_text);
                      pstmt.setString(7, modified_by);
-                     pstmt.setDate(8, null);
                      pstmt.setInt(9, priority);
                      pstmt.setString(10, status);
-                     pstmt.setTimestamp(11, null);
                      pstmt.setString(12, title);
                      pstmt.executeUpdate();
                 }  
@@ -159,18 +171,28 @@ public class DemoApplication implements CommandLineRunner {
                      int rev = Integer.parseInt((String) record.get("rev"));
                      int revtype = Integer.parseInt((String) record.get("revtype"));
                      String date = (String) record.get("modified_date");
-                     //Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
+                     if (!date.equals(null)) {
+                        Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
+                        pstmt.setTimeStamp(4, modified_date);
+                     }
+                     else {
+                        pstmt.setTimestamp(4, null);
+                     }
                      String text = (String) record.get("text");
                      date = (String) record.get("timestamp");
-                     //Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
+                     if (!date.equals(null)) {
+                        Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
+                        pstmt.setTimeStamp(6, timestamp);
+                     }
+                     else {
+                        pstmt.setTimestamp(6, null);
+                     }
                      String user = (String) record.get("user");
                      int issue_id = Integer.parseInt((String) record.get("issue_id"));
                      pstmt.setInt(1, comment_id);
                      pstmt.setInt(2, rev);
                      pstmt.setInt(3, revtype);
-                     pstmt.setDate(4, null);
                      pstmt.setString(5, text);
-                     pstmt.setTimestamp(6, null);
                      pstmt.setString(7, user);
                      pstmt.setInt(8, issue_id);
                      pstmt.executeUpdate();
