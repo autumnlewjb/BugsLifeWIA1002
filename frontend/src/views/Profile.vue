@@ -6,8 +6,8 @@
           <v-row>
             <v-avatar size="200" color="primary" rounded>
               <span class="white--text text-h1">{{
-                user.username[0].toUpperCase()
-              }}</span>
+                  user.username[0].toUpperCase()
+                }}</span>
             </v-avatar>
           </v-row>
           <v-row class="mt-16">
@@ -28,7 +28,7 @@
         </v-container>
         <v-container v-if="isAdmin">
           <v-card outlined>
-            <v-card-title> Administrative Control </v-card-title>
+            <v-card-title> Administrative Control</v-card-title>
             <v-list dense>
               <v-list-item-group>
                 <v-list-item @click="handleExportJson" target="blank">
@@ -60,31 +60,40 @@
           <v-tab-item>
             <v-container fluid v-if="projects.length > 0">
               <v-card
-                v-for="project in projects"
-                :key="project.id"
-                class="pa-5 ma-5"
+                  v-for="project in projects"
+                  :key="project.id"
+                  class="pa-5 ma-5"
               >
-                  <v-card-title>{{ project.name }}</v-card-title>
-                  <v-card-text
+                <v-row>
+                  <v-col>
+                    <v-card-title>{{ project.name }}</v-card-title>
+                  </v-col>
+                  <v-col cols="2">
+                    <p class="mr-4 text-right text-h6 grey--text">#{{ project.projectId }}</p>
+                  </v-col>
+                </v-row>
+                <v-card-text
                     v-html="getDescription(project.description)"
-                  ></v-card-text>
-                  <v-card-text
-                    >Created on
-                    {{
-                      project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
-                    }}</v-card-text
-                  >
-                  <v-card-actions class="d-flex justify-end">
-                    <v-btn
+                ></v-card-text>
+                <v-card-text
+                >Created on
+                  {{
+                    project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
+                  }}
+                </v-card-text
+                >
+                <v-card-actions class="d-flex justify-end">
+                  <v-btn
                       color="primary"
                       :to="{
                         path: 'project',
                         query: { projectId: project.projectId },
                       }"
                       text
-                      >View Project</v-btn
-                    >
-                  </v-card-actions>
+                  >View Project
+                  </v-btn
+                  >
+                </v-card-actions>
               </v-card>
             </v-container>
             <p style="text-align: center" class="text--secondary pa-5" v-else>
@@ -96,27 +105,29 @@
               <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
                 <v-card-title>
                   <span
-                    class="mr-5 status"
-                    :style="`min-width: 1rem; background-color: ${
+                      class="mr-5 status"
+                      :style="`min-width: 1rem; background-color: ${
                       statusColor[issue.status]
                     }`"
-                    >{{ issue.status }}</span
+                  >{{ issue.status }}</span
                   >
                   {{ issue.title }}
                   <v-icon v-for="n in issue.priority" :key="n" color="red"
-                    >mdi-exclamation</v-icon
+                  >mdi-exclamation
+                  </v-icon
                   >
                 </v-card-title>
                 <v-card-text>
                   <v-chip
-                    v-for="(tag, index) in issue.tag"
-                    :key="index"
-                    class="mx-1"
-                    >{{ tag }}</v-chip
+                      v-for="(tag, index) in issue.tag"
+                      :key="index"
+                      class="mx-1"
+                  >{{ tag }}
+                  </v-chip
                   >
                 </v-card-text>
                 <v-card-text
-                  v-html="
+                    v-html="
                     getDescription(
                       issue.descriptionText == null ||
                         issue.descriptionText == ''
@@ -130,15 +141,15 @@
                   Created on
                   {{
                     issue.timestamp == null
-                      ? "(Not Specified)"
-                      : new Date(issue.timestamp).toLocaleString()
+                        ? "(Not Specified)"
+                        : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
                 <v-card-actions>
                   <v-btn
-                    text
-                    color="primary"
-                    :to="{
+                      text
+                      color="primary"
+                      :to="{
                       name: 'Issue',
                       query: {
                         projectId: issue.projectId,
@@ -160,27 +171,29 @@
               <v-card v-for="issue in assigned" :key="issue.id" class="ma-5">
                 <v-card-title>
                   <span
-                    class="mr-5 status"
-                    :style="`min-width: 1rem; background-color: ${
+                      class="mr-5 status"
+                      :style="`min-width: 1rem; background-color: ${
                       statusColor[issue.status]
                     }`"
-                    >{{ issue.status }}</span
+                  >{{ issue.status }}</span
                   >
                   {{ issue.title }}
                   <v-icon v-for="n in issue.priority" :key="n" color="red"
-                    >mdi-exclamation</v-icon
+                  >mdi-exclamation
+                  </v-icon
                   >
                 </v-card-title>
                 <v-card-text>
                   <v-chip
-                    v-for="(tag, index) in issue.tag"
-                    :key="index"
-                    class="mx-1"
-                    >{{ tag }}</v-chip
+                      v-for="(tag, index) in issue.tag"
+                      :key="index"
+                      class="mx-1"
+                  >{{ tag }}
+                  </v-chip
                   >
                 </v-card-text>
                 <v-card-text
-                  v-html="
+                    v-html="
                     getDescription(
                       issue.descriptionText == null ||
                         issue.descriptionText == ''
@@ -194,15 +207,15 @@
                   Created on
                   {{
                     issue.timestamp == null
-                      ? "(Not Specified)"
-                      : new Date(issue.timestamp).toLocaleString()
+                        ? "(Not Specified)"
+                        : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
                 <v-card-actions>
                   <v-btn
-                    text
-                    color="primary"
-                    :to="{
+                      text
+                      color="primary"
+                      :to="{
                       name: 'Issue',
                       query: {
                         projectId: issue.projectId,
@@ -232,22 +245,22 @@
             <v-col cols="12">
               <v-form @submit="handleEdit">
                 <v-text-field
-                  type="email"
-                  name="email"
-                  v-model="email"
-                  outlined
-                  color="teal"
-                  label="Email"
+                    type="email"
+                    name="email"
+                    v-model="email"
+                    outlined
+                    color="teal"
+                    label="Email"
                 />
                 <v-text-field
-                  :type="hide ? 'text' : 'password'"
-                  name="password"
-                  v-model="password"
-                  outlined
-                  color="teal"
-                  :append-icon="hide ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append="hide = !hide"
-                  label="Password"
+                    :type="hide ? 'text' : 'password'"
+                    name="password"
+                    v-model="password"
+                    outlined
+                    color="teal"
+                    :append-icon="hide ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="hide = !hide"
+                    label="Password"
                 />
               </v-form>
             </v-col>
@@ -266,9 +279,9 @@
 
 export default {
   name: "Profile",
-  setup() {},
-  components: {
+  setup() {
   },
+  components: {},
   data() {
     return {
       user: null,
@@ -300,52 +313,52 @@ export default {
     this.user = this.$store.getters.getCurrentUser;
     this.projects = this.user.project;
     fetch(`/api/user`)
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data) {
-          console.log("success");
-          this.user = data;
-          this.projects = data.project;
-        }
-        console.log(this.user);
-      });
-    fetch(`/api/`)
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return [];
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        this.issues = [];
-        this.assigned = [];
-        data.forEach((project) => {
-          const projectIssues = project.issue.filter(
-            (issue) => issue.createdBy == this.user.username
-          );
-          const assignedIssues = project.issue.filter(
-            (issue) => issue.assignee == this.user.username
-          );
-          projectIssues.forEach(
-            (issue) => (issue.projectId = project.projectId)
-          );
-          assignedIssues.forEach(
-            (issue) => (issue.projectId = project.projectId)
-          );
-          this.issues = [...this.issues, ...projectIssues];
-          this.assigned = [...this.assigned, ...assignedIssues];
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data) {
+            console.log("success");
+            this.user = data;
+            this.projects = data.project;
+          }
+          console.log(this.user);
         });
-      });
+    fetch(`/api/`)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return [];
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          this.issues = [];
+          this.assigned = [];
+          data.forEach((project) => {
+            const projectIssues = project.issue.filter(
+                (issue) => issue.createdBy == this.user.username
+            );
+            const assignedIssues = project.issue.filter(
+                (issue) => issue.assignee == this.user.username
+            );
+            projectIssues.forEach(
+                (issue) => (issue.projectId = project.projectId)
+            );
+            assignedIssues.forEach(
+                (issue) => (issue.projectId = project.projectId)
+            );
+            this.issues = [...this.issues, ...projectIssues];
+            this.assigned = [...this.assigned, ...assignedIssues];
+          });
+        });
     this.isAdmin =
-      this.user?.roles.find((role) => role.name == "ADMIN") != null;
+        this.user?.roles.find((role) => role.name == "ADMIN") != null;
     this.issues.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
     this.assigned.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
   },
@@ -367,40 +380,40 @@ export default {
           password: this.password
         }),
       })
-        .then((res) => {
-          if (res.status == 200) {
-            this.showEditProfile = false;
-            this.$store.commit('setSuccessEdit', 'Profile');
-            return res.json();
-          }
-        })
-        .then((data) => {
-          if (data) {
-            this.$store.dispatch("fetchCurrentUser");
-          }
-        })
-        .catch((e) => console.log(e));
+          .then((res) => {
+            if (res.status == 200) {
+              this.showEditProfile = false;
+              this.$store.commit('setSuccessEdit', 'Profile');
+              return res.json();
+            }
+          })
+          .then((data) => {
+            if (data) {
+              this.$store.dispatch("fetchCurrentUser");
+            }
+          })
+          .catch((e) => console.log(e));
     },
     handleExportJson() {
-      fetch(`/api/JSON`) 
-      .then(res => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then(data => {
-        if (data) {
-          var dataStr = "data:text/json; charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-          var downloadElement = document.createElement('a');
-          downloadElement.setAttribute('href', dataStr);
-          downloadElement.setAttribute('download', 'export.json');
-          document.body.appendChild(downloadElement);
-          downloadElement.click();
-          downloadElement.remove();
-        }
-      })
+      fetch(`/api/JSON`)
+          .then(res => {
+            if (res.status == 200) {
+              return res.json();
+            } else {
+              return null;
+            }
+          })
+          .then(data => {
+            if (data) {
+              var dataStr = "data:text/json; charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+              var downloadElement = document.createElement('a');
+              downloadElement.setAttribute('href', dataStr);
+              downloadElement.setAttribute('download', 'export.json');
+              document.body.appendChild(downloadElement);
+              downloadElement.click();
+              downloadElement.remove();
+            }
+          })
     }
   },
   computed: {

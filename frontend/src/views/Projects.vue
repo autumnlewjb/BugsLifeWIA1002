@@ -49,27 +49,34 @@
               :key="project.id"
               class="pa-5 ma-5"
           >
-              <v-card-title>{{ project.name }}</v-card-title>
-              <v-card-text v-html="getDescription(project.description)"></v-card-text>
-              <v-card-text
-              >Created on
-                {{
-                  project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
-                }}
-              </v-card-text
-              >
-              <v-card-actions class="d-flex justify-end">
-                <v-btn
-                    color="primary"
-                    :to="{
+            <v-row>
+              <v-col>
+                <v-card-title>{{ project.name }}</v-card-title>
+              </v-col>
+              <v-col cols="2">
+                <p class="mr-4 text-right text-h6 grey--text">#{{ project.projectId }}</p>
+              </v-col>
+            </v-row>
+            <v-card-text v-html="getDescription(project.description)"></v-card-text>
+            <v-card-text
+            >Created on
+              {{
+                project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
+              }}
+            </v-card-text
+            >
+            <v-card-actions class="d-flex justify-end">
+              <v-btn
+                  color="primary"
+                  :to="{
                     path: 'project',
                     query: { projectId: project.projectId },
                   }"
-                    text
-                >View Project
-                </v-btn
-                >
-              </v-card-actions>
+                  text
+              >View Project
+              </v-btn
+              >
+            </v-card-actions>
           </v-card>
         </v-flex>
       </v-layout>
