@@ -306,61 +306,71 @@ export default {
     user(val) {
       this.email = val.email;
       this.password = val.password;
+    },
+    projects(val) {
+      console.log(val);
     }
   },
-  created() {
+  async created() {
     console.log("created profile");
     this.user = this.$store.getters.getCurrentUser;
     this.projects = this.user.project;
-    fetch(`/api/user`)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json();
-          } else {
-            return null;
-          }
+    await fetch(`/api/user`)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data) {
+          console.log("success");
+          this.user = data;
+          this.projects = data.project;
+        }
+        console.log(this.user);
+      });
+    await fetch(`/api/`)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return [];
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        this.issues = [];
+        this.assigned = [];
+        data.forEach((project) => {
+          const projectIssues = project.issue.filter(
+            (issue) => issue.createdBy == this.user.username
+          );
+          const assignedIssues = project.issue.filter(
+            (issue) => issue.assignee == this.user.username
+          );
+          projectIssues.forEach(
+            (issue) => (issue.projectId = project.projectId)
+          );
+          assignedIssues.forEach(
+            (issue) => (issue.projectId = project.projectId)
+          );
+          this.issues = [...this.issues, ...projectIssues];
+          this.assigned = [...this.assigned, ...assignedIssues];
         })
-        .then((data) => {
-          if (data) {
-            console.log("success");
-            this.user = data;
-            this.projects = data.project;
-          }
-          console.log(this.user);
-        });
-    fetch(`/api/`)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json();
-          } else {
-            return [];
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          this.issues = [];
-          this.assigned = [];
-          data.forEach((project) => {
-            const projectIssues = project.issue.filter(
-                (issue) => issue.createdBy == this.user.username
-            );
-            const assignedIssues = project.issue.filter(
-                (issue) => issue.assignee == this.user.username
-            );
-            projectIssues.forEach(
-                (issue) => (issue.projectId = project.projectId)
-            );
-            assignedIssues.forEach(
-                (issue) => (issue.projectId = project.projectId)
-            );
-            this.issues = [...this.issues, ...projectIssues];
-            this.assigned = [...this.assigned, ...assignedIssues];
-          });
-        });
+      });
     this.isAdmin =
-        this.user?.roles.find((role) => role.name == "ADMIN") != null;
-    this.issues.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
-    this.assigned.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp));
+      this.user?.roles.find((role) => role.name == "ADMIN") != null;
+    console.log("sorted");
+    this.projects.sort((a, b) => {
+      console.log(new Date(b.date).getTime() - new Date(a.date).getTime());
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+    console.log(this.projects);
+    this.issues.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp).getTime());
+    this.assigned.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp).getTime());
+    console.log("done");
   },
   methods: {
     getDescription(str) {
