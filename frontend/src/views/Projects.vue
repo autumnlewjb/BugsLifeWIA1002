@@ -49,7 +49,6 @@
               :key="project.id"
               class="pa-5 ma-5"
           >
-            <v-layout row align-center>
               <v-card-title>{{ project.name }}</v-card-title>
               <v-card-text v-html="getDescription(project.description)"></v-card-text>
               <v-card-text
@@ -71,7 +70,6 @@
                 </v-btn
                 >
               </v-card-actions>
-            </v-layout>
           </v-card>
         </v-flex>
       </v-layout>
