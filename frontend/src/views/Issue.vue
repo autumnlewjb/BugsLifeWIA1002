@@ -316,10 +316,10 @@ export default {
                 this.items = ["Reopened"];
                 break;
               case "In Progress":
-                this.items = ["Closed", "Resolved"];
+                this.items = ["Closed", "Resolved", "Open"];
                 break;
               case "Reopened":
-                this.items = ["Resolved"];
+                this.items = ["Resolved", "In Progress", "Closed"];
                 break;
             }
           })
