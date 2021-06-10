@@ -200,8 +200,10 @@ public class UserController {
                         continue;
                     }
                     String value = projectSelect.getString(i);
-                    if(value.equals("timestamp")) {
-                        value=toUnix(value);
+                    if(key.equals("date")) {
+                        String refer=toUnix(value);
+                        System.out.println("refer");
+                        value=refer;
                     }
                     obj.put(key, value);
                 }
@@ -225,8 +227,10 @@ public class UserController {
                         continue;
                     }
                     String value = issueSelect.getString(i);
-                    if(value.equals("timestamp")) {
-                        value=toUnix(value);
+                    if(key.equals("timestamp")) {
+                        String refer=toUnix(value);
+                        System.out.println("refer");
+                        value=refer;
                     }
                     obj.put(key, value);
                 }
@@ -241,8 +245,10 @@ public class UserController {
                         continue;
                     }
                     String value = commentSelect.getString(i);
-                    if(value.equals("timestamp")) {
-                        value=toUnix(value);
+                    if(key.equals("timestamp")) {
+                        String refer=toUnix(value);
+                        System.out.println(refer);
+                        value=refer;
                     }
                     obj.put(key, value);
                 }
@@ -369,6 +375,7 @@ public class UserController {
                 }
 
                 JSONObject header = new JSONObject();
+                obj.remove("user_id");
                 if (Integer.parseInt(roleSelect.getString(2)) == 1) {
                     header.put("role_id", 1);
                     header.put("name", "User");
@@ -377,12 +384,10 @@ public class UserController {
                     header.put("name", "Admin");
                 }
                 obj.put("project", projects);
-                obj.put("roles", header);
-                obj.remove("user_id");
-                JSONListWithRole.add(obj);
-                JSONObject temp = (JSONObject) JSONListWithRole.get(j).clone();
-                temp.remove("roles");
-                JSONListWithoutRole.add(temp);
+                JSONListWithoutRole.add(obj);
+                JSONObject refer=(JSONObject) obj.clone();
+                refer.put("roles", header);
+                JSONListWithRole.add(refer);
                 j++;
             }
             connection.close();
@@ -419,13 +424,13 @@ public class UserController {
         }
         return null;
     }
-    public static String toUnix(String timestamp) {
+    public String toUnix(String timestamp) {
         if(timestamp == null) return null;
         try {
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-          Date dt = (Date) sdf.parse(timestamp);
+          SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+          java.util.Date dt = (java.util.Date) sdf.parse(timestamp);
           long epoch = dt.getTime();
-          return String.valueOf((int)(epoch/1000));
+          return String.valueOf(epoch);
         } catch(ParseException e) {
            return null;
         }
