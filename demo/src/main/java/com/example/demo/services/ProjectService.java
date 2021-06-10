@@ -81,6 +81,7 @@ public class ProjectService {
         return projectRepository.findProjectById(project_id);
     }
 
+    @PreAuthorize("#oldProject.user.username == authentication.name")
     public void updateProject(Project oldProject, Project updatedProject) {
         updatedProject.setProjectId(oldProject.getProjectId());
         //find all issues from old project
@@ -100,7 +101,7 @@ public class ProjectService {
         projectRepository.save(updatedProject);
     }
 
-    @PreAuthorize("#project.user.username == authentication.name or hasAuthority('ADMIN')")
+    @PreAuthorize("#project.user.username == authentication.name")
     public void deleteProject(Project project) {
         project.getUser().getProject().remove(project);
         project.removeUser();
