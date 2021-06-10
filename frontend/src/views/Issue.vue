@@ -203,14 +203,16 @@ export default {
         body: JSON.stringify(this.issue),
       }).then((res) => {
         this.fetchIssue();
-        this.$refs.combobox.blur();
-        this.statusLoading=false;
-        this.toggleSnackbar("Update successful")
         if (res.status == 403) {
           this.forbiddenDialog = true;
         } else if (res.status != 200) {
-          alert("Issue not updated!");
+          this.toggleSnackbar("Update unsuccessful")
+        } else if(res.status === 200){
+          this.toggleSnackbar("Update successful")
         }
+      }).finally(() => {
+        this.$refs.combobox.blur();
+        this.statusLoading = false;
       });
     },
     showChangelog(val) {
