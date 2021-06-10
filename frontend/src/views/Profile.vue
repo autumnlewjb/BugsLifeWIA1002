@@ -72,7 +72,7 @@
                   <v-card-text
                     >Created on
                     {{
-                      project.date == null ? "(Not Specified)" : project.date
+                      project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
                     }}</v-card-text
                   >
                   <v-card-actions class="d-flex justify-end">
@@ -133,7 +133,7 @@
                   {{
                     issue.timestamp == null
                       ? "(Not Specified)"
-                      : issue.timestamp
+                      : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
                 <v-card-actions>
@@ -197,7 +197,7 @@
                   {{
                     issue.timestamp == null
                       ? "(Not Specified)"
-                      : issue.timestamp
+                      : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
                 <v-card-actions>

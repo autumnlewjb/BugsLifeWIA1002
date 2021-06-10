@@ -60,7 +60,7 @@ export default {
     async onSubmit(action) {
       this.loading = true;
       if (action == 'add') {
-        await fetch(`/api/`, {
+        await fetch(`/api/${this.$store.getters.getCurrentUser.user_id}/createProject`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
