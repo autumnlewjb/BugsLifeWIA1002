@@ -395,7 +395,7 @@ export default {
           var dataStr = "data:text/json; charset=utf-8," + encodeURIComponent(JSON.stringify(data));
           var downloadElement = document.createElement('a');
           downloadElement.setAttribute('href', dataStr);
-          downloadElement.setAttribute('download', 'data.json');
+          downloadElement.setAttribute('download', 'export.json');
           document.body.appendChild(downloadElement);
           downloadElement.click();
           downloadElement.remove();

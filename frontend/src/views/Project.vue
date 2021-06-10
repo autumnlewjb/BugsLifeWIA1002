@@ -52,11 +52,15 @@
         <v-tab-item>
           <v-container>
             <v-container class="d-flex justify-end">
+              <v-btn @click="refreshKey += 1" plain>
+                <v-icon>mdi-reload</v-icon>
+                 Refresh Chart
+              </v-btn>
               <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon>
                 <v-icon>mdi-open-in-new</v-icon>
               </v-btn>
             </v-container>
-            <Charts :projectId="projectId"/>
+            <Charts :projectId="projectId" :key="refreshKey"/>
           </v-container>
         </v-tab-item>
         <v-tab-item>
@@ -105,7 +109,8 @@ export default {
       forbiddenDialog: false,
       snackbar: false,
       message: null,
-      rank: []
+      rank: [],
+      refreshKey: 0
     };
   },
   setup() {
