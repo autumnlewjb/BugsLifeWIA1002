@@ -58,7 +58,7 @@
 import TipTap from '../components/TipTap'
 
 export default {
-  name: "ProjectForm",
+  name: "IssueForm",
   setup() {
   },
   components: {
@@ -176,7 +176,7 @@ export default {
   },
   props: {
     data: Object,
-    projectId: String,
+    projectId: Number,
     issue: Object
   }
 };

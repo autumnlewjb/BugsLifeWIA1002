@@ -57,7 +57,7 @@
             <v-list-item
               v-for="(item, index) in getItems"
               :key="index"
-              @click="handleClick(item.id, item.route)"
+              :to="item.route"
               rounded
             >
               <v-list-item-content>
@@ -208,6 +208,7 @@ export default {
           }
         })
         .then((data) => {
+          console.log(data);
           const { content, totalPages, number } = data;
           console.log(data);
           this.page = number ? number + 1 : 1;
@@ -220,16 +221,27 @@ export default {
   computed: {
     getItems() {
       this.items.map((item) => {
-        if (item.projectId) {
-          item.id = item.projectId;
-          item.route = "Project";
-          item.type = "project";
-        } else if (item.issueId) {
+        if (item.issueId) {
           item.id = item.issueId;
-          item.route = "Issue";
+          item.route = {
+            name: 'Issue',
+            query: {
+              projectId: item.projectId,
+              issueId: item.issueId
+            }
+          };
           item.type = "issue";
           item.name = item.title;
           item.description = item.descriptionText;
+        } else if (item.projectId) {
+          item.id = item.projectId;
+          item.route = {
+            name: "Project",
+            query: {
+              projectId: item.projectId
+            }
+          };
+          item.type = "project";
         } else if (item.user_id) {
           item.type = "user";
           item.name = item.username;

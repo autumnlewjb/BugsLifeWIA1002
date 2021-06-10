@@ -183,7 +183,7 @@ export default {
     };
   },
   created() {
-    this.projectId = this.$route.query.projectId;
+    this.projectId = parseInt(this.$route.query.projectId);
     this.issueId = parseInt(this.$route.query.issueId);
     this.fetchIssue();
   },
