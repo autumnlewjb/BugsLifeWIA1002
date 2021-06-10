@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,7 +193,16 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns2; i++) {
                     String key = columnNames2.get(i - 1);
+                    if (key.equals("modified_date")) {
+                        continue;
+                    }
+                    if (key.equals("modified_by")) {
+                        continue;
+                    }
                     String value = projectSelect.getString(i);
+                    if(value.equals("timestamp")) {
+                        value=toUnix(value);
+                    }
                     obj.put(key, value);
                 }
                 projectList.add(obj);
@@ -214,6 +225,9 @@ public class UserController {
                         continue;
                     }
                     String value = issueSelect.getString(i);
+                    if(value.equals("timestamp")) {
+                        value=toUnix(value);
+                    }
                     obj.put(key, value);
                 }
                 issueList.add(obj);
@@ -227,6 +241,9 @@ public class UserController {
                         continue;
                     }
                     String value = commentSelect.getString(i);
+                    if(value.equals("timestamp")) {
+                        value=toUnix(value);
+                    }
                     obj.put(key, value);
                 }
                 commentList.add(obj);
@@ -401,5 +418,16 @@ public class UserController {
             System.out.println("Problem with database");
         }
         return null;
+    }
+    public static String toUnix(String timestamp) {
+        if(timestamp == null) return null;
+        try {
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+          Date dt = (Date) sdf.parse(timestamp);
+          long epoch = dt.getTime();
+          return String.valueOf((int)(epoch/1000));
+        } catch(ParseException e) {
+           return null;
+        }
     }
 }
