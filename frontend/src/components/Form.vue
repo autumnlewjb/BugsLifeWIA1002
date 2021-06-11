@@ -8,10 +8,11 @@
         <v-text-field :type="hide ? 'text' : 'password'" name="password" v-model="password" outlined
                       color="teal" :append-icon="hide ? 'mdi-eye' : 'mdi-eye-off'" @click:append="hide = !hide"
                       label="Password"/>
+        <v-select v-if="register" :items="roles" label="Role" v-model="role" outlined/>
       </v-form>
     </v-col>
     <v-col cols="8" class="d-flex child-flex justify-center">
-      <v-btn type="submit" color="teal" dark @click="onSubmit">{{ formPurpose }}</v-btn>
+      <v-btn type="submit" color="teal" dark @click="onSubmit" :loading="loading">{{ formPurpose }}</v-btn>
     </v-col>
   </v-row>
 </template>
@@ -24,12 +25,16 @@ export default {
       username: '',
       password: '',
       email: '',
-      hide: false
+      role: '',
+      hide: false,
+      roles: ['User','Admin']
     }
   },
   props: {
     collectEmail: Boolean,
-    formPurpose: String
+    formPurpose: String,
+    loading: Boolean,
+    register: Boolean
   },
   setup() {
   },
@@ -39,12 +44,14 @@ export default {
       const user = {
         username: this.username,
         password: this.password,
-        email: this.email
+        email: this.email,
+        role: this.role
       }
 
       this.username = '';
       this.password = '';
       this.email = '';
+      this.role = '';
 
       this.$emit('form-submit', user)
     }

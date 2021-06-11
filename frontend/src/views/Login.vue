@@ -24,7 +24,8 @@
           <h1>Welcome back!</h1>
         </v-col>
         <v-col cols="12" class="d-flex justify-center">
-          <Form @form-submit="onSubmit" formPurpose="Login" :collectEmail="false"></Form>
+          <Form @form-submit="onSubmit" formPurpose="Login" :collectEmail="false" :loading="loading"
+                :register="false"></Form>
         </v-col>
       </v-col>
     </transition>
@@ -57,7 +58,8 @@ export default {
   data() {
     return {
       loginFailed: false,
-      fadeTransition: false
+      fadeTransition: false,
+      loading: false
     };
   },
   created() {
@@ -67,6 +69,7 @@ export default {
   },
   methods: {
     async onSubmit(user) {
+      this.loading = true;
       fetch(`/api/login`, {
         method: 'POST',
         headers: {
@@ -91,7 +94,8 @@ export default {
               this.$router.push({name: 'Profile'})
             }
           })
-          .catch((e) => console.log(e));
+          .catch((e) => console.log(e))
+          .finally(() => this.loading = false);
     },
   },
   mounted() {
