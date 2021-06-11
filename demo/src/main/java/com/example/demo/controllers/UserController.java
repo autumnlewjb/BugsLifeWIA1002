@@ -202,7 +202,6 @@ public class UserController {
                     String value = projectSelect.getString(i);
                     if(key.equals("date")) {
                         String refer=toUnix(value);
-                        System.out.println("refer");
                         value=refer;
                     }
                     obj.put(key, value);
@@ -229,7 +228,6 @@ public class UserController {
                     String value = issueSelect.getString(i);
                     if(key.equals("timestamp")) {
                         String refer=toUnix(value);
-                        System.out.println("refer");
                         value=refer;
                     }
                     obj.put(key, value);
@@ -247,7 +245,6 @@ public class UserController {
                     String value = commentSelect.getString(i);
                     if(key.equals("timestamp")) {
                         String refer=toUnix(value);
-                        System.out.println(refer);
                         value=refer;
                     }
                     obj.put(key, value);
