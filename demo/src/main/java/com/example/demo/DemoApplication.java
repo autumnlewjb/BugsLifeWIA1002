@@ -88,6 +88,7 @@ public class DemoApplication implements CommandLineRunner {
                     user.getRoles().add(roleService.searchRoleByName("ADMIN"));
                 else
                     user.getRoles().add(roleService.searchRoleByName("USER"));
+            }
             userService.createListOfUsers(users);
             System.out.println("Users Saved!");
         } catch (IOException e) {
