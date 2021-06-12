@@ -3,7 +3,7 @@
         <h3 class="my-5">Changelog</h3>
         <v-container class="changelog">
             <span v-for="(change, index) in changes" :key="index" class="py-5">
-                <p class="font-weight-medium">[{{ new Date(change.date)}}]</p>
+                <p class="font-weight-bold">[{{ new Date(change.date)}}]</p>
                 <span v-for="(statement, index) in change.statements" :key="index">
                     <p v-if="statement.html">
                         <span>{{change.modifier}} </span>

@@ -31,14 +31,14 @@
         </v-container>
         <v-container>
           <v-card outlined class="pa-5">
-            <span
+            <div
                 class="font-weight-normal"
                 v-html="
                 getIssue.descriptionText == null
                   ? 'Not specified'
                   : getIssue.descriptionText
               "
-            >Description</span
+            >Description</div
             >
             <br/>
           </v-card>

@@ -5,7 +5,7 @@
     </v-container>
     <v-textarea solo v-model="markdown" v-show="!preview" :placeholder="placeholder" autofocus></v-textarea>
     <v-container v-show="preview">
-        <p v-html="html"></p>
+        <div v-html="html"></div>
     </v-container>
 </div>
 </template>
@@ -19,7 +19,7 @@ export default {
         return {
             markdown: '',
             html: '',
-            converter: new showdown.Converter(),
+            converter: new showdown.Converter({strikethrough: true, emoji: true}),
             preview: false
         }
     },
