@@ -77,11 +77,11 @@
       </v-layout>
     </v-container>
     <v-container>
-      <v-layout row justify-center>
-        <v-flex xs12 md12 v-if="issues != null && issues.length > 0">
-          <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
+      <v-layout row >
+        <v-flex xs12 md12 v-if="getIssues != null && getIssues.length > 0">
+          <v-card v-for="issue in getIssues" :key="issue.id" class="pa-5 ma-5">
             <v-card-title>
-              <span class="mr-5 status" style="min-width: 1rem">{{issue.status}}</span>
+              <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{issue.status}}</span>
               {{ issue.title }}
               <v-icon v-for="n in issue.priority" :key="n" color="red"
                 >mdi-exclamation</v-icon
@@ -111,10 +111,10 @@
             <v-card-text>
               Created on 
               {{
-                issue.timestamp == null ? "(Not Specified)" : issue.timestamp
+                issue.timestamp == null ? "(Not Specified)" : new Date(issue.timestamp).toLocaleString()
               }}
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="d-flex justify-end">
               <v-btn
                 text
                 color="primary"
@@ -136,10 +136,12 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <IssueForm
         @toggleDialog="toggleDialog"
+        @show-snackbar="toggleSnackbar"
         :data="data"
         :projectId="projectId"
       />
     </v-dialog>
+    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
   </div>
 </template>
 
@@ -149,6 +151,7 @@ import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
 import SortForm from "../components/SortForm";
 import FilterForm from "../components/FilterForm";
+import Snackbar from "./Snackbar";
 
 export default {
   setup() {},
@@ -197,6 +200,15 @@ export default {
         },
       },
       multipleFilterAndSort: true,
+      statusColor: {
+        'Open': '#7eb67e',
+        'Closed': '#afabab',
+        'Resolved': '#f8f899',
+        'In Progress': '#93dcdf',
+        'Reopened': '#dfa44d'
+      },
+      snackbar: false,
+      message: null
     };
   },
   props: {
@@ -212,6 +224,7 @@ export default {
     SingleSort,
     SortForm,
     FilterForm,
+    Snackbar
   },
   watch: {
     sortData(val) {
@@ -317,10 +330,21 @@ export default {
       var tmp = document.createElement("DIV");
       tmp.innerHTML = str;
       return tmp.textContent || tmp.innerText || "";
-    }
+    },
+    toggleSnackbar(text) {
+      this.snackbar = true;
+      this.message = text;
+    },
+    closeSnackbar() {
+      this.snackbar = false;
+      this.message = null;
+    },
   },
   computed: {
     getIssues() {
+      this.issues?.forEach(obj => {
+        obj.status = obj.status == 'Reopened' ? "Open" : obj.status;
+      });
       return this.issues;
     },
     getSortButtonColor() {

@@ -7,16 +7,16 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.specification.IssueSpecification;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.*;
-import javax.persistence.EntityManager;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
 
 @Service
 @Transactional
@@ -85,6 +85,7 @@ public class IssueService {
         return issueRepository.findIssueById(issue_id);
     }
 
+    @PreAuthorize("#issue.createdBy == authentication.name  or #issue.assignee == authentication.name")
     public void updateIssue(Integer project_id, Issue issue, Issue updatedIssue) {
         updatedIssue.setIssueId(issue.getIssueId());
         List<Comment> allComments = commentRepository.findByIssue(issue);
@@ -98,7 +99,7 @@ public class IssueService {
         issueRepository.save(updatedIssue);
     }
 
-    @PreAuthorize("#issue.createdBy == authentication.name or hasAuthority('ADMIN')")
+    @PreAuthorize("#issue.createdBy == authentication.name or #issue.assignee == authentication.name")
     public void deleteIssue(Project project, Issue issue) {
         project.getIssue().remove(issue);
         issue.setProject(null);
@@ -108,25 +109,24 @@ public class IssueService {
     public List<Issue> findAll() {
         return issueRepository.findAll();
     }
-    
+
     public List<?> getHistory(Integer issue_id) {
-        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
-        return issueHistory;
-    }
-    
-    public List<?> getOwnHistory(String username) {
-        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.property("modifiedBy").eq(username)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
-        return issueHistory;
-    }
-    
-    public List<?> getAllHistory() {
-        List<?> issueHistory=AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        List<?> issueHistory = AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.id().eq(issue_id)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
         return issueHistory;
     }
 
-    public HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm)
-    {
-        List<Map.Entry<String, Integer> > list = new LinkedList<>(hm.entrySet());
+    public List<?> getOwnHistory(String username) {
+        List<?> issueHistory = AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).add(AuditEntity.property("modifiedBy").eq(username)).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+
+    public List<?> getAllHistory() {
+        List<?> issueHistory = AuditReaderFactory.get(entityManager).createQuery().forRevisionsOfEntity(Issue.class, true, true).addOrder(AuditEntity.revisionNumber().desc()).getResultList();
+        return issueHistory;
+    }
+
+    public HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(hm.entrySet());
 
         list.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
 
@@ -140,8 +140,8 @@ public class IssueService {
     public List<Issue> findIssuesByCreatedBy(String createdBy) {
         List<Issue> allIssues = issueRepository.findAll();
         List<Issue> issuesCreatedBy = new ArrayList<>();
-        for (Issue issue : allIssues){
-            if (issue.getCreatedBy().equals(createdBy)){
+        for (Issue issue : allIssues) {
+            if (issue.getCreatedBy().equals(createdBy)) {
                 issuesCreatedBy.add(issue);
             }
         }
@@ -151,8 +151,8 @@ public class IssueService {
     public List<Issue> findIssuesByStatus(Integer project_id, String status) {
         List<Issue> allIssues = issueRepository.findByProject(projectRepository.findProjectById(project_id));
         List<Issue> issueList = new ArrayList<>();
-        for (Issue issue : allIssues){
-            if (issue.getStatus().equalsIgnoreCase(status)){
+        for (Issue issue : allIssues) {
+            if (issue.getStatus().equalsIgnoreCase(status)) {
                 issueList.add(issue);
             }
         }

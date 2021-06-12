@@ -6,28 +6,62 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     currentUser: JSON.parse(localStorage.getItem('data')),
-    username: '',
-    userId: '',
-    email: '',
+    successEdit: false,
+    editSubject: '',
+    sessionExpired: false
   },
   mutations: {
     setCurrentUser(state, payload) {
       state.currentUser = payload;
-      if (payload) {
-        state.username = payload.username;
-        state.userId = payload.user_id;
-        state.email = payload.email;
-      }
+    },
+    clearUserState(state) {
+      state.currentUser = null;
+    },
+    setSuccessEdit(state, payload) {
+      state.successEdit = true;
+      state.editSubject = payload;
+    },
+    resetSuccessEdit(state) {
+      state.successEdit = false;
+    },
+    setSessionExpired(state, payload) {
+      state.sessionExpired = payload;
     }
   },
   actions: {
-    async fetchCurrentUser(state) {
-      if (localStorage.data) {
-        const currentUser = JSON.parse(localStorage.data);
-        state.commit('setCurrentUser', currentUser)
-      } else {
-        state.commit('setCurrentUser', null)
-      }
+     fetchCurrentUser(state) {
+      return new Promise((resolve, reject) => {
+        fetch(`/api/user`)
+        .then(res => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then(data => {
+          state.commit('setCurrentUser', data);
+          console.log(state.currentUser)
+          localStorage.setItem('data', JSON.stringify(data));
+          resolve(data);
+        })
+        .catch(e => reject(e))
+      });
+    },
+    logout(state) {
+      return new Promise((resolve, reject) => {
+        fetch(`/api/logout`).then((res) => {
+          console.log(res.status == 200);
+          if (res.status == 200) {
+            localStorage.removeItem('data');
+            state.commit('clearUserState');
+            resolve(res);
+          } else {
+            console.log("logout failed");
+          }
+        })
+        .catch(e => reject(e));
+      });
     }
   },
   modules: {
@@ -36,17 +70,14 @@ const store = new Vuex.Store({
     getCurrentUser(state) {
       return state.currentUser;
     },
-    getUsername(state) {
-      return state.username;
+    getEditSubject(state) {
+      return state.editSubject;
     },
-    getUserId(state) {
-      return state.userId;
+    getSuccessEdit(state) {
+      return state.successEdit;
     },
-    getEmail(state) {
-      return state.email;
-    },
-    getProjects(state) {
-      return state.projects;
+    getSessionExpired(state) {
+      return state.sessionExpired;
     }
   }
 });

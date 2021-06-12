@@ -1,30 +1,20 @@
 package com.example.demo.services;
 
-import java.util.List;
-
 import com.example.demo.models.Comment;
 import com.example.demo.models.Issue;
 import com.example.demo.models.React;
 import com.example.demo.repository.CommentRepository;
-import javax.transaction.Transactional;
-
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ReactRepository;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import javax.persistence.EntityManager;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.criteria.AuditCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -35,7 +25,7 @@ public class CommentService {
     
     private final CommentRepository commentRepository;
 
-    private  final IssueRepository issueRepository;
+    private final IssueRepository issueRepository;
 
     private final ReactRepository reactRepository;
 

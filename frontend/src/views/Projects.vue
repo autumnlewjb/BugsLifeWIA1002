@@ -19,13 +19,14 @@
         </v-flex>
         <v-flex xs12 md2>
           <v-btn
-            elevation="3"
-            rounded
-            color="teal"
-            class="white--text"
-            @click="dialog = true"
-            align="center" justify="center"
-            >+ Add Project</v-btn
+              elevation="3"
+              rounded
+              color="teal"
+              class="white--text"
+              @click="dialog = true"
+              align="center" justify="center"
+          >+ Add Project
+          </v-btn
           >
         </v-flex>
       </v-layout>
@@ -44,40 +45,49 @@
         </v-flex>
         <v-flex xs12 md12 v-else>
           <v-card
-            v-for="project in getProjects"
-            :key="project.id"
-            class="pa-5 ma-5"
+              v-for="project in getProjects"
+              :key="project.id"
+              class="pa-5 ma-5"
           >
-            <v-layout row align-center>
-              <v-card-title>{{ project.name }}</v-card-title>
-              <v-card-text v-html="getDescription(project.description)"></v-card-text>
-              <v-card-text
-                >Created on
-                {{
-                  project.date == null ? "(Not Specified)" : project.date
-                }}</v-card-text
-              >
-              <v-card-actions class="d-flex justify-end">
-                <v-btn
+            <v-row>
+              <v-col>
+                <v-card-title>{{ project.name }}</v-card-title>
+              </v-col>
+              <v-col cols="2">
+                <p class="mr-4 text-right text-h6 grey--text">#{{ project.projectId }}</p>
+              </v-col>
+            </v-row>
+            <v-card-text v-html="getDescription(project.description)"></v-card-text>
+            <v-card-text
+            >Created on
+              {{
+                project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
+              }}
+            </v-card-text
+            >
+            <v-card-actions class="d-flex justify-end">
+              <v-btn
                   color="primary"
                   :to="{
                     path: 'project',
                     query: { projectId: project.projectId },
                   }"
                   text
-                  >View Project</v-btn
-                >
-              </v-card-actions>
-            </v-layout>
+              >View Project
+              </v-btn
+              >
+            </v-card-actions>
           </v-card>
         </v-flex>
       </v-layout>
     </v-container>
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <ProjectForm @toggleDialog="toggleDialog" />
+        <ProjectForm @toggleDialog="toggleDialog"
+                     @show-snackbar="toggleSnackbar"/>
       </v-dialog>
     </v-row>
+    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
   </v-container>
 </template>
 
@@ -86,6 +96,7 @@ import ProjectForm from "../components/ProjectForm";
 import SingleFilter from "../components/SingleFilter";
 import SingleSort from "../components/SingleSort";
 import SortForm from "../components/SortForm";
+import Snackbar from "../components/Snackbar";
 
 export default {
   data() {
@@ -118,7 +129,9 @@ export default {
       ],
       tags: [],
       status: [],
-      multipleSort: true
+      multipleSort: true,
+      snackbar: false,
+      message: null
     };
   },
   created() {
@@ -128,8 +141,10 @@ export default {
     ProjectForm,
     SingleFilter,
     SingleSort,
-    SortForm
-  },
+    SortForm,
+    Snackbar
+  }
+  ,
   watch: {
     sortData(val) {
       var url;
@@ -151,17 +166,17 @@ export default {
     },
     fetchProjects(url) {
       fetch(url)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json();
-          } else {
-            return [];
-          }
-        })
-        .then((data) => {
-          this.projects = data;
-        })
-        .catch((e) => console.log(e));
+          .then((res) => {
+            if (res.status == 200) {
+              return res.json();
+            } else {
+              return [];
+            }
+          })
+          .then((data) => {
+            this.projects = data;
+          })
+          .catch((e) => console.log(e));
     },
     handleClick(item) {
       if (item == 'sort') {
@@ -176,7 +191,15 @@ export default {
       var tmp = document.createElement("DIV");
       tmp.innerHTML = str;
       return tmp.textContent || tmp.innerText || "";
-    }
+    },
+    toggleSnackbar(text) {
+      this.snackbar = true;
+      this.message = text;
+    },
+    closeSnackbar() {
+      this.snackbar = false;
+      this.message = null;
+    },
   },
   computed: {
     getProjects() {
@@ -193,8 +216,8 @@ export default {
     },
     getFilterButtonColor() {
       return this.showFilterForm && this.filterActive;
-    },
-  }
+    }
+  },
 };
 </script>
 

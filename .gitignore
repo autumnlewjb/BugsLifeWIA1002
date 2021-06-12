@@ -52,4 +52,4 @@ User
 demo/demo
 
 # output files
-log_file*
+*log*

@@ -2,11 +2,11 @@
   <div class="comment">
     <v-card class="ma-2" outlined>
       <v-card-text class="text--body-1 black--text blue-grey lighten-4"
-        >
+      >
         <strong
-          >{{comment.user}} commented on
+        >{{ comment.user }} commented on
           {{
-            comment.timestamp != null ? " " + comment.timestamp : "unknown time"
+            comment.timestamp != null ? " " + new Date(comment.timestamp).toLocaleString() : "unknown time"
           }}</strong
         >
         <v-menu offset-y>
@@ -21,26 +21,31 @@
             <v-list-item @click="showChangelog = true">Changelog</v-list-item>
           </v-list>
         </v-menu>
-        </v-card-text
+      </v-card-text
       >
       <v-card-text class="text--body-1 black--text" v-html="comment.text"></v-card-text>
       <v-card-text>
         <v-layout row>
           <v-flex xs6 md8>
-            <v-chip @click="handleEmojiClick('Angry', angryColor == undefined)" class="ma-1" :disabled="!enableAngry" :color="angryColor" :outlined="myReaction && myReaction.reaction == 'Angry'">
+            <v-chip @click="handleEmojiClick('Angry', angryColor == undefined)" class="ma-1" :disabled="!enableAngry"
+                    :color="angryColor" :outlined="myReaction && myReaction.reaction == 'Angry'">
               &#128520; {{ angryCount }}
             </v-chip>
-            <v-chip @click="handleEmojiClick('Happy', happyColor == undefined)" class="ma-1" :disabled="!enableHappy" :color="happyColor" :outlined="myReaction && myReaction.reaction == 'Happy'">
+            <v-chip @click="handleEmojiClick('Happy', happyColor == undefined)" class="ma-1" :disabled="!enableHappy"
+                    :color="happyColor" :outlined="myReaction && myReaction.reaction == 'Happy'">
               &#128516; {{ happyCount }}
             </v-chip>
-            <v-chip @click="handleEmojiClick('Thumbsup', thumbsupColor == undefined)" class="ma-1" :disabled="!enableThumbsup" :color="thumbsupColor" :outlined="myReaction && myReaction.reaction == 'Thumbsup'">
+            <v-chip @click="handleEmojiClick('Thumbsup', thumbsupColor == undefined)" class="ma-1"
+                    :disabled="!enableThumbsup" :color="thumbsupColor"
+                    :outlined="myReaction && myReaction.reaction == 'Thumbsup'">
               &#128077; {{ thumbsupCount }}
             </v-chip>
           </v-flex>
           <v-flex xs6 md4 style="text-align: end">
             <v-btn class="mx-0" plain @click="toggleEditDialog">Edit</v-btn>
             <v-btn class="mx-0" plain color="red" @click="toggleDeleteDialog(false)"
-              >Delete</v-btn
+            >Delete
+            </v-btn
             >
           </v-flex>
         </v-layout>
@@ -49,16 +54,17 @@
     <v-dialog v-model="dialog" class="" persistent width="600">
       <v-card class="pa-2" outlined>
         <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
-        <TipTap v-model="text" placeholder="Write a comment..."/>
+        <Editor v-model="text" placeholder="Write a comment..."/>
         <v-card-actions>
-          <v-btn text color="teal" class="" @click="editComment"
-            >Edit Comment</v-btn
+          <v-btn text color="teal" class="" @click="editComment" :loading="loading" :disabled="loading"
+          >Edit Comment
+          </v-btn
           >
-          <v-btn text color="red" @click="toggleEditDialog">Close</v-btn>
+          <v-btn text color="red" @click="toggleEditDialog" :disabled="loading">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog" />
+    <ConfirmDelete @toggleDeleteDialog="toggleDeleteDialog" :showDialog="confirmDeleteDialog"/>
     <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
     <v-dialog v-model="undoRedoFailed" width="500">
       <v-card>
@@ -80,15 +86,19 @@
 <script>
 import ConfirmDelete from "../components/ConfirmDelete"
 import Forbidden from "../components/Forbidden"
-import TipTap from '../components/TipTap'
+// import TipTap from '../components/TipTap'
+import Editor from '../components/Editor.vue'
 import Changelog from './Changelog.vue';
+
 export default {
-  setup() {},
+  setup() {
+  },
   components: {
     ConfirmDelete,
     Forbidden,
-    TipTap,
-    Changelog
+    // TipTap,
+    Changelog,
+    Editor
   },
   data() {
     return {
@@ -114,7 +124,8 @@ export default {
       enableThumbsup: false,
       undoRedoFailed: false,
       showChangelog: false,
-      history: []
+      history: [],
+      loading: false
     };
   },
   created() {
@@ -157,20 +168,20 @@ export default {
     showChangelog(val) {
       if (val) {
         fetch(`/api/comment/${this.commentId}/history`)
-        .then((res) => {
-          if (res.status == 200) {
-            return res.json();
-          } else {
-            return null;
-          }
-        })
-        .then((data) => {
-          if (data) {
-            console.log(data);
-            this.history = data;
-          }
-        })
-        .catch(e => console.log(e));
+            .then((res) => {
+              if (res.status == 200) {
+                return res.json();
+              } else {
+                return null;
+              }
+            })
+            .then((data) => {
+              if (data) {
+                console.log(data);
+                this.history = data;
+              }
+            })
+            .catch(e => console.log(e));
       }
     }
   },
@@ -194,24 +205,24 @@ export default {
         },
         body: JSON.stringify(data),
       })
-        .then((res) => {
-          if (res.status == 200) {
-            this.$store.dispatch("fetchCurrentUser");
-            console.log("successful");
-          } else {
-            console.log("failed");
-          }
-        })
-        .catch((e) => console.log(e));
+          .then((res) => {
+            if (res.status == 200) {
+              this.$store.dispatch("fetchCurrentUser");
+              console.log("successful");
+            } else {
+              console.log("failed");
+            }
+          })
+          .catch((e) => console.log(e));
       this.$emit('updateComment');
     },
     removeEmoji() {
       fetch(`/api/${this.projectId}/${this.issueId}/${this.commentId}/del`, {
         method: 'DELETE'
       })
-      .then(() => {
-        this.$emit('updateComment');
-      })
+          .then(() => {
+            this.$emit('updateComment');
+          })
     },
     toggleEditDialog() {
       this.dialog = !this.dialog;
@@ -224,22 +235,25 @@ export default {
     },
     async deleteComment() {
       await fetch(
-        `/api/${this.projectId}/${this.issueId}/${this.commentId}`,
-        {
-          method: "DELETE",
-        }
+          `/api/${this.projectId}/${this.issueId}/${this.commentId}`,
+          {
+            method: "DELETE",
+          }
       ).then((res) => {
         if (res.status == 200) {
+          this.$emit("show-snackbar", "Delete successful")
           this.$store.dispatch("fetchCurrentUser");
         } else if (res.status == 403) {
           this.forbiddenDialog = true;
         } else {
           console.log("delete unsuccessful");
+          this.$emit("show-snackbar", "Delete unsuccessful")
         }
       });
       this.$emit('updateComment');
     },
     async editComment() {
+      this.loading=true;
       await fetch(`/api/${this.projectId}/${this.issueId}/${this.commentId}`, {
         method: "PUT",
         headers: {
@@ -250,18 +264,21 @@ export default {
           timestamp: this.comment.timestamp,
         }),
       })
-        .then((res) => {
-          if (res.status == 200) {
-            this.$store.dispatch("fetchCurrentUser");
-            console.log("update successful");
-            this.toggleEditDialog();
-          } else if (res.status == 403) {
-            this.forbiddenDialog = true;
-          } else {
-            console.log("update failed");
-          }
-        })
-        .catch((e) => console.log(e));
+          .then((res) => {
+            if (res.status == 200) {
+              this.$store.dispatch("fetchCurrentUser");
+              console.log("update successful");
+              this.$emit("show-snackbar", "Update successful")
+            } else if (res.status == 403) {
+              this.forbiddenDialog = true;
+            } else {
+              console.log("update failed");
+              this.$emit("show-snackbar", "Update unsuccessful")
+            }
+          })
+          .catch((e) => console.log(e))
+          .finally(() => this.loading = false);
+      this.toggleEditDialog();
       this.$emit('updateComment');
     },
     closeForbiddenDialog() {
@@ -272,60 +289,60 @@ export default {
       console.log(this.commentId);
       if (action == 'undo') {
         fetch(`/api/${this.issueId}/${this.commentId}/comment/undo`)
-        .then((res) => {
-          if (res.status != 200) {
-            console.log(res.status);
-            return null;
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          if (data) {
-            if (check && data.comment_id != this.commentId) {
-              this.undoRedoFailed = true;
-              this.handleUndoRedo('redo', false);
-            } else {
-              this.$emit('updateComment');
-            }
-          } else {
-            this.undoRedoFailed = true;
-          }
-        })
-        .catch(e => console.log(e));
+            .then((res) => {
+              if (res.status != 200) {
+                console.log(res.status);
+                return null;
+              } else {
+                return res.json();
+              }
+            })
+            .then((data) => {
+              console.log(data);
+              if (data) {
+                if (check && data.comment_id != this.commentId) {
+                  this.undoRedoFailed = true;
+                  this.handleUndoRedo('redo', false);
+                } else {
+                  this.$emit('updateComment');
+                }
+              } else {
+                this.undoRedoFailed = true;
+              }
+            })
+            .catch(e => console.log(e));
       } else {
         fetch(`/api/${this.issueId}/${this.commentId}/comment/redo`)
-        .then((res) => {
-          console.log(res.status);
-          if (res.status != 200) {
-            return null;
-          } else {
-            console.log(res);
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          if (data) {
-            if (check && data.comment_id != this.commentId) {
-              this.undoRedoFailed = true;
-              this.handleUndoRedo('undo', false);
-            } else {
-              this.$emit('updateComment');
-            }
-          } else {
-            this.undoRedoFailed = true;
-          }
-        })
-        .catch(() => this.undoRedoFailed = true);
+            .then((res) => {
+              console.log(res.status);
+              if (res.status != 200) {
+                return null;
+              } else {
+                console.log(res);
+                return res.json();
+              }
+            })
+            .then((data) => {
+              console.log(data);
+              if (data) {
+                if (check && data.comment_id != this.commentId) {
+                  this.undoRedoFailed = true;
+                  this.handleUndoRedo('undo', false);
+                } else {
+                  this.$emit('updateComment');
+                }
+              } else {
+                this.undoRedoFailed = true;
+              }
+            })
+            .catch(() => this.undoRedoFailed = true);
       }
     },
     getText(str) {
       var tmp = document.createElement("DIV");
       tmp.innerHTML = str;
       return tmp.textContent || tmp.innerText || "";
-    },
+    }
   },
   computed: {
     getHappy() {
@@ -334,28 +351,32 @@ export default {
     getChanges() {
       if (this.history.length == 0) return;
       const changes = [];
-      var prev = this.history[this.history.length-1];
+      var prev = this.history[this.history.length - 1];
       changes.push({
-        date: this.history[this.history.length-1].timestamp,
-        modifier: this.history[this.history.length-1].user,
+        date: this.history[this.history.length - 1].timestamp,
+        modifier: this.history[this.history.length - 1].user,
         statements: [{description: "written the comment", html: false}]
       });
-      const excluded = ['user', 'timestamp', 'comment_id', 'react'];
-      for (let i=this.history.length-2; i>=0; i--) {
+      const excluded = ['user', 'timestamp', 'comment_id', 'react', 'modifiedDate', 'modifiedBy'];
+      for (let i = this.history.length - 2; i >= 0; i--) {
         var curr = this.history[i];
         var change = {
-          date: curr.timestamp,
+          date: curr.modifiedDate,
           modifier: curr.user,
           statements: []
         }
         Object.keys(curr).forEach((key) => {
           if (!excluded.includes(key)) {
             if (curr[key] != prev[key]) {
-              change.statements.push({description: `modified the ${key} from ${prev[key]} to ${curr[key]}`, html: key == "text"});
+              change.statements.push({
+                description: `modified the ${key} from ${prev[key]} to ${curr[key]}`,
+                html: key == "text"
+              });
             }
           }
         });
         if (change.statements.length > 0) changes.push(change);
+        prev = curr;
       }
 
       changes.reverse();

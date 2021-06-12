@@ -56,11 +56,13 @@ export default {
       tags: [],
       cummulativeCounter: [],
       issueCounter: [],
-      days: 0,
+      dates: 0,
       counter: [],
       data: [],
       headers: [],
       rows: [],
+      dateText: '',
+      monthDateText: '',
       chartOptions: {
         series: [
           {
@@ -77,12 +79,14 @@ export default {
         this.tags = data.tags;
         this.cummulativeCounter = data.cumulativeCounter;
         this.issueCounter = data.issueCounter;
-        this.days = data.days;
+        this.dates = data.dates;
         this.tags = data.tags;
         this.counter = data.counter;
         this.data = data.data;
         this.headers = data.headers;
         this.rows = data.rows;
+        this.dateText = data.dateText;
+        this.monthDateText = data.monthDateText;
       })
       .catch((e) => console.log(e));
   },
@@ -96,13 +100,17 @@ export default {
           type: "column",
         },
         title: {
-          text: "Tags Bar Chart",
+            text: 'Tags Bar Chart',
+        },
+        subtitle: {
+          text: this.dateText
         },
         xAxis: {
           categories: this.tags,
           crosshair: true,
         },
         yAxis: {
+          allowDecimals : false,
           title: {
             text: "Counter",
           },
@@ -142,6 +150,9 @@ export default {
         title: {
           text: "Status Pie Chart",
         },
+        subtitle: {
+          text: this.dateText
+        },
         tooltip: {
           pointFormat: "{series.name}: <b>{point.y}</b>",
         },
@@ -177,9 +188,12 @@ export default {
         title: {
           text: "Number of issues created ",
         },
+        subtitle: {
+          text: this.monthDateText
+        },
         xAxis: [
           {
-            categories: this.days,
+            categories: this.dates,
             crosshair: true,
           },
         ],

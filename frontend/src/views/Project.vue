@@ -2,33 +2,43 @@
   <v-container v-if="project">
     <v-container>
       <v-layout row>
-        <v-flex xs8 md8>
+        <v-flex xs12 md8>
           <v-container>
             <h1>
               {{ getProject.name }}
-              <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
-              <v-btn
-                  class="mx-0"
-                  plain
-                  color="red"
-                  @click="toggleDeleteDialog(false)"
-              >Delete
-              </v-btn
-              >
             </h1>
+            <v-btn class="mx-0" plain @click="editProject">Edit</v-btn>
+            <v-btn
+                class="mx-0"
+                plain
+                color="red"
+                @click="toggleDeleteDialog(false)"
+            >Delete
+            </v-btn
+            >
+            <v-container>
+              <p class="subtitle-2">
+                {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
+              </p>
+              <v-card outlined class="pa-5 my-10">
+                <p v-html="getProjectDescription"></p>
+              </v-card>
+            </v-container>
           </v-container>
         </v-flex>
-      </v-layout>
-      <v-layout row>
-        <v-flex x12 md12>
-          <v-container>
-            <p class="subtitle-2">
-              {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
-            </p>
-            <v-card outlined class="pa-5 my-10">
-              <p v-html="getProjectDescription"></p>
-            </v-card>
-          </v-container>
+        <v-flex xs12 md4 justify="center">
+          <v-card outlined height=100%>
+            <v-img src="../assets/medal.webp" height="200"></v-img>
+            <v-card-title>Top Performer Board</v-card-title>
+            <v-card-text v-if="rank.length > 0">
+              <p v-for="(username, index) in rank" :key="index" :class="{'yellow--text text--darken-4': index < 3}">
+                {{ index + 1 }}. {{ username }}
+              </p>
+            </v-card-text>
+            <v-card-text v-else>
+              <p>Maybe you will be the first?</p>
+            </v-card-text>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -45,11 +55,15 @@
         <v-tab-item>
           <v-container>
             <v-container class="d-flex justify-end">
+              <v-btn @click="refreshKey += 1" plain>
+                <v-icon class="mx-2">mdi-reload</v-icon>
+                 Refresh Chart
+              </v-btn>
               <v-btn :href="`/api/${projectId}/charts`" target="blank" color="primary" icon>
                 <v-icon>mdi-open-in-new</v-icon>
               </v-btn>
             </v-container>
-            <Charts :projectId="projectId"/>
+            <Charts :projectId="projectId" :key="refreshKey"/>
           </v-container>
         </v-tab-item>
         <v-tab-item>
@@ -65,6 +79,7 @@
           :project="getProject"
           @toggleDialog="toggleDialog"
           @toggleForbiddenDialog="toggleForbiddenDialog"
+          @show-snackbar="toggleSnackbar"
           :data="data"
       />
     </v-dialog>
@@ -73,6 +88,7 @@
         :showDialog="confirmDeleteDialog"
     />
     <Forbidden :dialog="forbiddenDialog" @closeDialog="closeForbiddenDialog"/>
+    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
   </v-container>
 </template>
 
@@ -83,6 +99,7 @@ import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
 import Charts from "../components/Charts";
 import Attachment from "../components/Attachment";
+import Snackbar from "../components/Snackbar";
 
 export default {
   data() {
@@ -92,7 +109,11 @@ export default {
       showIssues: false,
       dialog: false,
       confirmDeleteDialog: false,
-      forbiddenDialog: false
+      forbiddenDialog: false,
+      snackbar: false,
+      message: null,
+      rank: [],
+      refreshKey: 0
     };
   },
   setup() {
@@ -103,6 +124,19 @@ export default {
   created() {
     this.projectId = this.$route.query.projectId;
     this.fetchProject();
+    fetch(`/api/${this.projectId}/rank/data`)
+        .then(res => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return null;
+          }
+        })
+        .then(data => {
+          Object.keys(data).forEach(key => {
+            if (this.rank.length < 5) this.rank.push(key);
+          })
+        })
   },
   methods: {
     editProject() {
@@ -116,11 +150,13 @@ export default {
             if (res.status == 200) {
               console.log("delete successful");
               this.$store.dispatch("fetchCurrentUser");
-              this.$router.push({name: "Projects"});
+              this.toggleSnackbar("Delete successful")
+              setTimeout(() => this.$router.push({name: "Projects"}), 1500);
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
               console.log("delete unsuccessful");
+              this.toggleSnackbar("Delete unsuccessful")
             }
           })
           .catch((e) => console.log(e));
@@ -146,7 +182,9 @@ export default {
             }
           })
           .then((data) => {
-            this.project = data;
+            if (data) {
+              this.project = data;
+            }
           })
           .catch((e) => console.log(e));
     },
@@ -156,9 +194,18 @@ export default {
     toggleForbiddenDialog() {
       console.log("toggle")
       this.forbiddenDialog = true;
-    }
+    },
+    toggleSnackbar(text) {
+      this.snackbar = true;
+      this.message = text;
+    },
+    closeSnackbar() {
+      this.snackbar = false;
+      this.message = null;
+    },
   },
   components: {
+    Snackbar,
     Issues,
     ProjectForm,
     ConfirmDelete,
