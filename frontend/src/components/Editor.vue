@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-switch v-model="isMarkdown" label="use markdown" :disabled="disable"></v-switch>
+        <v-switch v-model="isMarkdown" label="Use markdown" :disabled="disable"></v-switch>
         <TipTap v-model="content" v-if="!isMarkdown" :placeholder="placeholder" />
         <MarkdownEditor v-if="isMarkdown" v-model="content" :placeholder="placeholder" />
     </v-container>
