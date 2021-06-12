@@ -3,6 +3,7 @@ package com.example.demo;
 
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
+import com.example.demo.services.RoleService;
 import com.example.demo.services.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +45,8 @@ public class DemoApplication implements CommandLineRunner {
 
     @Autowired
     UserService userService;
+    @Autowired
+    RoleService roleService;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -63,20 +66,28 @@ public class DemoApplication implements CommandLineRunner {
     public void run(String[] args) throws IOException {
         //Spring will automagically initialize the database with data.sql in resources folder
         //The data imported would not be affected by jpa auditing
+        roleService.createRole(new Role("ADMIN"));
+        roleService.createRole(new Role("USER"));
+        User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
+        User LJB=new User("LJB@issuetracker.com","LJB","LJB");
+        User LYM=new User("LYM@issuetracker.com","LYM","LYM");
+        User OJS=new User("OJS@issuetracker.com","OJS","OJS");
+        CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        userService.createUser(CWJ);
+        userService.createUser(LJB);
+        userService.createUser(LYM);
+        userService.createUser(OJS);
         /*
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
         try {
-            Role admin = new Role("ADMIN");
-            Role ordinaryUser = new Role("USER");
             List<User> users = mapper.readValue(inputStream, typeReference);
             for (User user : users) {
-                if (user.getUsername().equals("admin")) {
-                    user.getRoles().add(admin);
-                } else {
-                    user.getRoles().add(ordinaryUser);
-                }
+                user.getRoles().add(roleService.searchRoleByName("USER"));
             }
             userService.createListOfUsers(users);
             System.out.println("Users Saved!");
@@ -86,6 +97,5 @@ public class DemoApplication implements CommandLineRunner {
             System.out.println("Users Saved!");
         }
         */
-        }
-
+    }
 }
