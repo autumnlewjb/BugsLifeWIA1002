@@ -1,7 +1,7 @@
 <template>
   <v-row class="justify-space-around align-center fill-height title">
     <transition name="slide" appear>
-      <v-col cols="6">
+      <v-col cols="6" class="pb-1">
         <v-row>
           <v-col cols="12" class="d-flex justify-center mb-5">
             <p class="main-title">Bugs Life</p>

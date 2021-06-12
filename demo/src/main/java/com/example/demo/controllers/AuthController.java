@@ -20,15 +20,13 @@ public class AuthController {
     private final LoginService loginService;
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
     public static User referUser;
 
     @Autowired
-    public AuthController(LoginService loginService, UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public AuthController(LoginService loginService, UserService userService, RoleService roleService) {
         this.loginService = loginService;
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/register")
@@ -38,7 +36,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerPost(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         List<Role> role = new ArrayList<>();
         role.add(roleService.searchRoleByName("USER"));
         user.setRoles(role);
@@ -48,7 +45,6 @@ public class AuthController {
     
     @PostMapping("/register/admin")
     public ResponseEntity<User> registerAdminPost(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         List<Role> role = new ArrayList<>();
         role.add(roleService.searchRoleByName("ADMIN"));
         user.setRoles(role);

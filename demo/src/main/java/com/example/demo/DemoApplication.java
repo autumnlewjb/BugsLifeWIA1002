@@ -47,9 +47,6 @@ public class DemoApplication implements CommandLineRunner {
     UserService userService;
     @Autowired
     RoleService roleService;
-
-    @PersistenceContext
-    EntityManager entityManager;
     
     @Value("${spring.datasource.url}")
     private String database;
@@ -64,8 +61,6 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
-        //Spring will automagically initialize the database with data.sql in resources folder
-        //The data imported would not be affected by jpa auditing
         roleService.createRole(new Role("ADMIN"));
         roleService.createRole(new Role("USER"));
         User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
