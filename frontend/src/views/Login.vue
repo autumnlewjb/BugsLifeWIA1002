@@ -81,6 +81,7 @@ export default {
             if (res.status == 200) {
               return res.json()
             } else if (res.status == 401) {
+              this.$store.commit('setSessionExpired', false);
               this.loginFailed = true;
             } else {
               return null;
