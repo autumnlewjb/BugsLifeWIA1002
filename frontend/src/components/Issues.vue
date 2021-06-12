@@ -77,9 +77,9 @@
       </v-layout>
     </v-container>
     <v-container>
-      <v-layout row justify-center>
+      <v-layout row >
         <v-flex xs12 md12 v-if="issues != null && issues.length > 0">
-          <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
+          <v-card v-for="issue in issues" :key="issue.id" class="pa-5 ma-5">
             <v-card-title>
               <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{issue.status}}</span>
               {{ issue.title }}
@@ -114,7 +114,7 @@
                 issue.timestamp == null ? "(Not Specified)" : new Date(issue.timestamp).toLocaleString()
               }}
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="d-flex justify-end">
               <v-btn
                 text
                 color="primary"

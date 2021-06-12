@@ -83,6 +83,7 @@
 
 <script>
 import Snackbar from './components/Snackbar';
+import './fetch'
 export default {
   name: "App",
   data() {
