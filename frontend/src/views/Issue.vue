@@ -188,12 +188,9 @@ export default {
     this.fetchIssue();
   },
   watch: {
-    select(val, prev) {
+    select(val) {
       if (!this.issueLoaded) {
         this.issueLoaded = true;
-        return;
-      }
-      if (prev == 'Reopened' && val == 'Open') {
         return;
       }
       this.statusLoading = true;
@@ -309,7 +306,7 @@ export default {
           })
           .then((data) => {
             this.issue = data;
-            this.select = data.status == 'Reopened' ? 'Open' : data.status;
+            this.select = data.status;
             switch (data.status) {
               case "Open":
                 this.items = ["Resolved", "Closed", "In Progress"];

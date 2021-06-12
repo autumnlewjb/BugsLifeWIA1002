@@ -102,7 +102,7 @@
           </v-tab-item>
           <v-tab-item>
             <v-container v-if="issues.length > 0">
-              <v-card v-for="issue in issues" :key="issue.id" class="ma-5">
+              <v-card v-for="issue in getIssues" :key="issue.id" class="pa-5 ma-5">
                 <v-card-title>
                   <span
                       class="mr-5 status"
@@ -145,7 +145,7 @@
                         : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="d-flex justify-end">
                   <v-btn
                       text
                       color="primary"
@@ -168,7 +168,7 @@
           </v-tab-item>
           <v-tab-item>
             <v-container v-if="assigned.length > 0">
-              <v-card v-for="issue in assigned" :key="issue.id" class="ma-5">
+              <v-card v-for="issue in getAssigned" :key="issue.id" class="pa-5 ma-5">
                 <v-card-title>
                   <span
                       class="mr-5 status"
@@ -211,7 +211,7 @@
                         : new Date(issue.timestamp).toLocaleString()
                   }}
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="d-flex justify-end">
                   <v-btn
                       text
                       color="primary"
@@ -430,6 +430,14 @@ export default {
     getUser() {
       return this.$store.getters.getCurrentUser ? this.$store.getters.getCurrentUser : {};
     },
+    getIssues() {
+      this.issues.forEach(obj => obj.status = obj.status == 'Reopened' ? 'Open' : obj.status);
+      return this.issues;
+    },
+    getAssigned() {
+      this.assigned.forEach(obj => obj.status = obj.status == 'Reopened' ? 'Open' : obj.status);
+      return this.assigned;
+    }
   },
 };
 </script>

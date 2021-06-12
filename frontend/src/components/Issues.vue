@@ -78,8 +78,8 @@
     </v-container>
     <v-container>
       <v-layout row >
-        <v-flex xs12 md12 v-if="issues != null && issues.length > 0">
-          <v-card v-for="issue in issues" :key="issue.id" class="pa-5 ma-5">
+        <v-flex xs12 md12 v-if="getIssues != null && getIssues.length > 0">
+          <v-card v-for="issue in getIssues" :key="issue.id" class="pa-5 ma-5">
             <v-card-title>
               <span class="mr-5 status" :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">{{issue.status}}</span>
               {{ issue.title }}
@@ -342,6 +342,9 @@ export default {
   },
   computed: {
     getIssues() {
+      this.issues?.forEach(obj => {
+        obj.status = obj.status == 'Reopened' ? "Open" : obj.status;
+      });
       return this.issues;
     },
     getSortButtonColor() {
