@@ -61,6 +61,7 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
+        /*
         roleService.createRole(new Role("ADMIN"));
         roleService.createRole(new Role("USER"));
         User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
@@ -75,6 +76,7 @@ public class DemoApplication implements CommandLineRunner {
         userService.createUser(LJB);
         userService.createUser(LYM);
         userService.createUser(OJS);
+        */
         /*
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
@@ -82,8 +84,10 @@ public class DemoApplication implements CommandLineRunner {
         try {
             List<User> users = mapper.readValue(inputStream, typeReference);
             for (User user : users) {
-                user.getRoles().add(roleService.searchRoleByName("USER"));
-            }
+                if(user.getUsername().equals("CWJ") || user.getUsername().equals("LJB") || user.getUsername().equals("LYM") || user.getUsername().equals("OJS"))
+                    user.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                else
+                    user.getRoles().add(roleService.searchRoleByName("USER"));
             userService.createListOfUsers(users);
             System.out.println("Users Saved!");
         } catch (IOException e) {
