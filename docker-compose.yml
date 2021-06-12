@@ -23,9 +23,11 @@ services:
         build: ./frontend/
         ports:
             - 80:80
+            - 443:443
         depends_on:
             - spring-app
         volumes:
             - /var/www/files:/var/www/static/image
+            - /etc/letsencrypt:/etc/letsencrypt
         restart: on-failure
 
