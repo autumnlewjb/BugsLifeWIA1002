@@ -102,7 +102,7 @@
         />
         <v-card class="pa-5 ma-5" outlined>
           <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
-          <TipTap v-model="text" placeholder="Write a comment..."/>
+          <Editor v-model="text" placeholder="Write a comment..."/>
           <v-btn text color="teal" class="" @click="postComment" :loading="loading" :disabled="loading"
           >Post Comment
           </v-btn
@@ -153,7 +153,7 @@ import IssueForm from "../components/IssueForm";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Forbidden from "../components/Forbidden";
 import Changelog from "../components/Changelog";
-import TipTap from '../components/TipTap.vue';
+import Editor from '../components/Editor.vue';
 import Attachment from "../components/Attachment";
 import Snackbar from "../components/Snackbar";
 
@@ -232,10 +232,10 @@ export default {
     IssueForm,
     ConfirmDelete,
     Forbidden,
-    TipTap,
+    Editor,
     Changelog,
     Attachment,
-    Snackbar
+    Snackbar,
   },
   methods: {
     async postComment() {

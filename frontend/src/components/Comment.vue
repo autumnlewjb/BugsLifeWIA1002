@@ -54,7 +54,7 @@
     <v-dialog v-model="dialog" class="" persistent width="600">
       <v-card class="pa-2" outlined>
         <!-- <v-textarea solo :no-resize="true" v-model="text"></v-textarea> -->
-        <TipTap v-model="text" placeholder="Write a comment..."/>
+        <Editor v-model="text" placeholder="Write a comment..."/>
         <v-card-actions>
           <v-btn text color="teal" class="" @click="editComment" :loading="loading" :disabled="loading"
           >Edit Comment
@@ -86,7 +86,8 @@
 <script>
 import ConfirmDelete from "../components/ConfirmDelete"
 import Forbidden from "../components/Forbidden"
-import TipTap from '../components/TipTap'
+// import TipTap from '../components/TipTap'
+import Editor from '../components/Editor.vue'
 import Changelog from './Changelog.vue';
 
 export default {
@@ -95,8 +96,9 @@ export default {
   components: {
     ConfirmDelete,
     Forbidden,
-    TipTap,
-    Changelog
+    // TipTap,
+    Changelog,
+    Editor
   },
   data() {
     return {

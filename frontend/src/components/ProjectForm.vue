@@ -14,7 +14,7 @@
             v-model="description"
           ></v-textarea> -->
           <div style="width: 100%">
-            <TipTap v-model="description" placeholder="Write project description"/>
+            <Editor v-model="description" placeholder="Write project description"/>
           </div>
         </v-row>
       </v-container>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import TipTap from '../components/TipTap';
+import Editor from '../components/Editor';
 
 export default {
   name: "ProjectForm",
@@ -45,7 +45,7 @@ export default {
     };
   },
   components: {
-    TipTap
+    Editor
   },
   created() {
     if (this.project) {
@@ -105,6 +105,7 @@ export default {
             .finally(() => this.loading = false)
       }
       this.$emit('toggleDialog');
+      this.loading = false;
     }
   },
   props: {

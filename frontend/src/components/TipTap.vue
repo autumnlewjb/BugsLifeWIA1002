@@ -39,6 +39,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
+import Heading from '@tiptap/extension-heading';
 
 export default {
     components: {
@@ -64,6 +65,9 @@ export default {
                 Underline,
                 Highlight.configure({
                     multicolor: true
+                }),
+                Heading.configure({
+                    levels: [1, 2, 3]
                 })
             ],
             onUpdate: () => {
