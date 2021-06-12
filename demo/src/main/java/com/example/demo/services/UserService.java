@@ -29,7 +29,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getUsers() {
         return userRepository.findAll();
     }

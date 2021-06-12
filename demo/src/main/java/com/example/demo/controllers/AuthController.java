@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class AuthController {
         return "register";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<User> registerPost(@RequestBody User user) {
         List<Role> role = new ArrayList<>();
@@ -42,7 +44,8 @@ public class AuthController {
         userService.createUser(user);
         return ResponseEntity.ok(user);
     }
-    
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register/admin")
     public ResponseEntity<User> registerAdminPost(@RequestBody User user) {
         List<Role> role = new ArrayList<>();
