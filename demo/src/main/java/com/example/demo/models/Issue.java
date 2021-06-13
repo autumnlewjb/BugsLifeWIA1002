@@ -50,15 +50,18 @@ public class Issue implements Serializable, Cloneable {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "text", name = "descriptionText")
+    @JsonProperty(value="description_text")
     private String descriptionText;
 
     @CreatedBy
     @Column(updatable = false)
+    @JsonProperty(value="created_by")
     private String createdBy;
 
     private String assignee;
 
     @LastModifiedBy
+    @JsonProperty(value="modified_by")
     private String modifiedBy;
 
     @GenericField(sortable = Sortable.YES)
@@ -67,6 +70,7 @@ public class Issue implements Serializable, Cloneable {
     private Timestamp timestamp;
 
     @LastModifiedDate
+    @JsonProperty(value="modified_date")
     private Timestamp modifiedDate;
 
     @JsonBackReference

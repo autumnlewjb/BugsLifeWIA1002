@@ -61,23 +61,27 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
-        /*
-        roleService.createRole(new Role("ADMIN"));
-        roleService.createRole(new Role("USER"));
-        User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
-        User LJB=new User("LJB@issuetracker.com","LJB","LJB");
-        User LYM=new User("LYM@issuetracker.com","LYM","LYM");
-        User OJS=new User("OJS@issuetracker.com","OJS","OJS");
-        CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
-        LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
-        LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
-        OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
-        userService.createUser(CWJ);
-        userService.createUser(LJB);
-        userService.createUser(LYM);
-        userService.createUser(OJS);
-        */
-        /*
+        if(roleService.searchRoleByName("ADMIN")==null)
+            roleService.createRole(new Role("ADMIN"));
+        if(roleService.searchRoleByName("USER")==null)
+            roleService.createRole(new Role("USER"));
+        
+        if (TypeReference.class.getResourceAsStream("/json/data.json")==null) {
+            System.out.println("Hi");
+            User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
+            User LJB=new User("LJB@issuetracker.com","LJB","LJB");
+            User LYM=new User("LYM@issuetracker.com","LYM","LYM");
+            User OJS=new User("OJS@issuetracker.com","OJS","OJS");
+            CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
+            LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
+            LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
+            OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
+            userService.createUser(CWJ);
+            userService.createUser(LJB);
+            userService.createUser(LYM);
+            userService.createUser(OJS);
+        }
+        
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
@@ -96,6 +100,5 @@ public class DemoApplication implements CommandLineRunner {
         } catch (DataIntegrityViolationException e) {
             System.out.println("Users Saved!");
         }
-        */
     }
 }

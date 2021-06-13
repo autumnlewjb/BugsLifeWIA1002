@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 @RestController
 @RequestMapping("/api")
@@ -193,14 +194,12 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns2; i++) {
                     String key = columnNames2.get(i - 1);
-                    if (key.equals("modified_date")) {
-                        continue;
-                    }
-                    if (key.equals("modified_by")) {
-                        continue;
-                    }
                     String value = projectSelect.getString(i);
-                    if(key.equals("date")) {
+                    if (key.equals("modified_date")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
+                    if (key.equals("date")) {
                         String refer=toUnix(value);
                         value=refer;
                     }
@@ -213,19 +212,11 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns4; i++) {
                     String key = columnNames4.get(i - 1);
-                    if (key.equals("description_text")) {
-                        key = "descriptionText";
-                    }
-                    if (key.equals("created_by")) {
-                        key = "createdBy";
-                    }
-                    if (key.equals("modified_date")) {
-                        continue;
-                    }
-                    if (key.equals("modified_by")) {
-                        continue;
-                    }
                     String value = issueSelect.getString(i);
+                    if (key.equals("modified_date")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
                     if(key.equals("timestamp")) {
                         String refer=toUnix(value);
                         value=refer;
@@ -239,10 +230,11 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns5; i++) {
                     String key = columnNames5.get(i - 1);
-                    if (key.equals("modified_date")) {
-                        continue;
-                    }
                     String value = commentSelect.getString(i);
+                    if (key.equals("modified_date")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
                     if(key.equals("timestamp")) {
                         String refer=toUnix(value);
                         value=refer;
@@ -256,9 +248,6 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns6; i++) {
                     String key = columnNames6.get(i - 1);
-                    if (key.equals("reaction_by")) {
-                        key = "reactionBy";
-                    }
                     String value = reactSelect.getString(i);
                     obj.put(key, value);
                 }
@@ -424,9 +413,9 @@ public class UserController {
     public String toUnix(String timestamp) {
         if(timestamp == null) return null;
         try {
-          SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
           java.util.Date dt = (java.util.Date) sdf.parse(timestamp);
-          long epoch = dt.getTime();
+          long epoch = dt.getTime()/1000L+13046400L;
           return String.valueOf(epoch);
         } catch(ParseException e) {
            return null;
