@@ -21,7 +21,7 @@
                 {{ getProject.date == null ? "Not specified" : new Date(getProject.date) }}
               </p>
               <v-card outlined class="pa-5 my-10">
-                <p v-html="getProjectDescription"></p>
+                <div v-html="getProjectDescription"></div>
               </v-card>
             </v-container>
           </v-container>

@@ -5,57 +5,61 @@
     </v-card-title>
     <v-card-text>
       <v-container>
-        <v-row>
-          <v-text-field
-              label="Issue Title"
-              v-model="title"
+        <v-form ref="form" lazy-validation>
+          <v-row>
+            <v-text-field
+                label="Issue Title"
+                v-model="title"
+                :rules="[rules.required,rules.counter]"
+                :counter=this.length
+            ></v-text-field>
+          </v-row>
+          <v-row>
+            <!-- <v-textarea
+              solo
+              label="Description"
+              v-model="descriptionText"
               required
-          ></v-text-field>
-        </v-row>
-        <v-row>
-          <!-- <v-textarea
-            solo
-            label="Description"
-            v-model="descriptionText"
-            required
-          ></v-textarea> -->
-          <div style="width: 100%" class="my-5">
-            <Editor v-model="descriptionText" placeholder="Write issue description..."/>
-          </div>
-        </v-row>
-        <v-row>
-          <v-combobox :items="users" v-model="assignee" label="Assignee"></v-combobox>
-        </v-row>
-        <v-row>
-          <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips
-                      multiple></v-combobox>
-        </v-row>
-        <br/>
-        <p class="body-1">Priority: <br/></p>
-        <v-row>
-          <v-rating
-              v-model="priority"
-              full-icon="mdi-exclamation"
-              empty-icon="mdi-exclamation"
-              color="red"
-              length="10"
-          >
-          </v-rating>
-        </v-row>
+            ></v-textarea> -->
+            <div style="width: 100%" class="my-5">
+              <Editor v-model="descriptionText" placeholder="Write issue description..."/>
+            </div>
+          </v-row>
+          <v-row>
+            <v-combobox :items="users" v-model="assignee" label="Assignee"></v-combobox>
+          </v-row>
+          <v-row>
+            <v-combobox label="Tag (use comma to separate multiple tags)" v-model="tag" :items="tagOptions" chips
+                        multiple></v-combobox>
+          </v-row>
+          <br/>
+          <p class="body-1">Priority: <br/></p>
+          <v-row>
+            <v-rating
+                v-model="priority"
+                full-icon="mdi-exclamation"
+                empty-icon="mdi-exclamation"
+                color="red"
+                length="10"
+            >
+            </v-rating>
+          </v-row>
+        </v-form>
       </v-container>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="onSubmit('close')" :disabled="loading">
+      <v-btn color="blue darken-1" text @click="closeDialog" :disabled="loading">
         Close
       </v-btn>
-      <v-btn color="blue darken-1" text @click="onSubmit(action)" :disabled="loading" :loading="loading"> Save</v-btn>
+      <v-btn color="blue darken-1" text @click="validateForm(action)" :disabled="loading" :loading="loading"> Save</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import Editor from "../components/Editor"
+
 export default {
   name: "IssueForm",
   setup() {
@@ -74,7 +78,12 @@ export default {
       tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
       formTitle: "Add New Issue",
       users: ["lewjb", "jkjsdklfd", "ufifj", "sdkfjksladf", "sadjflsd", "osdfiopsd"],
-      loading: false
+      loading: false,
+      length: 100,
+      rules: {
+        required: value => !!value || 'This field cannot be empty',
+        counter: value => value.length <= this.length || 'Max '+this.length+' characters',
+      }
     };
   },
   created() {
@@ -99,13 +108,6 @@ export default {
         .catch(e => console.log(e));
   },
   methods: {
-    clearForm() {
-      this.title = "";
-      this.priority = 0;
-      this.tag = [];
-      this.descriptionText = "";
-      this.assignee = ""
-    },
     async onSubmit(action) {
       this.loading = true;
       console.log(action);
@@ -129,6 +131,7 @@ export default {
             .then((res) => {
               if (res.status == 200) {
                 console.log("added new issue");
+                this.closeDialog();
                 this.$emit("show-snackbar", "Added new issue")
                 this.$store.dispatch('fetchCurrentUser')
               } else {
@@ -158,6 +161,7 @@ export default {
             .then((res) => {
               if (res.status == 200) {
                 this.$store.dispatch('fetchCurrentUser');
+                this.closeDialog()
                 this.$emit("show-snackbar", "Update successful")
                 console.log("update successful");
               } else if (res.status == 403) {
@@ -170,9 +174,24 @@ export default {
             .catch((e) => console.log(e))
             .finally(() => this.loading = false)
       }
-      this.$emit("toggleDialog");
-      this.loading = false;
     },
+    clearForm() {
+      this.title = "";
+      this.priority = 0;
+      this.tag = [];
+      this.descriptionText = "";
+      this.assignee = ""
+    },
+    validateForm(action) {
+      const valid = this.$refs.form.validate();
+      if (valid) {
+        this.onSubmit(action)
+      }
+    },
+    closeDialog() {
+      this.clearForm();
+      this.$emit('toggleDialog');
+    }
   },
   props: {
     data: Object,

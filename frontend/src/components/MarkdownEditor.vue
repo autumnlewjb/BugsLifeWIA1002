@@ -1,11 +1,13 @@
 <template>
 <div>
-    <v-container>
-        <v-btn text @click="preview = !preview">{{preview ? "Close" : ''}} Preview</v-btn>
-    </v-container>
-    <v-textarea solo v-model="markdown" v-show="!preview" :placeholder="placeholder" autofocus></v-textarea>
+    <div>
+        <v-btn icon @click="preview = !preview">
+            <v-icon :color="preview ? 'primary': undefined">mdi-eye-outline</v-icon>
+        </v-btn>
+    </div>
+    <v-textarea solo flat v-model="markdown" v-show="!preview" :placeholder="placeholder" autofocus></v-textarea>
     <v-container v-show="preview">
-        <p v-html="html"></p>
+        <div v-html="html"></div>
     </v-container>
 </div>
 </template>
@@ -19,7 +21,7 @@ export default {
         return {
             markdown: '',
             html: '',
-            converter: new showdown.Converter(),
+            converter: new showdown.Converter({strikethrough: true, emoji: true}),
             preview: false
         }
     },
@@ -29,6 +31,10 @@ export default {
             this.html = this.converter.makeHtml(val);
             this.$emit('input', this.html);
         },
+        value(val) {
+            if (val.length > 0) return;
+            this.markdown = '';
+        }
     },
     props: {
         value: String,

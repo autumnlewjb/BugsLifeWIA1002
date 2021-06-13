@@ -82,50 +82,34 @@ const router = new VueRouter({routes: routes, mode: 'history'})
 router.beforeEach((to, from, next) => {
     console.log(store.getters.getCurrentUser);
     if (to.matched.some(route => route.meta.requiresAuth)) {
-            store.dispatch('fetchCurrentUser').then(() => {
-                if (store.getters.getCurrentUser) {
-                    if (to.matched.some(route => route.meta.requiresAdmin)) {
-                        console.log("requires admin");
-                        console.log(store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN'));
-                        if (store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN')) {
-                            next();
-                        } else {
-                            next({name: 'Profile'});
-                        }
-                    } else {
+        store.dispatch('fetchCurrentUser').then(() => {
+            if (store.getters.getCurrentUser) {
+                if (to.matched.some(route => route.meta.requiresAdmin)) {
+                    console.log("requires admin");
+                    console.log(store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN'));
+                    if (store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN')) {
                         next();
+                    } else {
+                        next({name: 'Profile'});
                     }
                 } else {
-                    next({name: 'Login'});
+                    next();
                 }
-            });
-        } else {
-            if (store.getters.getCurrentUser) {
-                next({name: from.name});
+            } else {
+                next({name: 'Login'});
+            }
+        });
+    } else {
+        if (store.getters.getCurrentUser) {
+            if (to.name == 'Login' || to.name == 'Home') {
+                next({name: 'Profile'});
             } else {
                 next();
             }
+        } else {
+            next();
         }
-        // if (store.getters.getCurrentUser) {
-        //     if (to.name == 'Login' || to.name == 'Home') {
-        //         next({name: 'Profile'});
-        //     } else if (to.name == 'Register' && store.getters.getCurrentUser.roles.find((role) => role.name == 'ADMIN') == null) {
-        //         next({name: 'Profile'});
-        //     } else {
-        //         next();
-        //     }
-        // } else {
-        //     if (to.name == 'Register') {
-        //         next({name: 'Login'});
-        //     } else if (to.name == 'Login') {
-        //         next();
-        //     } else if (to.name == 'Home') {
-        //         next();
-        //     } else {
-        //         next({name: 'Login'});
-        //     }
-        // }  
-    // });
+    }
 })
 
 export default router;

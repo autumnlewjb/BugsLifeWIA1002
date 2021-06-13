@@ -25,9 +25,6 @@
             <v-btn @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" :class="{ 'is-active': editor && editor.isActive('heading', { level: 3})}" :color="getButtonColor('heading', { level: 3})" icon>
                 <v-icon>mdi-format-header-3</v-icon>
             </v-btn>
-            <v-btn icon>
-
-            </v-btn>
         </div>
         <editor-content :editor="editor" class/>
     </div>
