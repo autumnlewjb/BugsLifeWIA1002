@@ -49,7 +49,6 @@ public class Comment implements Cloneable{
     private String user;
 
     @LastModifiedDate
-    @JsonProperty(value="modified_date")
     private Timestamp modifiedDate;
 
     @JsonBackReference

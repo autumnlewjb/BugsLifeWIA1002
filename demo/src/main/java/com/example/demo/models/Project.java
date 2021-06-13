@@ -50,11 +50,9 @@ public class Project implements Serializable {
     private Timestamp date;
 
     @LastModifiedDate
-    @JsonProperty(value="modified_date")
     private Timestamp modifiedDate;
 
     @LastModifiedBy
-    @JsonProperty(value="modified_by")
     private String modifiedBy;
 
     @JsonBackReference

@@ -28,7 +28,6 @@ public class React {
 
     @Column(updatable = false)
     @CreatedBy
-    @JsonProperty(value="reaction_by")
     private String reactionBy;
 
     public Integer getReact_id() {

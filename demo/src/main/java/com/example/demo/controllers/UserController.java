@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -98,7 +101,7 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/JSON")
     public ResponseEntity<?> getJson() {
         ArrayList<JSONObject> JSONListWithRole = new ArrayList<>();
@@ -195,7 +198,11 @@ public class UserController {
                 for (int i = 1; i <= numOfColumns2; i++) {
                     String key = columnNames2.get(i - 1);
                     String value = projectSelect.getString(i);
+                    if(key.equals("modified_by")) {
+                        key="modifiedBy";
+                    }
                     if (key.equals("modified_date")) {
+                        key="modifiedDate";
                         String refer=toUnix(value);
                         value=refer;
                     }
@@ -213,7 +220,17 @@ public class UserController {
                 for (int i = 1; i <= numOfColumns4; i++) {
                     String key = columnNames4.get(i - 1);
                     String value = issueSelect.getString(i);
+                    if(key.equals("modified_by")) {
+                        key="modifiedBy";
+                    }
+                    if(key.equals("created_by")) {
+                        key="createdBy";
+                    }
+                    if(key.equals("description_text")) {
+                        key="descriptionText";
+                    }
                     if (key.equals("modified_date")) {
+                        key="modifiedDate";
                         String refer=toUnix(value);
                         value=refer;
                     }
@@ -232,12 +249,16 @@ public class UserController {
                     String key = columnNames5.get(i - 1);
                     String value = commentSelect.getString(i);
                     if (key.equals("modified_date")) {
+                        key="modifiedDate";
                         String refer=toUnix(value);
                         value=refer;
                     }
                     if(key.equals("timestamp")) {
                         String refer=toUnix(value);
                         value=refer;
+                    }
+                    if(key.equals("created_by")) {
+                        key="user";
                     }
                     obj.put(key, value);
                 }
@@ -249,6 +270,9 @@ public class UserController {
                 for (int i = 1; i <= numOfColumns6; i++) {
                     String key = columnNames6.get(i - 1);
                     String value = reactSelect.getString(i);
+                    if(key.equals("reaction_by")) {
+                        key="reactionBy";
+                    }
                     obj.put(key, value);
                 }
                 reactList.add(obj);
@@ -413,11 +437,12 @@ public class UserController {
     public String toUnix(String timestamp) {
         if(timestamp == null) return null;
         try {
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-          java.util.Date dt = (java.util.Date) sdf.parse(timestamp);
-          long epoch = dt.getTime()/1000L+13046400L;
-          return String.valueOf(epoch);
-        } catch(ParseException e) {
+          LocalDateTime localDateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+          long millis = localDateTime
+                .atZone(ZoneId.systemDefault())
+                .toInstant().toEpochMilli();
+          return String.valueOf(millis);
+        } catch(Exception e) {
            return null;
         }
     }
