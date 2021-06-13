@@ -67,19 +67,26 @@ public class DemoApplication implements CommandLineRunner {
             roleService.createRole(new Role("USER"));
         
         if (TypeReference.class.getResourceAsStream("/json/data.json")==null) {
-            System.out.println("Hi");
-            User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
-            User LJB=new User("LJB@issuetracker.com","LJB","LJB");
-            User LYM=new User("LYM@issuetracker.com","LYM","LYM");
-            User OJS=new User("OJS@issuetracker.com","OJS","OJS");
-            CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
-            LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
-            LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
-            OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
-            userService.createUser(CWJ);
-            userService.createUser(LJB);
-            userService.createUser(LYM);
-            userService.createUser(OJS);
+            if(userService.getUser("CWJ")==null) {
+                User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
+                CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                userService.createUser(CWJ);
+            }
+            if(userService.getUser("LJB")==null) {
+                User LJB=new User("LJB@issuetracker.com","LJB","LJB");
+                LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                userService.createUser(LJB);
+            }
+            if(userService.getUser("LYM")==null) {
+                User LYM=new User("LYM@issuetracker.com","LYM","LYM");
+                LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                userService.createUser(LYM);
+            }
+            if(userService.getUser("OJS")==null) {
+                User OJS=new User("OJS@issuetracker.com","OJS","OJS");
+                OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                userService.createUser(OJS);
+            }
         }
         else {
         ObjectMapper mapper = new ObjectMapper();
