@@ -40,6 +40,7 @@ const store = new Vuex.Store({
           }
         })
         .then(data => {
+          delete data.password
           state.commit('setCurrentUser', data);
           
           localStorage.setItem('data', JSON.stringify(data));
