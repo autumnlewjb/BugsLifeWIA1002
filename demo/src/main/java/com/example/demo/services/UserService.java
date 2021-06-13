@@ -59,13 +59,19 @@ public class UserService {
     }
 
     public void createListOfUsers(List<User> users) {
-        for (User user : users) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
         userRepository.saveAll(users);
     }
 
+    @PreAuthorize("#updatedUser.username == authentication.name")
     public void updateUser(User user, User updatedUser) {
+        updatedUser.setUser_id(user.getUser_id());
+        updatedUser.setRoles(user.getRoles());
+        if (updatedUser.getPassword().equals(user.getPassword()) ||
+                passwordEncoder.matches(updatedUser.getPassword(), user.getPassword())) {
+            updatedUser.setPassword(user.getPassword());
+        } else {
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
         List<Project> allProject = projectRepository.findProjectsByUser(user);
         for (Project project : allProject) {
             project.setUser(updatedUser);

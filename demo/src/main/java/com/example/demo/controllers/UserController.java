@@ -81,8 +81,6 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestBody User updatedUser) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getUser(authentication.getName());
-        updatedUser.setUser_id(user.getUser_id());
-        updatedUser.setRoles(user.getRoles());
         userService.updateUser(user, updatedUser);
         return ResponseEntity.ok(HttpStatus.OK);
     }

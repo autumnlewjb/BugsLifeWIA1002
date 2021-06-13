@@ -67,38 +67,4 @@ public class AuthController {
         return "logout";
     }
 
-    /*@GetMapping("/")
-    public String homepage() {
-        return "homepage";
-    }
-
-    @GetMapping(path = "/project-dashboard")
-    public String projectDashboard(@ModelAttribute("username") String username, Model model) {
-        model.addAttribute("username", username);
-        return "project_dashboard";
-    }
-
-    @GetMapping(path = "/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping(path = "/project-page/{projectName}")
-    public String projectPage(@PathVariable String projectName, Model model) {
-        model.addAttribute("projectName", projectName);
-        return "project_page";
-    }
-
-    @GetMapping(path = "/issues/{projectName}")
-    public String issues(@PathVariable String projectName, Model model) {
-        model.addAttribute("projectName", projectName);
-        return "issue_dashboard";
-    }
-
-    @GetMapping(path = "/issue-page/{issueName}")
-    public String issuePage(@PathVariable String issueName, Model model) {
-        model.addAttribute("issueName", issueName);
-        return "issue_page";
-    }*/
-
 }
