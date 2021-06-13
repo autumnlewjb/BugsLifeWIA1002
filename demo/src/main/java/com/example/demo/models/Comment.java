@@ -1,32 +1,27 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Audited
 @Entity
 @Indexed
 @Table(name = "comment")
-@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
-public class Comment implements Cloneable{
-    
+public class Comment implements Cloneable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer comment_id;
@@ -36,19 +31,16 @@ public class Comment implements Cloneable{
     private String text;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "comment",  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     @NotAudited
     private List<React> react;
 
-    @CreatedDate
     @Column(updatable = false)
     private Timestamp timestamp;
 
     @Column(updatable = false)
-    @CreatedBy
     private String user;
 
-    @LastModifiedDate
     private Timestamp modifiedDate;
 
     @JsonBackReference
@@ -57,7 +49,7 @@ public class Comment implements Cloneable{
     @Audited
     private Issue issue;
 
-    public int getReactionIndex(React react){
+    public int getReactionIndex(React react) {
         return this.react.indexOf(react);
     }
 
@@ -101,8 +93,7 @@ public class Comment implements Cloneable{
         this.react = react;
     }
 
-    public Object clone() throws CloneNotSupportedException
-    {
+    public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
@@ -120,5 +111,23 @@ public class Comment implements Cloneable{
 
     public void setModifiedDate(Timestamp modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setUser(authentication.getName());
+            setTimestamp(new Timestamp(Instant.now().toEpochMilli()));
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setUser(authentication.getName());
+            setModifiedDate(new Timestamp(Instant.now().toEpochMilli()));
+        }
     }
 }

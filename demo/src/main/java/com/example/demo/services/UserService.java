@@ -59,6 +59,9 @@ public class UserService {
     }
 
     public void createListOfUsers(List<User> users) {
+        for (User user : users) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userRepository.saveAll(users);
     }
 

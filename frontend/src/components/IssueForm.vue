@@ -52,7 +52,8 @@
       <v-btn color="blue darken-1" text @click="closeDialog" :disabled="loading">
         Close
       </v-btn>
-      <v-btn color="blue darken-1" text @click="validateForm(action)" :disabled="loading" :loading="loading"> Save</v-btn>
+      <v-btn color="blue darken-1" text @click="validateForm(action)" :disabled="loading" :loading="loading"> Save
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -82,7 +83,7 @@ export default {
       length: 100,
       rules: {
         required: value => !!value || 'This field cannot be empty',
-        counter: value => value.length <= this.length || 'Max '+this.length+' characters',
+        counter: value => value.length <= this.length || 'Max ' + this.length + ' characters',
       }
     };
   },
@@ -176,11 +177,13 @@ export default {
       }
     },
     clearForm() {
-      this.title = "";
-      this.priority = 0;
-      this.tag = [];
-      this.descriptionText = "";
-      this.assignee = ""
+      if (this.action === "add") {
+        this.title = "";
+        this.priority = 0;
+        this.tag = [];
+        this.descriptionText = "";
+        this.assignee = ""
+      }
     },
     validateForm(action) {
       const valid = this.$refs.form.validate();
@@ -190,6 +193,7 @@ export default {
     },
     closeDialog() {
       this.clearForm();
+      this.$refs.form.resetValidation();
       this.$emit('toggleDialog');
     }
   },
