@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,7 +193,17 @@ public class UserController {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= numOfColumns2; i++) {
                     String key = columnNames2.get(i - 1);
+                    if (key.equals("modified_date")) {
+                        continue;
+                    }
+                    if (key.equals("modified_by")) {
+                        continue;
+                    }
                     String value = projectSelect.getString(i);
+                    if(key.equals("date")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
                     obj.put(key, value);
                 }
                 projectList.add(obj);
@@ -214,6 +226,10 @@ public class UserController {
                         continue;
                     }
                     String value = issueSelect.getString(i);
+                    if(key.equals("timestamp")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
                     obj.put(key, value);
                 }
                 issueList.add(obj);
@@ -227,6 +243,10 @@ public class UserController {
                         continue;
                     }
                     String value = commentSelect.getString(i);
+                    if(key.equals("timestamp")) {
+                        String refer=toUnix(value);
+                        value=refer;
+                    }
                     obj.put(key, value);
                 }
                 commentList.add(obj);
@@ -352,6 +372,7 @@ public class UserController {
                 }
 
                 JSONObject header = new JSONObject();
+                obj.remove("user_id");
                 if (Integer.parseInt(roleSelect.getString(2)) == 1) {
                     header.put("role_id", 1);
                     header.put("name", "User");
@@ -360,12 +381,10 @@ public class UserController {
                     header.put("name", "Admin");
                 }
                 obj.put("project", projects);
-                obj.put("roles", header);
-                obj.remove("user_id");
-                JSONListWithRole.add(obj);
-                JSONObject temp = (JSONObject) JSONListWithRole.get(j).clone();
-                temp.remove("roles");
-                JSONListWithoutRole.add(temp);
+                JSONListWithoutRole.add(obj);
+                JSONObject refer=(JSONObject) obj.clone();
+                refer.put("roles", header);
+                JSONListWithRole.add(refer);
                 j++;
             }
             connection.close();
@@ -391,7 +410,7 @@ public class UserController {
                 file = new FileWriter("comment_log.json");
                 mapper.writeValue(file, JSONCommentLog);
                 file.close();
-                return ResponseEntity.ok(JSONListWithRole);
+                return ResponseEntity.ok(JSONListWithoutRole);
             } catch (IOException e) {
                 System.out.println("Error with output file");
             }
@@ -401,5 +420,16 @@ public class UserController {
             System.out.println("Problem with database");
         }
         return null;
+    }
+    public String toUnix(String timestamp) {
+        if(timestamp == null) return null;
+        try {
+          SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+          java.util.Date dt = (java.util.Date) sdf.parse(timestamp);
+          long epoch = dt.getTime();
+          return String.valueOf(epoch);
+        } catch(ParseException e) {
+           return null;
+        }
     }
 }

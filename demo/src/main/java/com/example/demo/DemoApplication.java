@@ -3,6 +3,7 @@ package com.example.demo;
 
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
+import com.example.demo.services.RoleService;
 import com.example.demo.services.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,9 +45,8 @@ public class DemoApplication implements CommandLineRunner {
 
     @Autowired
     UserService userService;
-
-    @PersistenceContext
-    EntityManager entityManager;
+    @Autowired
+    RoleService roleService;
     
     @Value("${spring.datasource.url}")
     private String database;
@@ -61,22 +61,33 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
-        //Spring will automagically initialize the database with data.sql in resources folder
-        //The data imported would not be affected by jpa auditing
+        /*
+        roleService.createRole(new Role("ADMIN"));
+        roleService.createRole(new Role("USER"));
+        User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
+        User LJB=new User("LJB@issuetracker.com","LJB","LJB");
+        User LYM=new User("LYM@issuetracker.com","LYM","LYM");
+        User OJS=new User("OJS@issuetracker.com","OJS","OJS");
+        CWJ.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        LJB.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        LYM.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        OJS.getRoles().add(roleService.searchRoleByName("ADMIN"));
+        userService.createUser(CWJ);
+        userService.createUser(LJB);
+        userService.createUser(LYM);
+        userService.createUser(OJS);
+        */
         /*
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
         InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
         try {
-            Role admin = new Role("ADMIN");
-            Role ordinaryUser = new Role("USER");
             List<User> users = mapper.readValue(inputStream, typeReference);
             for (User user : users) {
-                if (user.getUsername().equals("admin")) {
-                    user.getRoles().add(admin);
-                } else {
-                    user.getRoles().add(ordinaryUser);
-                }
+                if(user.getUsername().equals("CWJ") || user.getUsername().equals("LJB") || user.getUsername().equals("LYM") || user.getUsername().equals("OJS"))
+                    user.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                else
+                    user.getRoles().add(roleService.searchRoleByName("USER"));
             }
             userService.createListOfUsers(users);
             System.out.println("Users Saved!");
@@ -85,128 +96,6 @@ public class DemoApplication implements CommandLineRunner {
         } catch (DataIntegrityViolationException e) {
             System.out.println("Users Saved!");
         }
-        
-        /*
-            Connection conn = null;
-            Statement stmt = null;
-            try {
-                conn = (Connection) DriverManager.getConnection(database, databaseUsername, databasePassword);
-                stmt = (Statement) conn.createStatement();
-                String query1 = "DELETE from issue_aud";
-                String query2 = "DELETE from comment_aud";
-                stmt.executeUpdate(query1);
-                System.out.println("Record form issue_aud deleted successfully");
-                stmt.executeUpdate(query2);
-                System.out.println("Record form comment_aud deleted successfully");
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            JSONParser jsonParser = new JSONParser();
-            try {
-                JSONArray jsonArray = (JSONArray) jsonParser.parse(new FileReader("C:/Users/ooijs/Desktop/AssignmentExploration/demo/issue_log.json"));
-                conn = (Connection) DriverManager.getConnection(database, databaseUsername, databasePassword);
-                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO issue_aud values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                for(Object object : jsonArray) {
-                     JSONObject record = (JSONObject) object;
-                     int issue_id = Integer.parseInt((String) record.get("issue_id"));
-                     int rev = Integer.parseInt((String) record.get("rev"));
-                     int revtype = Integer.parseInt((String) record.get("revtype"));
-                     String assignee = (String) record.get("assignee");
-                     String created_by = (String) record.get("created_by");
-                     String description_text = (String) record.get("description_text");
-                     String modified_by = (String) record.get("modified_by");
-                     String date = (String) record.get("modified_date");
-                     Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
-                     if (!date.equals(null)) {
-                        Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
-                        pstmt.setTimeStamp(8, modified_date);
-                     }
-                     else {
-                        pstmt.setTimestamp(8, null);
-                     }
-                     int priority = Integer.parseInt((String) record.get("priority"));
-                     String status = (String) record.get("status");
-                     date = (String) record.get("timestamp");
-                     Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
-                     if (!date.equals(null)) {
-                        Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
-                        pstmt.setTimeStamp(11, timestamp);
-                     }
-                     else {
-                        pstmt.setTimestamp(11, null);
-                     }
-                     String title = (String) record.get("title");
-                     pstmt.setInt(1, issue_id);
-                     pstmt.setInt(2, rev);
-                     pstmt.setInt(3, revtype);
-                     pstmt.setString(4, assignee);
-                     pstmt.setString(5, created_by);
-                     pstmt.setString(6, description_text);
-                     pstmt.setString(7, modified_by);
-                     pstmt.setInt(9, priority);
-                     pstmt.setString(10, status);
-                     pstmt.setString(12, title);
-                     pstmt.executeUpdate();
-                }  
-                conn.close();
-            System.out.println("Records inserted for issue_aud");
-            } catch (FileNotFoundException e) {
-               e.printStackTrace();
-            } catch (IOException e) {
-               e.printStackTrace();
-            } catch (Exception e) {
-               e.printStackTrace();
-            }
-            
-            try {
-                JSONArray jsonArray = (JSONArray) jsonParser.parse(new FileReader("C:/Users/ooijs/Desktop/AssignmentExploration/demo/comment_log.json"));
-                conn = (Connection) DriverManager.getConnection(database, databaseUsername, databasePassword);
-                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO comment_aud values (?, ?, ?, ?, ?, ?, ?, ? )");
-                for(Object object : jsonArray) {
-                     JSONObject record = (JSONObject) object;
-                     int comment_id = Integer.parseInt((String) record.get("comment_id"));
-                     int rev = Integer.parseInt((String) record.get("rev"));
-                     int revtype = Integer.parseInt((String) record.get("revtype"));
-                     String date = (String) record.get("modified_date");
-                     if (!date.equals(null)) {
-                        Timestamp modified_date = new Timestamp(Date.valueOf(date).getTime());
-                        pstmt.setTimeStamp(4, modified_date);
-                     }
-                     else {
-                        pstmt.setTimestamp(4, null);
-                     }
-                     String text = (String) record.get("text");
-                     date = (String) record.get("timestamp");
-                     if (!date.equals(null)) {
-                        Timestamp timestamp = new Timestamp(Date.valueOf(date).getTime());
-                        pstmt.setTimeStamp(6, timestamp);
-                     }
-                     else {
-                        pstmt.setTimestamp(6, null);
-                     }
-                     String user = (String) record.get("user");
-                     int issue_id = Integer.parseInt((String) record.get("issue_id"));
-                     pstmt.setInt(1, comment_id);
-                     pstmt.setInt(2, rev);
-                     pstmt.setInt(3, revtype);
-                     pstmt.setString(5, text);
-                     pstmt.setString(7, user);
-                     pstmt.setInt(8, issue_id);
-                     pstmt.executeUpdate();
-                }  
-                conn.close();
-            System.out.println("Records inserted for comment_aud");
-            } catch (FileNotFoundException e) {
-               e.printStackTrace();
-            } catch (IOException e) {
-               e.printStackTrace();
-            } catch (Exception e) {
-               e.printStackTrace();
-            }
-            */
-        }
-
+        */
+    }
 }

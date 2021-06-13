@@ -23,7 +23,7 @@ public class Role {
     @Column(nullable = false, updatable = true, unique = true)
     private String name;
     
-    @ManyToMany(fetch=FetchType.LAZY,cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy="roles")
+    @ManyToMany(fetch=FetchType.LAZY,cascade={CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy="roles")
     @JsonIgnore
     private List<User> users=new ArrayList<>();
     
