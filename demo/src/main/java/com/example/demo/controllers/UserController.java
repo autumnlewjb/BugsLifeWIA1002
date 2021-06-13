@@ -364,10 +364,10 @@ public class UserController {
                 obj.remove("user_id");
                 if (Integer.parseInt(roleSelect.getString(2)) == 1) {
                     header.put("role_id", 1);
-                    header.put("name", "User");
+                    header.put("name", "ADMIN");
                 } else {
                     header.put("role_id", 2);
-                    header.put("name", "Admin");
+                    header.put("name", "USER");
                 }
                 obj.put("project", projects);
                 JSONListWithoutRole.add(obj);

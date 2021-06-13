@@ -81,24 +81,25 @@ public class DemoApplication implements CommandLineRunner {
             userService.createUser(LYM);
             userService.createUser(OJS);
         }
-        
+        else {
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
-        InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
-        try {
-            List<User> users = mapper.readValue(inputStream, typeReference);
-            for (User user : users) {
-                if(user.getUsername().equals("CWJ") || user.getUsername().equals("LJB") || user.getUsername().equals("LYM") || user.getUsername().equals("OJS"))
-                    user.getRoles().add(roleService.searchRoleByName("ADMIN"));
-                else
-                    user.getRoles().add(roleService.searchRoleByName("USER"));
+            TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
+            InputStream inputStream = TypeReference.class.getResourceAsStream("/json/data.json");
+            try {
+                List<User> users = mapper.readValue(inputStream, typeReference);
+                for (User user : users) {
+                    if(user.getUsername().equals("CWJ") || user.getUsername().equals("LJB") || user.getUsername().equals("LYM") || user.getUsername().equals("OJS"))
+                        user.getRoles().add(roleService.searchRoleByName("ADMIN"));
+                    else
+                        user.getRoles().add(roleService.searchRoleByName("USER"));
+                }
+                userService.createListOfUsers(users);
+                System.out.println("Users Saved!");
+            } catch (IOException e) {
+                System.out.println("Unable to save users: " + e.getMessage());
+            } catch (DataIntegrityViolationException e) {
+                System.out.println("Users Saved!");
             }
-            userService.createListOfUsers(users);
-            System.out.println("Users Saved!");
-        } catch (IOException e) {
-            System.out.println("Unable to save users: " + e.getMessage());
-        } catch (DataIntegrityViolationException e) {
-            System.out.println("Users Saved!");
         }
     }
 }
