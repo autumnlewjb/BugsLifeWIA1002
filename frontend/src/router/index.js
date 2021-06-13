@@ -8,6 +8,7 @@ import Issue from '../views/Issue'
 import Search from '../views/Search'
 import Home from '../views/Home'
 import Profile from '../views/Profile'
+import PageNotFound from '../views/404'
 
 import Vue from 'vue'
 
@@ -74,19 +75,21 @@ const routes = [
         meta: {
             requiresAuth: true
         }
+    },
+    {
+        path: '*',
+        name: 'PageNotFound',
+        component: PageNotFound
     }
 ]
 
 const router = new VueRouter({routes: routes, mode: 'history'})
 
 router.beforeEach((to, from, next) => {
-    console.log(store.getters.getCurrentUser);
     if (to.matched.some(route => route.meta.requiresAuth)) {
         store.dispatch('fetchCurrentUser').then(() => {
             if (store.getters.getCurrentUser) {
                 if (to.matched.some(route => route.meta.requiresAdmin)) {
-                    console.log("requires admin");
-                    console.log(store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN'));
                     if (store.getters.getCurrentUser.roles.find(role => role.name == 'ADMIN')) {
                         next();
                     } else {
