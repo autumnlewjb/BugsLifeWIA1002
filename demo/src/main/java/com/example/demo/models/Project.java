@@ -42,8 +42,6 @@ public class Project implements Serializable {
 
     private Timestamp modifiedDate;
 
-    private String modifiedBy;
-
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -166,14 +164,6 @@ public class Project implements Serializable {
         this.modifiedDate = modifiedDate;
     }
 
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
     @PrePersist
     public void prePersist() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -186,7 +176,6 @@ public class Project implements Serializable {
     public void preUpdate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            setModifiedBy(authentication.getName());
             setModifiedDate(new Timestamp(Instant.now().toEpochMilli()));
         }
     }
