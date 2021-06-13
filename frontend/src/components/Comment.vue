@@ -148,7 +148,8 @@ export default {
       this.angryCount = this.angry.length;
       this.happyCount = this.happy.length;
       this.thumbsupCount = this.thumbsup.length;
-      this.myReaction = val.react.find((r) => r.reactionBy == this.$store.getters.getCurrentUser.username);
+      console.log(this.$store.getters.getCurrentUser);
+      this.myReaction = val.react.find((r) => r.reaction_by == this.$store.getters.getCurrentUser.username);
       if (this.myReaction) {
         this.enableHappy = this.myReaction.reaction == 'Happy';
         this.enableAngry = this.myReaction.reaction == 'Angry';
