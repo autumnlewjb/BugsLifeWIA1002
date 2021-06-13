@@ -47,7 +47,7 @@ export default {
       length: 100,
       rules: {
         required: value => !!value || 'This field cannot be empty',
-        counter: value => value.length <= this.length || 'Max '+this.length+' characters',
+        counter: value => value.length <= this.length || 'Max ' + this.length + ' characters',
       }
     }
   },
@@ -103,7 +103,7 @@ export default {
           if (res.status == 200) {
             console.log("update project")
             this.$emit("show-snackbar", "Updated the project")
-            this.closeDialog()
+            this.closeDialog();
             this.$store.dispatch('fetchCurrentUser')
           } else if (res.status == 403) {
             this.$emit('toggleForbiddenDialog');
@@ -114,9 +114,16 @@ export default {
             .finally(() => this.loading = false)
       }
     },
+    closeDialog() {
+      this.clearForm();
+      this.$refs.form.resetValidation();
+      this.$emit('toggleDialog');
+    },
     clearForm() {
-      this.name = "";
-      this.description = "";
+      if (this.action !== 'edit') {
+        this.name = "";
+        this.description = "";
+      }
     },
     validateForm(action) {
       const valid = this.$refs.form.validate();
@@ -124,14 +131,10 @@ export default {
         this.onSubmit(action)
       }
     },
-    closeDialog() {
-      this.clearForm();
-      this.$emit('toggleDialog');
-    }
   },
   props: {
-    data: Object,
     project: Object
   },
+
 };
 </script>
