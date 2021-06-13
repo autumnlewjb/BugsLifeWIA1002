@@ -28,7 +28,7 @@ export default {
             this.$emit('input', val);
         },
         value(val) {
-            console.log(val)
+            
             this.content = val;
         }
     },

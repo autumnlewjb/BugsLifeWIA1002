@@ -103,7 +103,7 @@ export default {
     Snackbar
   },
   created() {
-    console.log("created");
+    
     // this.$store.dispatch('fetchCurrentUser');
   },
   watch: {
@@ -118,8 +118,8 @@ export default {
       this.$router.push({name: 'Projects'}).catch(() => {})
     },
     logOut() {
-      this.$store.dispatch('logout').then((res) => {
-        console.log(res);
+      this.$store.dispatch('logout').then(() => {
+        
         this.$router.push({name: 'Home'});
       });
     },

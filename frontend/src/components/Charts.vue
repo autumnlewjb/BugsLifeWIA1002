@@ -275,7 +275,7 @@ export default {
           value: element,
         });
       });
-      console.log(headers);
+      
       return headers;
     },
     getTableData() {
@@ -283,7 +283,7 @@ export default {
       this.rows.forEach((element) => {
         rows.push(element);
       });
-      console.log(rows);
+      
       return rows;
     },
   },

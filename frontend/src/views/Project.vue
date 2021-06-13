@@ -148,14 +148,14 @@ export default {
       })
           .then((res) => {
             if (res.status == 200) {
-              console.log("delete successful");
+              
               this.$store.dispatch("fetchCurrentUser");
               this.toggleSnackbar("Delete successful")
               setTimeout(() => this.$router.push({name: "Projects"}), 1500);
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
-              console.log("delete unsuccessful");
+              
               this.toggleSnackbar("Delete unsuccessful")
             }
           })
@@ -192,7 +192,7 @@ export default {
       this.forbiddenDialog = false;
     },
     toggleForbiddenDialog() {
-      console.log("toggle")
+      
       this.forbiddenDialog = true;
     },
     toggleSnackbar(text) {

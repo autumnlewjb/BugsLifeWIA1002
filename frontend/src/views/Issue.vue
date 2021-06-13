@@ -249,7 +249,7 @@ export default {
       })
           .then((res) => {
             if (res.status == 200) {
-              console.log("comment added");
+              
               this.toggleSnackbar("Comment added")
               this.text = "";
               this.$store.dispatch("fetchCurrentUser");
@@ -279,7 +279,7 @@ export default {
       })
           .then((res) => {
             if (res.status == 200) {
-              console.log("delete successful");
+              
               this.$store.dispatch("fetchCurrentUser");
               this.toggleSnackbar("Delete successful")
               setTimeout(() => this.$router.push({
@@ -289,7 +289,7 @@ export default {
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
-              console.log("delete unsuccessful");
+              
               this.toggleSnackbar("Delete unsuccessful")
             }
           })
@@ -343,7 +343,7 @@ export default {
           });
     },
     updateComment() {
-      console.log("comment updated");
+      
       this.fetchIssue();
     },
     closeForbiddenDialog() {
@@ -357,14 +357,14 @@ export default {
         fetch(`/api/${this.projectId}/${this.issueId}/issue/undo`)
             .then((res) => {
               if (res.status != 200) {
-                console.log(res.status);
+                
                 return null;
               } else {
                 return res.json();
               }
             })
             .then((data) => {
-              console.log(data);
+              
               if (data) {
                 if (check && data.issue_id != this.issueId) {
                   this.undoRedoFailed = true;
@@ -380,16 +380,16 @@ export default {
       } else {
         fetch(`/api/${this.projectId}/${this.issueId}/issue/redo`)
             .then((res) => {
-              console.log(res.status);
+              
               if (res.status != 200) {
                 return null;
               } else {
-                console.log(res);
+                
                 return res.json();
               }
             })
             .then((data) => {
-              console.log(data);
+              
               if (data) {
                 if (check && data.issue_id != this.issueId) {
                   this.undoRedoFailed = true;
@@ -427,7 +427,7 @@ export default {
     },
     getChanges() {
       if (this.history.length == 0) return [];
-      console.log(this.history);
+      
       const changes = [];
       changes.push({
         date: this.history[this.history.length - 1].timestamp,
@@ -453,7 +453,7 @@ export default {
         Object.keys(curr).forEach((key) => {
           if (!excluded.includes(key)) {
             if (key == "tag") {
-              console.log(curr[key]);
+              
               for (var index in curr[key]) {
                 if (!prev[key].find((element) => element == curr[key][index])) {
                   change.statements.push({

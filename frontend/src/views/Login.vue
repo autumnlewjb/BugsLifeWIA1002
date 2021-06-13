@@ -89,7 +89,7 @@ export default {
           })
           .then((data) => {
             if (data) {
-              console.log(data);
+              
               localStorage.setItem('data', JSON.stringify(data));
               this.$store.commit('setCurrentUser', data);
               this.$router.push({name: 'Profile'})

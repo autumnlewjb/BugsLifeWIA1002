@@ -27,7 +27,7 @@ export default {
     },
     watch: {
         markdown(val) {
-            console.log("run");
+            
             this.html = this.converter.makeHtml(val);
             this.$emit('input', this.html);
         },
@@ -42,7 +42,7 @@ export default {
     },
     created() {
         this.markdown = this.converter.makeMarkdown(this.value);
-        console.log(this.converter.getFlavor());
+        
     }
 }
 </script>

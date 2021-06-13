@@ -111,7 +111,7 @@ export default {
   methods: {
     async onSubmit(action) {
       this.loading = true;
-      console.log(action);
+      
       if (action == "add") {
         await fetch(`/api/${this.projectId}`, {
           method: "POST",
@@ -131,7 +131,7 @@ export default {
         })
             .then((res) => {
               if (res.status == 200) {
-                console.log("added new issue");
+                
                 this.closeDialog();
                 this.$emit("show-snackbar", "Added new issue")
                 this.$store.dispatch('fetchCurrentUser')
@@ -142,7 +142,7 @@ export default {
             .catch((e) => console.log(e))
             .finally(() => this.loading = false);
       } else if (action == "edit") {
-        console.log(this.title)
+        
         await fetch(`/api/${this.projectId}/${this.issue.issueId}`, {
           method: 'PUT',
           headers: {
@@ -164,11 +164,11 @@ export default {
                 this.$store.dispatch('fetchCurrentUser');
                 this.closeDialog()
                 this.$emit("show-snackbar", "Update successful")
-                console.log("update successful");
+                
               } else if (res.status == 403) {
                 this.$emit('toggleForbiddenDialog');
               } else {
-                console.log("update unsuccessful");
+                
                 this.$emit("show-snackbar", "Update unsuccessful")
               }
             })

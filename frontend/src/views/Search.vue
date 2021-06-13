@@ -208,9 +208,9 @@ export default {
           }
         })
         .then((data) => {
-          console.log(data);
+          
           const { content, totalPages, number } = data;
-          console.log(data);
+          
           this.page = number ? number + 1 : 1;
           this.totalPages = totalPages;
           this.items = content;

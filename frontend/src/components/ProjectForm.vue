@@ -79,7 +79,7 @@ export default {
           })
         }).then((res) => {
           if (res.status == 200) {
-            console.log("added new project")
+            
             this.$emit("show-snackbar", "Added new project");
             this.closeDialog();
             this.$store.dispatch('fetchCurrentUser');
@@ -101,7 +101,7 @@ export default {
           })
         }).then((res) => {
           if (res.status == 200) {
-            console.log("update project")
+            
             this.$emit("show-snackbar", "Updated the project")
             this.closeDialog();
             this.$store.dispatch('fetchCurrentUser')

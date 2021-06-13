@@ -53,7 +53,7 @@ export default {
       }).finally(() => this.loading = false)
 
       if (res.status === 200) {
-        console.log("registered");
+        
         this.toggleSnackbar("Registered")
         // router.push({"name": "Login"});
       } else {

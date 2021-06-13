@@ -141,14 +141,14 @@ export default {
       this.commentObj = val;
     },
     commentObj(val) {
-      console.log("change");
+      
       this.angry = this.comment.react.filter((r) => r.reaction.toLowerCase() === "angry");
       this.happy = this.comment.react.filter((r) => r.reaction.toLowerCase() === "happy");
       this.thumbsup = this.comment.react.filter((r) => r.reaction.toLowerCase() === "thumbsup");
       this.angryCount = this.angry.length;
       this.happyCount = this.happy.length;
       this.thumbsupCount = this.thumbsup.length;
-      console.log(this.$store.getters.getCurrentUser);
+      
       this.myReaction = val.react.find((r) => r.reaction_by == this.$store.getters.getCurrentUser.username);
       if (this.myReaction) {
         this.enableHappy = this.myReaction.reaction == 'Happy';
@@ -178,7 +178,7 @@ export default {
             })
             .then((data) => {
               if (data) {
-                console.log(data);
+                
                 this.history = data;
               }
             })
@@ -208,10 +208,7 @@ export default {
       })
           .then((res) => {
             if (res.status == 200) {
-              this.$store.dispatch("fetchCurrentUser");
-              console.log("successful");
-            } else {
-              console.log("failed");
+              this.$store.dispatch("fetchCurrentUser"); 
             }
           })
           .catch((e) => console.log(e));
@@ -268,12 +265,12 @@ export default {
           .then((res) => {
             if (res.status == 200) {
               this.$store.dispatch("fetchCurrentUser");
-              console.log("update successful");
+              
               this.$emit("show-snackbar", "Update successful")
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
-              console.log("update failed");
+              
               this.$emit("show-snackbar", "Update unsuccessful")
             }
           })
@@ -286,20 +283,20 @@ export default {
       this.forbiddenDialog = false;
     },
     handleUndoRedo(action, check = true) {
-      console.log(this.issueId);
-      console.log(this.commentId);
+      
+      
       if (action == 'undo') {
         fetch(`/api/${this.issueId}/${this.commentId}/comment/undo`)
             .then((res) => {
               if (res.status != 200) {
-                console.log(res.status);
+                
                 return null;
               } else {
                 return res.json();
               }
             })
             .then((data) => {
-              console.log(data);
+              
               if (data) {
                 if (check && data.comment_id != this.commentId) {
                   this.undoRedoFailed = true;
@@ -315,16 +312,16 @@ export default {
       } else {
         fetch(`/api/${this.issueId}/${this.commentId}/comment/redo`)
             .then((res) => {
-              console.log(res.status);
+              
               if (res.status != 200) {
                 return null;
               } else {
-                console.log(res);
+                
                 return res.json();
               }
             })
             .then((data) => {
-              console.log(data);
+              
               if (data) {
                 if (check && data.comment_id != this.commentId) {
                   this.undoRedoFailed = true;

@@ -114,7 +114,7 @@ export default {
           body: formData
         }).then((res) => {
           if (res.status === 200) {
-            console.log("Uploaded the attachment")
+            
             this.$emit("update-attachment")
             this.closeDialog()
           } else {

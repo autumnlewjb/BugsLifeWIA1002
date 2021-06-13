@@ -41,7 +41,7 @@ const store = new Vuex.Store({
         })
         .then(data => {
           state.commit('setCurrentUser', data);
-          console.log(state.currentUser)
+          
           localStorage.setItem('data', JSON.stringify(data));
           resolve(data);
         })
@@ -51,13 +51,11 @@ const store = new Vuex.Store({
     logout(state) {
       return new Promise((resolve, reject) => {
         fetch(`/api/logout`).then((res) => {
-          console.log(res.status == 200);
+          
           if (res.status == 200) {
             localStorage.removeItem('data');
             state.commit('clearUserState');
             resolve(res);
-          } else {
-            console.log("logout failed");
           }
         })
         .catch(e => reject(e));

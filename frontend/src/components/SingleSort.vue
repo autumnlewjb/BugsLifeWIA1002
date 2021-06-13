@@ -68,14 +68,6 @@ export default {
         this.sortOrder = this.sortData[0].order;
     }
   },
-  watch: {
-    sortData(val) {
-      // this.availableSortSubjects = this.sortSubjects.filter((item) => val.filter((data) => data.subject == item).length == 0);
-      console.log(this.availableSortSubjects);
-      console.log("-")
-      console.log(val);
-    }
-  },
   methods: {
     addNewSort() {
       if (this.sortSubject == '' || this.sortOrder == '') return;
@@ -89,7 +81,7 @@ export default {
       });
       // this.sortSubject = "";
       // this.sortOrder = "";
-      console.log(this.sortData);
+      
     },
     clearAll() {
       const len = this.sortData.length;

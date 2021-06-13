@@ -241,7 +241,7 @@ export default {
         body: formData
       }).then((res) => {
         if (res.status === 200) {
-          console.log("Deleted the attachment")
+          
           this.editing = false
           this.fetchAttachments()
         } else {
