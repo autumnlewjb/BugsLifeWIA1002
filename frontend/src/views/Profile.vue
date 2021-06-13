@@ -103,48 +103,57 @@
           <v-tab-item>
             <v-container v-if="issues.length > 0">
               <v-card v-for="issue in getIssues" :key="issue.id" class="pa-5 ma-5">
-                <v-card-title>
-                  <span
-                      class="mr-5 status"
-                      :style="`min-width: 1rem; background-color: ${
-                      statusColor[issue.status]
-                    }`"
-                  >{{ issue.status }}</span
-                  >
-                  {{ issue.title }}
-                  <v-icon v-for="n in issue.priority" :key="n" color="red"
-                  >mdi-exclamation
-                  </v-icon
-                  >
+                <v-card-title class="ma-0 pa-0">
+                  <v-col cols="10">
+                    <v-card-title class="mb-0 pb-0">
+                    <span class="status mr-3"
+                          :style="`min-width: 1rem; background-color: ${statusColor[issue.status]}`">
+                      {{ issue.status }}
+                    </span>
+                      <v-icon v-for="n in issue.priority" :key="n" color="red">
+                        mdi-exclamation
+                      </v-icon>
+                    </v-card-title>
+                  </v-col>
+                  <v-col cols="2">
+                    <p class="mr-4 text-right text-h6 grey--text">#{{ issue.issueId }}</p>
+                  </v-col>
                 </v-card-title>
-                <v-card-text>
-                  <v-chip
-                      v-for="(tag, index) in issue.tag"
-                      :key="index"
-                      class="mx-1"
-                  >{{ tag }}
-                  </v-chip
+                <v-card-subtitle class="pb-0">
+                  <v-col cols="12">
+                    <v-chip-group v-if="issue.tag">
+                      <v-tooltip bottom v-for="tag in issue.tag" :key="tag">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-chip
+                              class="mx-1"
+                              @click="handleChipClick(tag)"
+                              v-on="on"
+                              v-bind="attrs"
+                          >{{ tag }}
+                          </v-chip
+                          >
+                        </template>
+                        <span>Filter by "{{ tag }}"</span>
+                      </v-tooltip>
+                    </v-chip-group>
+                  </v-col>
+                </v-card-subtitle>
+                <v-container class="pl-6 pt-0">
+                  <v-card-title>
+                    {{ issue.title }}
+                  </v-card-title>
+                  <v-card-text v-html="getDescription(issue.descriptionText == null || issue.descriptionText == ''
+                  ? '(Description not specified)'
+                  : issue.descriptionText)">
+                  </v-card-text
                   >
-                </v-card-text>
-                <v-card-text
-                    v-html="
-                    getDescription(
-                      issue.descriptionText == null ||
-                        issue.descriptionText == ''
-                        ? '(Description not specified)'
-                        : issue.descriptionText
-                    )
-                  "
-                >
-                </v-card-text>
-                <v-card-text>
-                  Created on
-                  {{
-                    issue.timestamp == null
-                        ? "(Not Specified)"
-                        : new Date(issue.timestamp).toLocaleString()
-                  }}
-                </v-card-text>
+                  <v-card-text>
+                    Created on
+                    {{
+                      issue.timestamp == null ? "(Not Specified)" : new Date(issue.timestamp).toLocaleString()
+                    }}
+                  </v-card-text>
+                </v-container>
                 <v-card-actions class="d-flex justify-end">
                   <v-btn
                       text
