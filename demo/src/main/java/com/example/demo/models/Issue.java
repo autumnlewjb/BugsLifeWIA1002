@@ -1,29 +1,27 @@
 package com.example.demo.models;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Formula;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
-
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 @Audited
 @Entity
 @Indexed
 @Table(name = "issue")
-@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 public class Issue implements Serializable, Cloneable {
 
@@ -52,21 +50,17 @@ public class Issue implements Serializable, Cloneable {
     @Column(columnDefinition = "text", name = "descriptionText")
     private String descriptionText;
 
-    @CreatedBy
     @Column(updatable = false)
     private String createdBy;
 
     private String assignee;
 
-    @LastModifiedBy
     private String modifiedBy;
 
     @GenericField(sortable = Sortable.YES)
-    @CreatedDate
     @Column(updatable = false)
     private Timestamp timestamp;
 
-    @LastModifiedDate
     private Timestamp modifiedDate;
 
     @JsonBackReference
@@ -199,8 +193,7 @@ public class Issue implements Serializable, Cloneable {
         this.attachments = attachment;
     }
 
-    public Object clone() throws CloneNotSupportedException
-    {
+    public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
@@ -223,5 +216,23 @@ public class Issue implements Serializable, Cloneable {
     @JsonProperty
     public Integer getProjectId() {
         return project == null ? null : project.getProjectId();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setCreatedBy(authentication.getName());
+            setTimestamp(new Timestamp(Instant.now().toEpochMilli()));
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setModifiedBy(authentication.getName());
+            setModifiedDate(new Timestamp(Instant.now().toEpochMilli()));
+        }
     }
 }

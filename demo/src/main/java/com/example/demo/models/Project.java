@@ -1,32 +1,24 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Formula;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "project")
-@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 @Indexed
 public class Project implements Serializable {
@@ -45,14 +37,11 @@ public class Project implements Serializable {
     private String description;
 
     @GenericField(sortable = Sortable.YES)
-    @CreatedDate
     @Column(updatable = false)
     private Timestamp date;
 
-    @LastModifiedDate
     private Timestamp modifiedDate;
 
-    @LastModifiedBy
     private String modifiedBy;
 
     @JsonBackReference
@@ -183,5 +172,22 @@ public class Project implements Serializable {
 
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setDate(new Timestamp(Instant.now().toEpochMilli()));
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            setModifiedBy(authentication.getName());
+            setModifiedDate(new Timestamp(Instant.now().toEpochMilli()));
+        }
     }
 }
