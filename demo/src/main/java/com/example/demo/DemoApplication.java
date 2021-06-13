@@ -61,7 +61,7 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws IOException {
-        /*
+        
         roleService.createRole(new Role("ADMIN"));
         roleService.createRole(new Role("USER"));
         User CWJ=new User("CWJ@issuetracker.com","CWJ","CWJ");
@@ -76,7 +76,7 @@ public class DemoApplication implements CommandLineRunner {
         userService.createUser(LJB);
         userService.createUser(LYM);
         userService.createUser(OJS);
-        */
+        
         /*
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
