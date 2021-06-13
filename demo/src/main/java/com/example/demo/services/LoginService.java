@@ -50,7 +50,7 @@ public class LoginService {
     public ResponseCookie createAccessTokenCookie(String token) {
         return ResponseCookie.from(jwtCookieName, token)
                 .maxAge(-1) // the cookie is removed when the browser is closed
-                .domain("localhost")
+                // .domain("localhost")
                 .path("/")
                 .httpOnly(true)
                 .build();
