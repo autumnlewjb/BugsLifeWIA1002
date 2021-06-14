@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.CacheControl;
+import java.util.concurrent.TimeUnit;
 
 import java.util.List;
 
@@ -24,13 +26,13 @@ public class ProjectController {
     @GetMapping("/")
     public ResponseEntity<List<Project>> getAllProjects(@RequestParam(defaultValue = "date,desc") String[] sort) {
         List<Project> projectList = projectService.findAllProjectsWithSort(sort);
-        return ResponseEntity.ok(projectList);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(projectList);
     }
 
     @GetMapping("/project/{project_id}")
     public ResponseEntity<Project> getProject(@PathVariable Integer project_id) {
         Project project = projectService.findProjectWithId(project_id);
-        return ResponseEntity.ok(project);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(project);
     }
 
     @PostMapping("/{user_id}/createProject")

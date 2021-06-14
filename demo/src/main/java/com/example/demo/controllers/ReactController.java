@@ -13,6 +13,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.CacheControl;
+import java.util.concurrent.TimeUnit;
 
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class ReactController {
             throw new ResourceNotFoundException("comment", "id", comment_id);
         }
         List<React> reactList = reactService.getReactionsByComment(comment);
-        return ResponseEntity.ok(reactList);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(reactList);
     }
 
     @PostMapping("/{project_id}/{issue_id}/{comment_id}")

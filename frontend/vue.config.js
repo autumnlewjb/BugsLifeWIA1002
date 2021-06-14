@@ -14,5 +14,14 @@ module.exports = {
 
     transpileDependencies: [
       'vuetify'
-    ]
+    ],
+
+    pwa: {
+        name: 'BugsLife',
+        themeColor: '#FFFAFA',
+        appleMobileWebAppCapable: 'yes',
+        iconPaths: {
+            msTileImage: 'img/icons/mstile-150x150.png'
+        }
+    }
 }

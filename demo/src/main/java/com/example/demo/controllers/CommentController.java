@@ -28,6 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.CacheControl;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
@@ -55,7 +57,7 @@ public class CommentController {
             throw new ResourceNotFoundException("issue", "id", issue_id);
         }
         List<Comment> commentList=commentService.findCommentsByIssue(issue);
-        return ResponseEntity.ok(commentList);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(commentList);
     }
 
     @PostMapping("{project_id}/{issue_id}")

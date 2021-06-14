@@ -39,6 +39,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.CacheControl;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/api")
@@ -65,7 +67,7 @@ public class IssueController {
             throw new ResourceNotFoundException("project", "id", project_id);
         }
         List<Issue> issueList = issueService.findIssuesByProjectWithSortAndFilter(sort, filter, project);
-        return ResponseEntity.ok(issueList);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(issueList);
     }
 
     @PostMapping("/{project_id}")
@@ -88,7 +90,7 @@ public class IssueController {
     @GetMapping("issue/{issue_id}")
     public ResponseEntity<Issue> getIssue(@PathVariable Integer issue_id) {
         Issue issue = issueService.findIssuesById(issue_id);
-        return ResponseEntity.ok(issue);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(issue);
     }
 
     @GetMapping("/allIssues")
@@ -441,7 +443,7 @@ public class IssueController {
         Map<String, Integer> ranking = issueService.sortByValue(performerList);
         System.out.println(ranking);
 
-        return ResponseEntity.ok(ranking);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(ranking);
     }
 
     @GetMapping("/{project_id}/charts/data")
@@ -596,7 +598,7 @@ public class IssueController {
         response.put("headers", headers);
         response.put("rows", rows);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(100, TimeUnit.SECONDS)).body(response);
 
     }
 
