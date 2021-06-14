@@ -4,6 +4,7 @@ import App from './App'
 import vuetify from './plugins/vuetify'
 import store from './store'
 import HighchartsVue from 'highcharts-vue'
+import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
