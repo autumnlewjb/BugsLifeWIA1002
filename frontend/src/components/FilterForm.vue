@@ -10,7 +10,7 @@
             </v-row>
             <v-row>
               <v-col sm="12" md="12">
-                <v-combobox solo label="Issue Status" v-model="filterStatus" :items="filterOptions" multiple></v-combobox>
+                <v-combobox solo label="Issue Status" v-model="filterStatus" :items="filterOptions"></v-combobox>
               </v-col>
             </v-row>
             <v-row class="d-flex justify-end">
@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       filterTags: [],
-      filterStatus: [],
+      filterStatus: null,
       filterTagsArray: [],
       filterStatusArray: [],
       tagOptions: ['Frontend', 'Backend', 'Suggestion', 'First Bug', 'Enhancement'],
@@ -61,7 +61,7 @@ export default {
       for (var i=0; i<len; i++) {
         this.filterStatusArray.pop();
       }
-      val?.forEach(element => this.filterStatusArray.push(element));
+      this.filterStatusArray.push(val);
     }
   },
   computed: {
@@ -70,7 +70,7 @@ export default {
   methods: {
     clearAll() {
       this.filterTags = [];
-      this.filterStatus = [];
+      this.filterStatus = null;
     },
   }
 }
