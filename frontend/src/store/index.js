@@ -40,10 +40,12 @@ const store = new Vuex.Store({
           }
         })
         .then(data => {
-          delete data.password
-          state.commit('setCurrentUser', data);
-          
-          localStorage.setItem('data', JSON.stringify(data));
+          if (data) {
+            delete data.password
+            state.commit('setCurrentUser', data);
+            
+            localStorage.setItem('data', JSON.stringify(data));
+          }
           resolve(data);
         })
         .catch(e => reject(e))
@@ -52,7 +54,6 @@ const store = new Vuex.Store({
     logout(state) {
       return new Promise((resolve, reject) => {
         fetch(`/api/logout`).then((res) => {
-          
           if (res.status == 200) {
             localStorage.removeItem('data');
             state.commit('clearUserState');

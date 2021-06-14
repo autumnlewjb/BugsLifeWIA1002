@@ -1,4 +1,4 @@
-# AssignmentExploration
+# BugsLifeWIA1002
 
 ## Requirements
 - Java Development Kit (JDK) 11
@@ -11,7 +11,7 @@
 Start your mysql server with the credentials below  
 ```user: root, password: secret```  
 
-*if you would like to use a different user and password, specify in the file ```src\main\resources\application.properties```*
+*if you would like to use a different user and password, specify in the file ```src/main/resources/application.properties```*
 
 ### Start the Spring backend service
 You have two options here:  
