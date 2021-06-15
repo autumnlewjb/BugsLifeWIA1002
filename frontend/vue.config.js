@@ -22,6 +22,21 @@ module.exports = {
         appleMobileWebAppCapable: 'yes',
         iconPaths: {
             msTileImage: 'img/icons/mstile-150x150.png'
+        },
+        workboxPluginMode: 'GenerateSW',
+        workboxOptions: {
+            runtimeCaching: [
+                {
+                    handler: 'NetworkFirst',
+                    urlPattern: new RegExp('.*/api/.*'),
+                    options: {
+                        cacheName: 'http-req',
+                        expiration: {
+                            maxAgeSeconds: 60 * 60
+                        }
+                    }
+                }
+            ]
         }
     }
 }

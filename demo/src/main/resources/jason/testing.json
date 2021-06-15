@@ -1,0 +1,82 @@
+[
+    {
+        "user_id": 1,
+        "email": "admin@issuetracker.com",
+        "username": "admin",
+        "password": "admin",
+        "project": [
+            {
+                "project_id": 1,
+                "name": "project B",
+                "description": "this is project B",
+                "date": "2021-06-07",
+                "issue": [
+                    {
+                        "issue_id": 1,
+                        "title": "Can't display the table",
+                        "priority": 4,
+                        "status": "In Progress",
+                        "tag": "Frontend",
+                        "descriptionText": null,
+                        "createdBy": null,
+                        "assignee": "btan",
+                        "timestamp": "2021-06-07",
+                        "comment": [
+                            {
+                                "comment_id": 1,
+                                "text": "Please find below links to the two .pbix files I've created in an attempt toconquer this error I'm receiving.",
+                                "react": 2,
+                                "timestamp": "1970-01-19"
+                            },
+                            {
+                                "comment_id": 3,
+                                "text": "I am having the same issue with a disc of photos from Christmas given to me by my sister. I have tried opening all of the photos with all of my available opening options and still get the same message as above poster. ",
+                                "react": 6,
+                                "timestamp": "1970-01-19"
+                            }
+                        ]
+                    },
+                    {
+                        "issue_id": 2,
+                        "title": "Can't display the table",
+                        "priority": 5,
+                        "status": "In Progress",
+                        "tag": "Frontend",
+                        "descriptionText": "Hi, \n\n            I'm receiving the \"Can't display the data because Power BI can't determine the relationship between two or more fields.\" error message and I do not understand why. I have searched the net for help but can't find a post that answers my question.\n\n           It may well be a straight modelling restriction but best to check.\n\n\n   I have two datasources (Sheet 1 and Sheet 2). Both are Excel files.",
+                        "createdBy": "jhoe",
+                        "assignee": "btan",
+                        "timestamp": "2021-06-07",
+                        "comment": []
+                    },
+                    {
+                        "issue_id": 3,
+                        "title": "Can't open file",
+                        "priority": 3,
+                        "status": "Open",
+                        "tag": "Backend",
+                        "descriptionText": "Windows 10 Photo will not open a jpg file. I get \"We can't open this file.\" error message.\n\nThey're family photo that I sure would like to salvage.  Thanks",
+                        "createdBy": "btan",
+                        "assignee": "jhoe",
+                        "timestamp": "1970-01-19",
+                        "comment": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "user_id": 9,
+        "email": "admin9@issuetracker.com",
+        "username": "admin9",
+        "password": "admin9",
+        "project": [
+            {
+                "project_id": 14,
+                "name": "project 123",
+                "description": "this is project 34",
+                "date": "2021-06-07",
+                "issue": []
+            }
+        ]
+    }
+]

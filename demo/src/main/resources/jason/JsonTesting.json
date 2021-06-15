@@ -1,0 +1,543 @@
+[{
+        "email": "jhoe@gmail.com",
+        "username": "jhoe",
+        "password": "password",
+        "project": [
+            {
+                "name": "Project A",
+                "description": "This is my first project",
+                "date": "2020-06-21",
+                "issue": [
+                    {
+                        "title": "Can't display the table",
+                        "priority": 4,
+                        "status": "In progress",
+                        "tag": [
+                            "Frontend"
+                        ],
+                        "descriptionText": null,
+                        "createdBy": null,
+                        "assignee": "btan",
+                        "timestamp": "2020-06-25",
+                        "comment": [
+                            {
+                                "text": "Have you tried following the manuals?",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 0
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 1
+                                    }
+                                ],
+                                "timestamp": "2020-06-28"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "email": "btan@yahoo.com",
+        "username": "btan",
+        "password": "btan123",
+        "project": []
+    },
+    {
+        "email": "jonathon@hotmail.com",
+        "username": "jonathon",
+        "password": "qwerty",
+        "project": [
+            {
+                "name": "Project C",
+                "description": "This is my first project",
+                "date": null,
+                "issue": [
+                    {
+                        "title": "I am facing infinite recursive loop, causing stack overflow",
+                        "priority": 2,
+                        "status": "In progress",
+                        "tag": [
+                            "Frontend"
+                        ],
+                        "descriptionText": "I cannot understand in a recursive way",
+                        "createdBy": null,
+                        "assignee": "hoo",
+                        "timestamp": null,
+                        "comment": []
+                    }
+                ]
+            },
+            {
+                "name": "Project D",
+                "description": "This is my second project",
+                "date": null,
+                "issue": [
+                    {
+                        "title": "I cannot post issues using my personal laptop",
+                        "priority": 3,
+                        "status": "In progress",
+                        "tag": [
+                            "Frontend",
+                            "Backend"
+                        ],
+                        "descriptionText": "Can anyone assist me?",
+                        "createdBy": null,
+                        "assignee": "lim",
+                        "timestamp": null,
+                        "comment": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "email": "admin@issuetracker.com",
+        "username": "admin",
+        "password": "admin",
+        "project": []
+    },
+    {
+        "email": "samantha@facebook.com",
+        "username": "samantha",
+        "password": "asdfgh",
+        "project": [
+            {
+                "name": "Project D",
+                "description": "This is my second project",
+                "date": "2021-03-01",
+                "issue": [
+                    {
+                        "title": "Issue testing",
+                        "priority": 3,
+                        "status": "In progress",
+                        "tag": [
+                            "Frontend",
+                            "Backend"
+                        ],
+                        "descriptionText": "I am just testing",
+                        "createdBy": null,
+                        "assignee": "btan",
+                        "timestamp": null,
+                        "comment": []
+                    },
+                    {
+                        "title": "Another ssue testing",
+                        "priority": 1,
+                        "status": "In progress",
+                        "tag": [
+                            "Frontend"
+                        ],
+                        "descriptionText": "I am just testing again. No worries",
+                        "createdBy": null,
+                        "assignee": "btan",
+                        "timestamp": "2021-05-12",
+                        "comment": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "email": "klee@genshin.com",
+        "username": "klee",
+        "password": "jean",
+        "project": [
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Project E",
+                "description": "This is my third project",
+                "date": "2021-04-25",
+                "issue": [
+                    {
+                        "title": "The game is crashing",
+                        "priority": 5,
+                        "status": "In progress",
+                        "tag": [
+                            "Backend"
+                        ],
+                        "descriptionText": "The game crashes whenever i fight boses with high graphics",
+                        "createdBy": null,
+                        "assignee": "venti",
+                        "timestamp": "2021-04-12",
+                        "comment": [
+                            {
+                                "text": "Can you post the print screen of your graphic settings",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 6
+                                    }
+                                ],
+                                "timestamp": null
+                            },
+                            {
+                                "text": "I think you are running at a higher fps than your computer can withstand. Try using 30 fps only",
+                                "react": [
+                                    {
+                                        "reaction": "angry",
+                                        "count": 3
+                                    },
+                                    {
+                                        "reaction": "happy",
+                                        "count": 0
+                                    }
+                                ],
+                                "timestamp": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
