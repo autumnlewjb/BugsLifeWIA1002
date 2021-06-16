@@ -2,13 +2,15 @@ version: "3.9"
 services:
     spring-app:
         build: ./demo/
-        ports:
-            - 8080:8080
+        # ports:
+        #     - 8080:8080
         depends_on: 
             - sql-server
         restart: on-failure
         volumes:
             - /var/www/files:/var/www/html
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
     sql-server:
         image: mysql:latest
         environment:

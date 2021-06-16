@@ -49,7 +49,7 @@
         </v-flex>
       </v-layout>
       <v-layout row justify-content-center>
-        <v-flex xs12 md12 v-if="showFilterForm">
+        <v-flex xs12 md12 v-show="showFilterForm">
           <SingleFilter
               :filterSubjects="filterSubjects"
               :tags="tags"
@@ -63,7 +63,7 @@
               v-if="multipleFilterAndSort"
           />
         </v-flex>
-        <v-flex xs12 md12 v-if="showSortForm">
+        <v-flex xs12 md12 v-show="showSortForm">
           <SingleSort
               :sortSubjects="sortSubjects"
               :alreadyInSort="sortData"
@@ -246,7 +246,7 @@ export default {
     Snackbar
   },
   watch: {
-    sortData(val) {
+    async sortData(val) {
       this.queryParams.sort = [];
       if (val.length > 0) {
         val.forEach((element) =>
@@ -256,9 +256,9 @@ export default {
       } else {
         this.sortActive = false;
       }
-      this.fetchIssues();
+      await this.fetchIssues();
     },
-    tags(val) {
+    async tags(val) {
       this.queryParams.filter.tag = [];
       if (focus) {
         val.forEach((element) =>
@@ -268,9 +268,9 @@ export default {
       } else {
         this.filterActive = false;
       }
-      this.fetchIssues();
+      await this.fetchIssues();
     },
-    status(val) {
+    async status(val) {
       this.queryParams.filter.status = [];
       if (focus) {
         val.forEach((element) =>
@@ -280,7 +280,7 @@ export default {
       } else {
         this.filterActive = false;
       }
-      this.fetchIssues();
+      await this.fetchIssues();
     },
   },
   methods: {

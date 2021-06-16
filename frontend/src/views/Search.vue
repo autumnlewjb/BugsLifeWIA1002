@@ -153,8 +153,8 @@ export default {
       } else if (val == 'project') {
         this.availableSort = [
           {
-            text: 'Timestamp',
-            value: 'timestamp'
+            text: 'Date',
+            value: 'date'
           }
         ];
         this.availableFilter = []
@@ -173,13 +173,13 @@ export default {
     search() {
       this.page = 1;
     },
-    getSearchObject(val) {
+    async getSearchObject(val) {
       if (val == null) {
         return;
       }
-      if (this.loading) {
-        return;
-      }
+      // if (this.loading) {
+      //  return;
+      // }
       this.loading = true;
       var url = `/api?query=${val.query}&scope=${val.scope}&size=5&page=${val.page}`;
       this.searchType = val.scope;
@@ -196,7 +196,7 @@ export default {
         url += `&filter=${item}`;
       });
 
-      fetch(url)
+      await fetch(url)
         .then((res) => {
           if (res.status == 200) {
             return res.json();

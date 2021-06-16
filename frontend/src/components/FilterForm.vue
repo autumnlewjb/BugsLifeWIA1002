@@ -1,28 +1,28 @@
 <template>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-form>
-            <v-row>
-              <v-col sm="12" md="12">
-                <v-combobox solo label="Issue Tags" v-model="filterTags" :items="tagOptions" multiple></v-combobox>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col sm="12" md="12">
-                <v-combobox solo label="Issue Status" v-model="filterStatus" :items="filterOptions"></v-combobox>
-              </v-col>
-            </v-row>
-            <v-row class="d-flex justify-end">
-              <v-btn text @click="clearAll">Clear All</v-btn>
-            </v-row>
-          </v-form>
-        </v-col>
-      </v-row>
-      <v-row class="my-10">
-        <v-divider></v-divider>
-      </v-row>
-    </v-container>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-form>
+          <v-row>
+            <v-col sm="12" md="12">
+              <v-combobox solo label="Issue Tags" v-model="filterTags" :items="tagOptions" multiple></v-combobox>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="12" md="12">
+              <v-combobox solo label="Issue Status" v-model="filterStatus" :items="filterOptions"></v-combobox>
+            </v-col>
+          </v-row>
+          <v-row class="d-flex justify-end">
+            <v-btn text @click="clearAll">Clear All</v-btn>
+          </v-row>
+        </v-form>
+      </v-col>
+    </v-row>
+    <v-row class="my-10">
+      <v-divider></v-divider>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -46,27 +46,25 @@ export default {
     this.filterTagsArray = this.tags;
     this.filterStatusArray = this.status;
     this.filterTagsArray.forEach(element => this.filterTags.push(element));
-    this.filterStatusArray.forEach(element => this.filterStatus.push(element));
+    this.filterStatus = this.filterStatusArray[0];
   },
   watch: {
     filterTags(val) {
       const len = this.filterTagsArray.length;
-      for (var i=0; i<len; i++) {
+      for (var i = 0; i < len; i++) {
         this.filterTagsArray.pop();
       }
       val?.forEach(element => this.filterTagsArray.push(element));
     },
     filterStatus(val) {
       const len = this.filterStatusArray.length;
-      for (var i=0; i<len; i++) {
+      for (var i = 0; i < len; i++) {
         this.filterStatusArray.pop();
       }
-      this.filterStatusArray.push(val);
+      if (val) this.filterStatusArray.push(val);
     }
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
     clearAll() {
       this.filterTags = [];

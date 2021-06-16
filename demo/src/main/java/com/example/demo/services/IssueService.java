@@ -65,7 +65,7 @@ public class IssueService {
         if (!filterList.isEmpty()) {
             return issueRepository
                     .findAll(IssueSpecification.belongsToProject(project)
-                            .and(IssueSpecification.getSpecificationFromFilters(filterList)));
+                            .and(IssueSpecification.getSpecificationFromFilters(filterList)), Sort.by(orders));
         }
         return issueRepository.findByProject(project, Sort.by(orders));
     }
