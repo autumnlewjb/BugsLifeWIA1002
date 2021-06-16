@@ -46,7 +46,7 @@ export default {
     this.filterTagsArray = this.tags;
     this.filterStatusArray = this.status;
     this.filterTagsArray.forEach(element => this.filterTags.push(element));
-    this.filterStatusArray.forEach(element => this.filterStatus.push(element));
+    this.filterStatus = this.filterStatusArray[0];
   },
   watch: {
     filterTags(val) {
@@ -61,11 +61,7 @@ export default {
       for (var i = 0; i < len; i++) {
         this.filterStatusArray.pop();
       }
-      if (val != null) {
-        this.filterStatusArray.push(val);
-      } else {
-        this.filterStatusArray = [];
-      }
+      if (val) this.filterStatusArray.push(val);
     }
   },
   computed: {},

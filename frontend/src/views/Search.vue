@@ -153,8 +153,8 @@ export default {
       } else if (val == 'project') {
         this.availableSort = [
           {
-            text: 'Timestamp',
-            value: 'timestamp'
+            text: 'Date',
+            value: 'date'
           }
         ];
         this.availableFilter = []
@@ -177,9 +177,9 @@ export default {
       if (val == null) {
         return;
       }
-      if (this.loading) {
-        return;
-      }
+      // if (this.loading) {
+      //  return;
+      // }
       this.loading = true;
       var url = `/api?query=${val.query}&scope=${val.scope}&size=5&page=${val.page}`;
       this.searchType = val.scope;
