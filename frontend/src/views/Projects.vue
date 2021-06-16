@@ -34,7 +34,7 @@
         <v-flex xs12 md12 v-if="showFilterForm">
           <SingleFilter/>
         </v-flex>
-        <v-flex xs12 md12 v-if="showSortForm">
+        <v-flex xs12 md12 v-show="showSortForm">
           <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="!multipleSort"/>
           <SortForm :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="multipleSort"/>
         </v-flex>
