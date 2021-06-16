@@ -44,7 +44,7 @@ Start with your preferred IDE
 ## Deployment Guide
 In order to follow this guide you need to be on a Linux environment. 
 ### Edit database settings
-You can edit the database settings in the ```deploy-compose.yml``` file and make sure all configurations are the same as the spring database configuration in ```./demo/src/main/resources/application.properties```. 
+You can edit the database settings in the ```docker-compose.yml``` file and make sure all configurations are the same as the spring database configuration in ```./demo/src/main/resources/application.properties```. 
 ### Start all services with deployment script
 1. Change directory to the root directory of this project.
 2. Change permission to execute the deployment script ```deploy.sh```  
