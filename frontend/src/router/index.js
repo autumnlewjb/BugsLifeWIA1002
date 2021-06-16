@@ -77,6 +77,9 @@ const routes = [
         }
     },
     {
+        path: '/image'
+    },
+    {
         path: '*',
         name: 'PageNotFound',
         component: PageNotFound
