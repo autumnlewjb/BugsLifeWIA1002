@@ -241,6 +241,7 @@ export default {
         if (res.status == 200) {
           this.$emit("show-snackbar", "Delete successful")
           this.$store.dispatch("fetchCurrentUser");
+          location.reload();
         } else if (res.status == 403) {
           this.forbiddenDialog = true;
         } else {
@@ -266,7 +267,8 @@ export default {
             if (res.status == 200) {
               this.$store.dispatch("fetchCurrentUser");
               
-              this.$emit("show-snackbar", "Update successful")
+              this.$emit("show-snackbar", "Update successful");
+              location.reload();
             } else if (res.status == 403) {
               this.forbiddenDialog = true;
             } else {
