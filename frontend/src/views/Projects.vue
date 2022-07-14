@@ -3,10 +3,18 @@
     <v-container style="min-height: 80vh">
       <v-layout row justify-space-around class="my-10">
         <v-flex xs12 md8>
-          <h1 class="subheading">Project Dashboard
+          <h1 class="subheading">
+            Project Dashboard
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn plain icon @click="handleClick('sort')" :color="getSortButtonColor" v-bind="attrs" v-on="on">
+                <v-btn
+                  plain
+                  icon
+                  @click="handleClick('sort')"
+                  :color="getSortButtonColor"
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <v-icon>mdi-sort</v-icon>
                 </v-btn>
               </template>
@@ -19,63 +27,83 @@
         </v-flex>
         <v-flex xs12 md2>
           <v-btn
-              elevation="3"
-              rounded
-              color="teal"
-              class="white--text"
-              @click="dialog = true"
-              align="center" justify="center"
-          >+ Add Project
-          </v-btn
-          >
+            elevation="3"
+            rounded
+            color="teal"
+            class="white--text"
+            @click="dialog = true"
+            align="center"
+            justify="center"
+            >+ Add Project
+          </v-btn>
         </v-flex>
       </v-layout>
       <v-layout row justify-content-center>
         <v-flex xs12 md12 v-if="showFilterForm">
-          <SingleFilter/>
+          <SingleFilter />
         </v-flex>
         <v-flex xs12 md12 v-show="showSortForm">
-          <SingleSort :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="!multipleSort"/>
-          <SortForm :sortSubjects="sortSubjects" :alreadyInSort="sortData" v-if="multipleSort"/>
+          <SingleSort
+            :sortSubjects="sortSubjects"
+            :alreadyInSort="sortData"
+            v-if="!multipleSort"
+          />
+          <SortForm
+            :sortSubjects="sortSubjects"
+            :alreadyInSort="sortData"
+            v-if="multipleSort"
+          />
         </v-flex>
       </v-layout>
       <v-layout row>
-        <v-flex md12 sm12 v-if="getProjects.length == 0" justify-center class="ma-10">
-          <p style="text-align: center;" class="text--secondary">Hhhhmmmm... No projects now</p>
+        <v-flex
+          md12
+          sm12
+          v-if="getProjects.length == 0"
+          justify-center
+          class="ma-10"
+        >
+          <p style="text-align: center;" class="text--secondary">
+            Hhhhmmmm... No projects now
+          </p>
         </v-flex>
         <v-flex xs12 md12 v-else>
           <v-card
-              v-for="project in getProjects"
-              :key="project.id"
-              class="pa-5 ma-5"
+            v-for="project in getProjects"
+            :key="project.id"
+            class="pa-5 ma-5"
           >
             <v-row>
               <v-col>
                 <v-card-title>{{ project.name }}</v-card-title>
               </v-col>
               <v-col cols="2">
-                <p class="mr-4 text-right text-h6 grey--text">#{{ project.projectId }}</p>
+                <p class="mr-4 text-right text-h6 grey--text">
+                  #{{ project.projectId }}
+                </p>
               </v-col>
             </v-row>
-            <v-card-text v-html="getDescription(project.description)"></v-card-text>
             <v-card-text
-            >Created on
+              v-html="getDescription(project.description)"
+            ></v-card-text>
+            <v-card-text
+              >Created on
               {{
-                project.date == null ? "(Not Specified)" : new Date(project.date).toLocaleString()
+                project.date == null
+                  ? "(Not Specified)"
+                  : new Date(project.date).toLocaleString()
               }}
-            </v-card-text
-            >
+            </v-card-text>
             <v-card-actions class="d-flex justify-end">
               <v-btn
-                  color="primary"
-                  :to="{
-                    path: 'project',
-                    query: { projectId: project.projectId },
-                  }"
-                  text
-              >View Project
-              </v-btn
-              >
+                color="primary"
+                :to="{
+                  path: 'project',
+                  query: { projectId: project.projectId },
+                }"
+                text
+                >View Project
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -83,11 +111,17 @@
     </v-container>
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <ProjectForm @toggleDialog="toggleDialog"
-                     @show-snackbar="toggleSnackbar"/>
+        <ProjectForm
+          @toggleDialog="toggleDialog"
+          @show-snackbar="toggleSnackbar"
+        />
       </v-dialog>
     </v-row>
-    <Snackbar :snackbar="snackbar" :text="message" @close-snackbar="closeSnackbar"/>
+    <Snackbar
+      :snackbar="snackbar"
+      :text="message"
+      @close-snackbar="closeSnackbar"
+    />
   </v-container>
 </template>
 
@@ -111,75 +145,76 @@ export default {
       sortData: [],
       sortSubjects: [
         {
-          text: 'Name',
-          value: 'name'
+          text: "Name",
+          value: "name",
         },
         {
-          text: 'Date',
-          value: 'date'
+          text: "Date",
+          value: "date",
         },
         {
-          text: 'Number Of Issues',
-          value: 'issueNum'
+          text: "Number Of Issues",
+          value: "issueNum",
         },
         {
-          text: 'Project ID',
-          value: 'projectId'
-        }
+          text: "Project ID",
+          value: "projectId",
+        },
       ],
       tags: [],
       status: [],
       multipleSort: true,
       snackbar: false,
-      message: null
+      message: null,
     };
   },
   created() {
-    this.fetchProjects(`/api/`);
+    this.fetchProjects(`/api/projects`);
   },
   components: {
     ProjectForm,
     SingleFilter,
     SingleSort,
     SortForm,
-    Snackbar
-  }
-  ,
+    Snackbar,
+  },
   watch: {
     sortData(val) {
       var url;
       if (val.length > 0) {
-        url = `/api/?`;
-        val.forEach((element) => url += `&sort=${element.subject},${element.order}`)
+        url = `/api/projects?`;
+        val.forEach(
+          (element) => (url += `&sort=${element.subject},${element.order}`)
+        );
         this.sortActive = true;
       } else {
-        url = `/api/`;
+        url = `/api/projects`;
         this.sortActive = false;
       }
       this.fetchProjects(url);
-    }
+    },
   },
   methods: {
     toggleDialog() {
-      this.fetchProjects(`/api/`);
+      this.fetchProjects(`/api/projects`);
       this.dialog = false;
     },
     fetchProjects(url) {
       fetch(url)
-          .then((res) => {
-            if (res.status == 200) {
-              return res.json();
-            } else {
-              return [];
-            }
-          })
-          .then((data) => {
-            this.projects = data;
-          })
-          .catch((e) => console.log(e));
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            return [];
+          }
+        })
+        .then((data) => {
+          this.projects = data;
+        })
+        .catch((e) => console.log(e));
     },
     handleClick(item) {
-      if (item == 'sort') {
+      if (item == "sort") {
         this.showSortForm = !this.showSortForm;
         this.showFilterForm = false;
       } else {
@@ -216,10 +251,9 @@ export default {
     },
     getFilterButtonColor() {
       return this.showFilterForm && this.filterActive;
-    }
+    },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

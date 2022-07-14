@@ -21,7 +21,7 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects(@RequestParam(defaultValue = "date,desc") String[] sort) {
         List<Project> projectList = projectService.findAllProjectsWithSort(sort);
         return ResponseEntity.ok(projectList);
